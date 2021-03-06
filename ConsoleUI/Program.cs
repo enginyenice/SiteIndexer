@@ -21,7 +21,7 @@ namespace ConsoleUI
             IIndexerService indexerService = new IndexerManager(new InMemoryHtmlTagDal());
             WebSite webSite = new WebSite
             {
-                Url = "https://tr.lipsum.com/"
+                Url = "https://enginyenice.com/laravel-veritabani-islemleri/"
             };
 
             Console.WriteLine(indexerService.FrequanceCalculate(webSite).Data.Content);

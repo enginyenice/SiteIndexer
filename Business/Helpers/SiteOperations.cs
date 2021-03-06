@@ -60,7 +60,6 @@ namespace Business.Helper
 
                 last = titleIndexFirst + titleIndexLast;
                 text += RemoveHtml(siteAllData.Substring(titleIndexFirst, titleIndexLast)) + " ";
-                //text += siteAllData.Substring(titleIndexFirst, titleIndexLast) + " ";
             }
 
             return text;
@@ -69,12 +68,17 @@ namespace Business.Helper
         public static string RemoveHtml(string text)
         {
             Regex rRemScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+            Regex rRemHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
             Regex rRemStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
+            Regex rRemCode = new Regex(@"<code[^>]*>[\s\S]*?</code>");
             Regex rRemImage = new Regex(@"<img[^>]* />");
+
             Regex rRemHtml = new Regex(@"<(.|\n)*?>");
             text = rRemScript.Replace(text, " ");
+            text = rRemHead.Replace(text, " ");
             text = rRemStyle.Replace(text, " ");
             text = rRemImage.Replace(text, " ");
+            text = rRemCode.Replace(text, " ");
             text = rRemHtml.Replace(text, " ");
             return text;
         }
