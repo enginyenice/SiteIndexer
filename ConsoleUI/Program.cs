@@ -6,6 +6,7 @@ using Business.Concrete;
 using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
 using System;
+using System.Collections.Generic;
 
 namespace ConsoleUI
 {
@@ -13,18 +14,35 @@ namespace ConsoleUI
     {
         private static void Main(string[] args)
         {
-            if (args is null)
+            //SayfadaGecenKelimelerinFrekanslariniHesaplama();
+            AnahtarKelimeCikarma();
+        }
+
+        private static void AnahtarKelimeCikarma()
+        {
+            IIndexerService _indexerService = new IndexerManager(new InMemoryHtmlTagDal());
+            List<WebSite> webSites = new List<WebSite> {
+                new WebSite { Url = "https://www.sondakika.com/haber/haber-son-dakika-haberleri-ofkeli-sahis-sokaktaki-tum-evleri-atese-verdi-13974473/", Keywords = new List<string>()},
+                new WebSite { Url = "https://www.internethaber.com/aydinda-ofkeli-yegen-sokaktaki-evleri-atese-verdi-itfaiyeye-tahta-kasayla-saldirdi-2168526h.htm", Keywords = new List<string>() }
+        };
+            var result = _indexerService.KeywordGenerator(webSites);
+
+            foreach (var item in result.Data)
             {
-                throw new ArgumentNullException(nameof(args));
+                Console.WriteLine($"URL: {item.Url} \nKeywords: {string.Join("\n", item.Keywords)}");
             }
+        }
 
-            IIndexerService indexerService = new IndexerManager(new InMemoryHtmlTagDal());
-            WebSite webSite = new WebSite
+        private static void SayfadaGecenKelimelerinFrekanslariniHesaplama()
+        {
+            IIndexerService _indexerService = new IndexerManager(new InMemoryHtmlTagDal());
+            WebSite webSite = new WebSite { Url = "https://www.haberler.com/son-dakika-haberi-polis-memurunu-olduren-amerikan-katil-zanlilarina-13974607-haberi/" };
+            //Console.WriteLine(_indexerService.FrequanceCalculate(webSite).Data.Content);
+
+            foreach (var frequance in _indexerService.FrequanceCalculate(webSite).Data.Frequances)
             {
-                Url = "https://enginyenice.com/laravel-veritabani-islemleri/"
-            };
-
-            Console.WriteLine(indexerService.FrequanceCalculate(webSite).Data.Content);
+                Console.WriteLine($"[{frequance.Piece}]->{frequance.Keyword}");
+            }
         }
     }
 }

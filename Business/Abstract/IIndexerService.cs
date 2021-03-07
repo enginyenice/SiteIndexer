@@ -12,5 +12,7 @@ namespace Business.Abstract
     public interface IIndexerService
     {
         IDataResult<WebSite> FrequanceCalculate(WebSite webSite);
+
+        IDataResult<List<WebSite>> KeywordGenerator(List<WebSite> webSites);
     }
 }

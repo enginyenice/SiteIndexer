@@ -28,18 +28,41 @@ namespace Business.Concrete
             var keywords = result.Data.Content.Split(" ");
             foreach (var keyword in keywords)
             {
-                if (frequances.Any(p => p.Keyword == keyword) && keyword != "")
+                if (keyword != "" && keyword != " ")
                 {
-                    var frequance = frequances.SingleOrDefault(p => p.Keyword == keyword);
-                    frequance.Piece += 1;
+                    if (frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower()) != null)
+                    {
+                        var frequance = frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower());
+                        frequance.Piece += 1;
+                    }
+                    else
+                    {
+                        frequances.Add(new Frequance
+                        {
+                            Piece = 1,
+                            Keyword = keyword.ToLower()
+                        });
+                    }
                 }
-                frequances.Add(new Frequance
-                {
-                    Piece = 1,
-                    Keyword = keyword
-                });
             }
+            frequances = SiteOperations.RemoveTurkishConjunctions(frequances);
+            result.Data.Frequances = frequances.OrderByDescending(p => p.Piece).ToList();
+
             return result;
+        }
+
+        public IDataResult<List<WebSite>> KeywordGenerator(List<WebSite> webSites)
+        {
+            foreach (var site in webSites)
+            {
+                var result = FrequanceCalculate(site);
+                foreach (var item in result.Data.Frequances)
+                {
+                    if (site.Keywords.Count >= 10) break;
+                    site.Keywords.Add(item.Keyword);
+                }
+            }
+            return new SuccessDataResult<List<WebSite>>(webSites);
         }
     }
 }

@@ -14,5 +14,7 @@ namespace Entities.Concrete
         public string Url { get; set; }
         public string SiteTitle { get; set; }
         public string Content { get; set; }
+        public List<string> Keywords { get; set; }
+        public List<Frequance> Frequances { get; set; }
     }
 }
