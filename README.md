@@ -16,7 +16,7 @@ Girilen url diğer girilen url listesinden en benzer olanlara göre sıralama ya
 1.URL Anahtar kelimeler a,b,c,d,e
 2.URL içerisinde geçen ortak kelimeler a,c,d,e olsun
 
-(2.URL a tekrar sayısı)*(2.URL c tekrar sayısı)*(2.URL d tekrar sayısı)*(2.URL e tekrar sayısı) / 2.URL toplam kelime sayısı
+(2.URL a tekrar sayısı) * (2.URL c tekrar sayısı) * (2.URL d tekrar sayısı) * (2.URL e tekrar sayısı) / 2.URL toplam kelime sayısı
 
 4) Ayrı bir sayfa olacak
 1 adet girilecek url
