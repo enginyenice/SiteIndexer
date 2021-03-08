@@ -23,32 +23,7 @@ namespace Business.Concrete
 
         public IDataResult<WebSite> FrequanceCalculate(WebSite webSite)
         {
-            List<Frequance> frequances = new List<Frequance>();
-            var result = SiteOperations.GetWebSite(webSite, _htmlTagDal.GetAll());
-            var keywords = result.Data.Content.Split(" ");
-            foreach (var keyword in keywords)
-            {
-                if (keyword != "" && keyword != " ")
-                {
-                    if (frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower()) != null)
-                    {
-                        var frequance = frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower());
-                        frequance.Piece += 1;
-                    }
-                    else
-                    {
-                        frequances.Add(new Frequance
-                        {
-                            Piece = 1,
-                            Keyword = keyword.ToLower()
-                        });
-                    }
-                }
-            }
-            frequances = SiteOperations.RemoveTurkishConjunctions(frequances);
-            result.Data.Frequances = frequances.OrderByDescending(p => p.Piece).ToList();
-
-            return result;
+            return SiteOperations.GetWebSite(webSite, _htmlTagDal.GetAll());
         }
 
         public IDataResult<List<WebSite>> KeywordGenerator(List<WebSite> webSites)

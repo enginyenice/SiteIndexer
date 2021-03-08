@@ -1,9 +1,6 @@
 ﻿//Created By Engin Yenice
 //enginyenice2626@gmail.com
 
-// Created By Engin Yenice
-// enginyenice2626@gmail.com
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,6 +30,7 @@ namespace Business.Helper
             }
 
             webSite.Content = webSite.Content.Trim();
+            webSite.Frequances = CreateFrequency(webSite.Content);
             return new SuccessDataResult<WebSite>(webSite);
         }
 
@@ -68,41 +66,46 @@ namespace Business.Helper
 
         public static string RemoveHtml(string text)
         {
-            Regex rRemScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
-            Regex rRemHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
-            Regex rRemStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
-            Regex rRemCode = new Regex(@"<code[^>]*>[\s\S]*?</code>");
-            Regex rRemImage = new Regex(@"<img[^>]* />");
-            Regex rRemHtml = new Regex(@"<(.|\n)*?>");
-            Regex rRemT = new Regex(@"\t");
-            Regex rRemNbsp = new Regex(@"&nbsp;");
-            Regex rRemBr = new Regex(@"<br>");
-            Regex rRemBrX = new Regex(@"</br>");
-            Regex rRemLine = new Regex(@"\n");
-            Regex rRemXX = new Regex(@"\r\n?|\n");
+            text = text.ToLower();
+            Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+            Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
+            Regex regexStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
+            Regex regexCode = new Regex(@"<code[^>]*>[\s\S]*?</code>");
+            Regex regexImage = new Regex(@"<img[^>]* />");
+            Regex regexHtml = new Regex(@"<(.|\n)*?>");
+            Regex regexTab = new Regex(@"\t");
+            Regex regexWhiteSpace = new Regex(@"&nbsp;");
+            Regex regexNewLine = new Regex(@"<br>");
+            Regex regexNewLine2 = new Regex(@"</br>");
+            Regex regexNewLine3 = new Regex(@"\n");
+            Regex regexRN = new Regex(@"\r\n?|\n");
+            Regex regexAdditional = new Regex(@"’[a-z]+");
+            Regex regexMark = new Regex(@"[“”!'^+%&/()=?_#½{[\]}\\|\-.,~:;><]");
 
             #region Regex Replace
 
-            text = rRemScript.Replace(text, " ");
-            text = rRemT.Replace(text, " ");
-            text = rRemHead.Replace(text, " ");
-            text = rRemStyle.Replace(text, " ");
-            text = rRemImage.Replace(text, " ");
-            text = rRemCode.Replace(text, " ");
-            text = rRemNbsp.Replace(text, " ");
-            text = rRemBr.Replace(text, " ");
-            text = rRemBrX.Replace(text, " ");
-            text = rRemLine.Replace(text, " ");
-            text = rRemXX.Replace(text, " ");
-            text = rRemHtml.Replace(text, " ");
+            text = regexScript.Replace(text, " ");
+            text = regexHead.Replace(text, " ");
+            text = regexStyle.Replace(text, " ");
+            text = regexCode.Replace(text, " ");
+            text = regexImage.Replace(text, " ");
+            text = regexTab.Replace(text, " ");
+            text = regexWhiteSpace.Replace(text, " ");
+            text = regexNewLine.Replace(text, " ");
+            text = regexNewLine2.Replace(text, " ");
+            text = regexNewLine3.Replace(text, " ");
+            text = regexRN.Replace(text, " ");
+            text = regexHtml.Replace(text, " ");
+            text = regexAdditional.Replace(text, " ");
+            text = regexMark.Replace(text, " ");
 
             #endregion Regex Replace
 
             #region Unicode Replace
 
             text = text.Replace("&bull;", ""); // •
-            text = text.Replace("&#8217;", "'");
-            text = text.Replace("&#39;", "'");
+            text = text.Replace("&#8217;", " ");
+            text = text.Replace("&#39;", " ");
             text = text.Replace("&#8217;", "\"");
             text = text.Replace("&#8221;", "\"");
             text = text.Replace("&#8220;", "\"");
@@ -125,6 +128,33 @@ namespace Business.Helper
             return text;
         }
 
+        public static List<Frequance> CreateFrequency(string content)
+        {
+            List<Frequance> frequances = new List<Frequance>();
+            var keywords = content.Split(" ");
+            foreach (var keyword in keywords)
+            {
+                if (keyword != "" && keyword != " ")
+                {
+                    if (frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower()) != null)
+                    {
+                        var frequance = frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower());
+                        frequance.Piece += 1;
+                    }
+                    else
+                    {
+                        frequances.Add(new Frequance
+                        {
+                            Piece = 1,
+                            Keyword = keyword.ToLower()
+                        });
+                    }
+                }
+            }
+            frequances = SiteOperations.RemoveTurkishConjunctions(frequances);
+            return frequances.OrderByDescending(p => p.Piece).ToList();
+        }
+
         public static List<Frequance> RemoveTurkishConjunctions(List<Frequance> frequances)
         {
             List<string> conjuctions = new List<string>
@@ -132,16 +162,16 @@ namespace Business.Helper
                 "a'nî","ama","amma","ancak","altı","altmış","az",
                 "belki","bile","bir başka deyişle","bu","ben","biz","benim","bunlar","bir","beş","bin",
                 "çünkü","çok",
-                "da","de","dahi", "de","demek","dışında","dört","dokuz","doksan",
+                "da","de","dahi", "de","demek","dışında","dört","dokuz","doksan","diye",
                 "eğer","encami","elli",
                 "fakat",
                 "gâh","gelgelelim","gibi",
-                "ha","hâlbuki","hatta",
+                "ha","hâlbuki","hatta","hangisi",
                 "ile","ille","velakin","ille velâkin", "imdi","iki","iyi","için",
                 "kâh","kaldı ki","karşın","ki","kırk","kötü","kadar",
                 "lakin",
                 "madem","mademki","maydamı","meğerki","meğerse",
-                "ne var ki","neyse",
+                "ne var ki","neyse","nerede","nereye","ne","niçin","neden","kim","kimi","kimin","nasıl",
                 "oysa","oysaki","o","onlar","onun","onların","on","otuz",
                 "seksle","sen","siz","senin","sizin","şunlar","sekiz","seksen",
                 "üç",
@@ -154,7 +184,7 @@ namespace Business.Helper
             List<Frequance> Tempfrequances = new List<Frequance>();
             foreach (var item in frequances)
             {
-                if (!conjuctions.Any(p => p == item.Keyword) && item.Keyword.Length > 1)
+                if (!conjuctions.Any(p => p == item.Keyword) && item.Keyword.Length > 3)
                 {
                     Tempfrequances.Add(item);
                 }

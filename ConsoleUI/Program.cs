@@ -14,29 +14,29 @@ namespace ConsoleUI
     {
         private static void Main(string[] args)
         {
-            //SayfadaGecenKelimelerinFrekanslariniHesaplama();
-            AnahtarKelimeCikarma();
+            //FrequanceCalculate(); // 1
+            KeywordsGenerator();
         }
 
-        private static void AnahtarKelimeCikarma()
+        private static void KeywordsGenerator()
         {
             IIndexerService _indexerService = new IndexerManager(new InMemoryHtmlTagDal());
             List<WebSite> webSites = new List<WebSite> {
-                new WebSite { Url = "https://www.sondakika.com/haber/haber-son-dakika-haberleri-ofkeli-sahis-sokaktaki-tum-evleri-atese-verdi-13974473/", Keywords = new List<string>()},
-                new WebSite { Url = "https://www.internethaber.com/aydinda-ofkeli-yegen-sokaktaki-evleri-atese-verdi-itfaiyeye-tahta-kasayla-saldirdi-2168526h.htm", Keywords = new List<string>() }
+                new WebSite { Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/dostluk-ayakkabilari", Keywords = new List<string>()},
+                new WebSite { Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/kuzeye-giden-kizaklar", Keywords = new List<string>() }
         };
             var result = _indexerService.KeywordGenerator(webSites);
 
             foreach (var item in result.Data)
             {
-                Console.WriteLine($"URL: {item.Url} \nKeywords: {string.Join("\n", item.Keywords)}");
+                Console.WriteLine($"URL: {item.Url}\nKeywords: {string.Join(",", item.Keywords)}");
             }
         }
 
-        private static void SayfadaGecenKelimelerinFrekanslariniHesaplama()
+        private static void FrequanceCalculate()
         {
             IIndexerService _indexerService = new IndexerManager(new InMemoryHtmlTagDal());
-            WebSite webSite = new WebSite { Url = "https://www.haberler.com/son-dakika-haberi-polis-memurunu-olduren-amerikan-katil-zanlilarina-13974607-haberi/" };
+            WebSite webSite = new WebSite { Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/dostluk-ayakkabilari" };
             //Console.WriteLine(_indexerService.FrequanceCalculate(webSite).Data.Content);
 
             foreach (var frequance in _indexerService.FrequanceCalculate(webSite).Data.Frequances)
