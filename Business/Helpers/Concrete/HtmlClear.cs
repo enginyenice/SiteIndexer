@@ -52,6 +52,7 @@ namespace Business.Helpers.Concrete
             text = text.Replace("&bull;", ""); // •
             text = text.Replace("&#8217;", " ");
             text = text.Replace("&#39;", " ");
+            text = text.Replace("&#x27;", " ");
             text = text.Replace("&#8217;", "\"");
             text = text.Replace("&#8221;", "\"");
             text = text.Replace("&#8220;", "\"");

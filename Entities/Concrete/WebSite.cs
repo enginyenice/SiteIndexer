@@ -10,6 +10,12 @@ namespace Entities.Concrete
 {
     public class WebSite : IEntity
     {
+        public WebSite()
+        {
+            Keywords = new List<string>();
+            Frequances = new List<Frequance>();
+        }
+
         public int Id { get; set; }
         public string Url { get; set; }
         public string Title { get; set; }
