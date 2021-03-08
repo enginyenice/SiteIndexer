@@ -2,9 +2,8 @@
 //enginyenice2626@gmail.com
 
 using Business.Abstract;
-using Business.Helper;
+using Business.Helpers.Concrete;
 using Core.Utilities.Results;
-using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -14,30 +13,17 @@ namespace Business.Concrete
 {
     public class IndexerManager : IIndexerService
     {
-        private readonly IHtmlTagDal _htmlTagDal;
-
-        public IndexerManager(IHtmlTagDal htmlTagDal)
-        {
-            _htmlTagDal = htmlTagDal;
-        }
-
         public IDataResult<WebSite> FrequanceCalculate(WebSite webSite)
         {
-            return SiteOperations.GetWebSite(webSite, _htmlTagDal.GetAll());
+            return WebSiteOperation.GetWebSite(webSite);
         }
 
-        public IDataResult<List<WebSite>> KeywordGenerator(List<WebSite> webSites)
+        public IDataResult<WebSite> KeywordGenerator(WebSite webSite)
         {
-            foreach (var site in webSites)
-            {
-                var result = FrequanceCalculate(site);
-                foreach (var item in result.Data.Frequances)
-                {
-                    if (site.Keywords.Count >= 10) break;
-                    site.Keywords.Add(item.Keyword);
-                }
-            }
-            return new SuccessDataResult<List<WebSite>>(webSites);
+            webSite = WebSiteOperation.GetWebSite(webSite).Data;
+            webSite = KeywordOperation.KeywordGenerator(webSite).Data;
+
+            return new SuccessDataResult<WebSite>(webSite);
         }
     }
 }

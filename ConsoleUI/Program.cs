@@ -3,7 +3,6 @@
 
 using Business.Abstract;
 using Business.Concrete;
-using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -14,30 +13,26 @@ namespace ConsoleUI
     {
         private static void Main(string[] args)
         {
-            //FrequanceCalculate(); // 1
-            KeywordsGenerator();
+            // KeywordsGenerator();
+            // FrequanceCalculate(); // 1
         }
 
         private static void KeywordsGenerator()
         {
-            IIndexerService _indexerService = new IndexerManager(new InMemoryHtmlTagDal());
-            List<WebSite> webSites = new List<WebSite> {
-                new WebSite { Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/dostluk-ayakkabilari", Keywords = new List<string>()},
-                new WebSite { Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/kuzeye-giden-kizaklar", Keywords = new List<string>() }
-        };
-            var result = _indexerService.KeywordGenerator(webSites);
-
-            foreach (var item in result.Data)
+            IIndexerService _indexerService = new IndexerManager();
+            WebSite webSite = new WebSite
             {
-                Console.WriteLine($"URL: {item.Url}\nKeywords: {string.Join(",", item.Keywords)}");
-            }
+                Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/dostluk-ayakkabilari",
+                Keywords = new List<string>()
+            };
+            var result = _indexerService.KeywordGenerator(webSite);
+            Console.WriteLine("Url: {0}\nTitle: {1}\nKeywords: {2}", result.Data.Url, result.Data.Title, string.Join(",", result.Data.Keywords));
         }
 
         private static void FrequanceCalculate()
         {
-            IIndexerService _indexerService = new IndexerManager(new InMemoryHtmlTagDal());
+            IIndexerService _indexerService = new IndexerManager();
             WebSite webSite = new WebSite { Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/dostluk-ayakkabilari" };
-            //Console.WriteLine(_indexerService.FrequanceCalculate(webSite).Data.Content);
 
             foreach (var frequance in _indexerService.FrequanceCalculate(webSite).Data.Frequances)
             {

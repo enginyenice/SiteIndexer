@@ -13,6 +13,6 @@ namespace Business.Abstract
     {
         IDataResult<WebSite> FrequanceCalculate(WebSite webSite);
 
-        IDataResult<List<WebSite>> KeywordGenerator(List<WebSite> webSites);
+        IDataResult<WebSite> KeywordGenerator(WebSite webSite);
     }
 }
