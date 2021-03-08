@@ -9,16 +9,10 @@ using System.Text;
 
 namespace Entities.Dto
 {
-    public class WebSiteRankingDto : IDto
+    public class FrequencyWebSiteDto : IDto
     {
-        public int RankingCount { get; set; }
-
-        public WebSiteRankingDto()
-        {
-            RankingCount = 0;
-        }
-
-        public string Title { get; set; }
         public string Url { get; set; }
+        public string Title { get; set; }
+        public List<Frequance> Frequances { get; set; }
     }
 }

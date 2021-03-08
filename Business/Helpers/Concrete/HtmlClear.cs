@@ -26,7 +26,7 @@ namespace Business.Helpers.Concrete
             Regex regexNewLine3 = new Regex(@"\n");
             Regex regexRN = new Regex(@"\r\n?|\n");
             Regex regexAdditional = new Regex(@"’[a-z]+");
-            Regex regexMark = new Regex(@"[“”!'^+%&/()=?_#½{[\]}\\|\-.,~:;><]");
+            Regex regexMark = new Regex(@"[“”!'^+%&/()=?_#½{[\]}\\|\-.,~:;><•*+]");
 
             #region Regex Replace
 
@@ -42,17 +42,21 @@ namespace Business.Helpers.Concrete
             text = regexNewLine3.Replace(text, " ");
             text = regexRN.Replace(text, " ");
             text = regexHtml.Replace(text, " ");
+            text = ReplaceText(text);
             text = regexAdditional.Replace(text, " ");
             text = regexMark.Replace(text, " ");
 
             #endregion Regex Replace
 
-            #region Unicode Replace
+            return text;
+        }
 
-            text = text.Replace("&bull;", ""); // •
-            text = text.Replace("&#8217;", " ");
-            text = text.Replace("&#39;", " ");
-            text = text.Replace("&#x27;", " ");
+        public static string ReplaceText(string text)
+        {
+            text = text.Replace("&bull;", "•"); // •
+            text = text.Replace("&#8217;", "'");
+            text = text.Replace("&#39;", "'");
+            text = text.Replace("&#x27;", "'");
             text = text.Replace("&#8217;", "\"");
             text = text.Replace("&#8221;", "\"");
             text = text.Replace("&#8220;", "\"");
@@ -69,9 +73,6 @@ namespace Business.Helpers.Concrete
             text = text.Replace("&#214;", "Ö");
             text = text.Replace("&#246;", "ö");
             text = text.Replace("&copy;", "©");
-
-            #endregion Unicode Replace
-
             return text;
         }
     }

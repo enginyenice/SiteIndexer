@@ -63,7 +63,7 @@ namespace Business.Helpers.Concrete
         {
             int titleIndexFirst = stringWebSite.IndexOf("<title>", StringComparison.Ordinal) + 7;
             int titleIndexLast = stringWebSite[titleIndexFirst..].IndexOf("</title>", StringComparison.Ordinal); //8
-            return new SuccessDataResult<string>(data: stringWebSite.Substring(titleIndexFirst, titleIndexLast));
+            return new SuccessDataResult<string>(data: HtmlClear.ReplaceText(stringWebSite.Substring(titleIndexFirst, titleIndexLast)));
         }
     }
 }

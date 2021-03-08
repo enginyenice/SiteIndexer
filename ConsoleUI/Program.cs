@@ -11,16 +11,10 @@ namespace ConsoleUI
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
-            // KeywordsGenerator();
-            // FrequanceCalculate();
-            UrlRanking(new WebSite
-            {
-                Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/dostluk-ayakkabilari",
-                Keywords = new List<string>()
-            }, new List<WebSite>
-            {
+            UrlRanking(new WebSite { Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/dostluk-ayakkabilari" },
+            new List<WebSite>{
             new WebSite{Url = "https://www.kocamanbisite.com/cocuk-hikayeleri/dostluk-ayakkabilari"},
             new WebSite{Url = "https://www.kocamanbisite.com/masallar-binbir-gece/yedi-renk-masallari-lacivert-yol"},
             new WebSite{Url = "https://www.kocamanbisite.com/masallar-binbir-gece/sehrazatin-saraya-gidisi"},
@@ -38,6 +32,7 @@ namespace ConsoleUI
             new WebSite {Url = "https://www.kocamanbisite.com/grimm-masallari/hansel-ve-gretel-masali"},
             new WebSite {Url = "https://www.kocamanbisite.com/grimm-masallari/cirkin-ordek-yavrusu-masali"},
             new WebSite {Url = "https://www.kocamanbisite.com/grimm-masallari/pamuk-prenses"},
+            new WebSite {Url = "https://www.fluentu.com/blog/english-tur/ingilizce-okuma-pratigi/"},
             });
         }
 
@@ -48,7 +43,7 @@ namespace ConsoleUI
             Console.WriteLine($"Aranan Site: {targetSite.Title}");
             foreach (var item in result.Data)
             {
-                Console.WriteLine($"Havuz Sıralaması : {item.WebSite.Title} -> {item.RankingCount}");
+                Console.WriteLine($"Havuz Sıralaması : {item.Title} -> {item.RankingCount}");
             }
         }
 

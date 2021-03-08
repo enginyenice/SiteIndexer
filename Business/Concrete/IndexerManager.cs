@@ -35,7 +35,7 @@ namespace Business.Concrete
             List<WebSiteRankingDto> webSiteRankingDtos = new List<WebSiteRankingDto>();
             foreach (var item in pool)
             {
-                WebSiteRankingDto webSiteRankingDto = new WebSiteRankingDto { WebSite = item };
+                WebSiteRankingDto webSiteRankingDto = new WebSiteRankingDto { Title = item.Title, Url = item.Url };
                 foreach (var keyword in targetSite.Keywords)
                 {
                     if (item.Frequances.Any(p => p.Keyword == keyword))
