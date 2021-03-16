@@ -2,6 +2,7 @@
 //enginyenice2626@gmail.com
 
 using Business.Abstract;
+using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Dto;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +35,8 @@ namespace WebAPI.Controllers
                 Title = result.Title,
                 Url = result.Url
             };
-            return Ok(frequencyWebSiteDto);
+            
+            return Ok(new SuccessDataResult<FrequencyWebSiteDto>(frequencyWebSiteDto));
         }
     }
 }

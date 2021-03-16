@@ -53,6 +53,7 @@ namespace Business
         public IDataResult<string> ReplaceText(string text)
         {
             text = text.Replace("&bull;", "•"); // •
+            
             text = text.Replace(",", " "); // ,
             text = text.Replace(":", " "); // ,
             text = text.Replace(".", " "); // ,
@@ -76,6 +77,7 @@ namespace Business
             text = text.Replace("&#214;", "Ö");
             text = text.Replace("&#246;", "ö");
             text = text.Replace("&copy;", "©");
+            text = text.Replace('\'', ' '); // •
             return new SuccessDataResult<string>(data: text);
         }
     }

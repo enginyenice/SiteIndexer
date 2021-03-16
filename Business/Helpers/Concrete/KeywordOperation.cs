@@ -84,7 +84,7 @@ namespace Business
             {
                 int titleIndexFirst = stringWebSite.IndexOf("<title>", StringComparison.Ordinal) + 7;
                 int titleIndexLast = stringWebSite[titleIndexFirst..].IndexOf("</title>", StringComparison.Ordinal); //8
-                return new SuccessDataResult<string>(data: _htmlClearer.ReplaceText(stringWebSite.Substring(titleIndexFirst, titleIndexLast)));
+                return new SuccessDataResult<string>(data: _htmlClearer.ReplaceText(stringWebSite.Substring(titleIndexFirst, titleIndexLast)).Data);
             }
             catch (Exception)
             {
