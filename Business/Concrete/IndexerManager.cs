@@ -2,27 +2,36 @@
 //enginyenice2626@gmail.com
 
 using Business.Abstract;
-using Business.Helpers.Concrete;
+using Business.Helpers.Abstract;
 using Core.Utilities.Results;
+using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Dto;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-
 namespace Business.Concrete
 {
     public class IndexerManager : IIndexerService
     {
+        IWordToExcludeDal _wordToExcludeDal;
+        IWebSiteOperation _webSiteOperation;
+        IKeywordOperation _keywordOperation;
+        public IndexerManager(IWordToExcludeDal wordToExcludeDal, IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation)
+        {
+            _wordToExcludeDal = wordToExcludeDal;
+            _webSiteOperation = webSiteOperation;
+            _keywordOperation = keywordOperation;
+        }
+
         public IDataResult<WebSite> FrequanceCalculate(WebSite webSite)
         {
-            return WebSiteOperation.GetWebSite(webSite);
+            return _webSiteOperation.GetWebSite(webSite);
         }
 
         public IDataResult<WebSite> KeywordGenerator(WebSite webSite)
         {
-            webSite = WebSiteOperation.GetWebSite(webSite).Data;
-            webSite = KeywordOperation.KeywordGenerator(webSite).Data;
+            webSite = _webSiteOperation.GetWebSite(webSite).Data;
+            webSite = _keywordOperation.KeywordGenerator(webSite).Data;
 
             return new SuccessDataResult<WebSite>(webSite);
         }
@@ -46,5 +55,9 @@ namespace Business.Concrete
             webSiteRankingDtos = webSiteRankingDtos.OrderByDescending(p => p.RankingCount).ToList();
             return new SuccessDataResult<List<WebSiteRankingDto>>(webSiteRankingDtos);
         }
+
+
+
+
     }
 }

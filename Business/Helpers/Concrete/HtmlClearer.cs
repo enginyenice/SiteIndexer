@@ -1,16 +1,13 @@
-﻿//Created By Engin Yenice
-//enginyenice2626@gmail.com
-
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Business.Helpers.Abstract;
+using Core.Utilities.Results;
+using Entities.Concrete;
 using System.Text.RegularExpressions;
 
-namespace Business.Helpers.Concrete
+namespace Business
 {
-    public class HtmlClear
+    public class HtmlClearer : IHtmlClearer
     {
-        public static string RemoveHtml(string content)
+        public IDataResult<string> RemoveHtml(string content)
         {
             string text = content.ToLower();
             Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
@@ -26,7 +23,8 @@ namespace Business.Helpers.Concrete
             Regex regexNewLine3 = new Regex(@"\n");
             Regex regexRN = new Regex(@"\r\n?|\n");
             Regex regexAdditional = new Regex(@"’[a-z]+");
-            Regex regexMark = new Regex(@"[“”!'^+%&/()=?_#½{[\]}\\|\-.,~:;><•*+]");
+            Regex regexMark = new Regex(@"\\[“”!'^+%&/()=?_#½{[\]}\\|\-.,,~:;><•*+]");
+
 
             #region Regex Replace
 
@@ -42,19 +40,24 @@ namespace Business.Helpers.Concrete
             text = regexNewLine3.Replace(text, " ");
             text = regexRN.Replace(text, " ");
             text = regexHtml.Replace(text, " ");
-            text = ReplaceText(text);
+            text = ReplaceText(text).Data;
+
             text = regexAdditional.Replace(text, " ");
             text = regexMark.Replace(text, " ");
 
             #endregion Regex Replace
 
-            return text;
+           
+            return new SuccessDataResult<string>(data:text);
         }
-
-        public static string ReplaceText(string text)
+        public IDataResult<string> ReplaceText(string text)
         {
             text = text.Replace("&bull;", "•"); // •
+            text = text.Replace(",", " "); // ,
+            text = text.Replace(":", " "); // ,
+            text = text.Replace(".", " "); // ,
             text = text.Replace("&#8217;", "'");
+            text = text.Replace('"', '\'');
             text = text.Replace("&#39;", "'");
             text = text.Replace("&#x27;", "'");
             text = text.Replace("&#8217;", "\"");
@@ -73,7 +76,7 @@ namespace Business.Helpers.Concrete
             text = text.Replace("&#214;", "Ö");
             text = text.Replace("&#246;", "ö");
             text = text.Replace("&copy;", "©");
-            return text;
+            return new SuccessDataResult<string>(data: text);
         }
     }
 }

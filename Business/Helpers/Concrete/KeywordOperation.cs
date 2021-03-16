@@ -1,19 +1,40 @@
-﻿//Created By Engin Yenice
-//enginyenice2626@gmail.com
-
+﻿using Business.Helpers.Abstract;
 using Core.Utilities.Results;
+using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Business.Helpers.Concrete
+namespace Business
 {
-    public class KeywordOperation
+    public class KeywordOperation : IKeywordOperation
     {
-        public static IDataResult<WebSite> KeywordGenerator(WebSite webSite)
+        ITagAndPointDal _tagAndPointDal;
+        IHtmlClearer _htmlClearer;
+        IWordToExcludeDal _wordToExcludeDal;
+        public KeywordOperation(ITagAndPointDal tagAndPointDal, IHtmlClearer htmlClearer, IWordToExcludeDal wordToExcludeDal)
         {
+            _tagAndPointDal = tagAndPointDal;
+            _htmlClearer = htmlClearer;
+            _wordToExcludeDal = wordToExcludeDal;
+        }
+
+        public IDataResult<WebSite> KeywordGenerator(WebSite webSite)
+        {
+
+            foreach (var tagAndPoint in _tagAndPointDal.GetAll())
+            {
+                List<Frequance> Frequencies = FrequencyList(tagAndPoint.before, tagAndPoint.after, webSite.StringWebSite).Data;
+                foreach (var item in Frequencies)
+                {
+                    var selectedFrequency = webSite.Frequances.SingleOrDefault(p => p.Keyword == item.Keyword);
+                    int piece = (item.Piece * tagAndPoint.point) + selectedFrequency.Piece - item.Piece;
+                    selectedFrequency.Piece = piece;
+
+                }
+            }
             foreach (var item in webSite.Frequances)
             {
                 if (webSite.Keywords.Count >= 10) break;
@@ -21,49 +42,83 @@ namespace Business.Helpers.Concrete
             }
             return new SuccessDataResult<WebSite>(webSite);
         }
-
-        public static List<Frequance> RemoveTurkishConjunctions(List<Frequance> frequances)
+        private IDataResult<List<Frequance>> FrequencyList(string before, string after, string StringWebSite)
         {
-            List<string> conjuctions = new List<string>
+            int firstCount = 0;
+            int lastCount = 0;
+            string allData = "";
+            while (firstCount != -1 || lastCount != -1)
             {
-                "a'nî","ama","amma","ancak","altı","altmış","az",
-                "belki","bile","bir başka deyişle","bu","ben","biz","benim","bunlar","bir","beş","bin",
-                "çünkü","çok",
-                "da","de","dahi", "de","demek","dışında","dört","dokuz","doksan","diye",
-                "eğer","encami","elli",
-                "fakat",
-                "gâh","gelgelelim","gibi",
-                "ha","hâlbuki","hatta","hangisi",
-                "ile","ille","velakin","ille velâkin", "imdi","iki","iyi","için",
-                "kâh","kaldı ki","karşın","ki","kırk","kötü","kadar",
-                "lakin",
-                "madem","mademki","maydamı","meğerki","meğerse",
-                "ne var ki","neyse","nerede","nereye","ne","niçin","neden","kim","kimi","kimin","nasıl",
-                "oysa","oysaki","o","onlar","onun","onların","on","otuz",
-                "seksle","sen","siz","senin","sizin","şunlar","sekiz","seksen",
-                "üç",
-                "ve","velakin","velev","velhâsıl","velhâsılıkelâm","veya","veyahut",
-                "yedi","yirmi","yetmiş","yüz",
-                "zira",
-                "and","am","is","are","to","in","on","your","he","she","it","they","there","her","has","this","by","you","the","follow"
-            };
+                try
+                {
+                    firstCount = StringWebSite.IndexOf(before, firstCount);
+                    lastCount = StringWebSite.IndexOf(after, firstCount) + 5;
+                    allData += _htmlClearer.RemoveHtml(StringWebSite.Substring(firstCount, (lastCount - firstCount))).Data;
+                }
+                catch (Exception)
+                {
 
+                    break;
+                }
+
+                firstCount += 1;
+            }
+            var result = CreateFrequency(allData);
+            return result;
+        }
+        public IDataResult<List<Frequance>> RemoveWordsToExclude(List<Frequance> frequances)
+        {
             List<Frequance> Tempfrequances = new List<Frequance>();
             foreach (var item in frequances)
             {
-                if (!conjuctions.Any(p => p == item.Keyword) && item.Keyword.Length > 3)
+                if (_wordToExcludeDal.CheckWord(item.Keyword) == false && item.Keyword.Length >= 1)
                 {
                     Tempfrequances.Add(item);
                 }
             }
-            return Tempfrequances;
+            return new SuccessDataResult<List<Frequance>>(Tempfrequances);
         }
-
-        public static IDataResult<string> GetTitle(string stringWebSite)
+        public IDataResult<string> GetTitle(string stringWebSite)
         {
-            int titleIndexFirst = stringWebSite.IndexOf("<title>", StringComparison.Ordinal) + 7;
-            int titleIndexLast = stringWebSite[titleIndexFirst..].IndexOf("</title>", StringComparison.Ordinal); //8
-            return new SuccessDataResult<string>(data: HtmlClear.ReplaceText(stringWebSite.Substring(titleIndexFirst, titleIndexLast)));
+            try
+            {
+                int titleIndexFirst = stringWebSite.IndexOf("<title>", StringComparison.Ordinal) + 7;
+                int titleIndexLast = stringWebSite[titleIndexFirst..].IndexOf("</title>", StringComparison.Ordinal); //8
+                return new SuccessDataResult<string>(data: _htmlClearer.ReplaceText(stringWebSite.Substring(titleIndexFirst, titleIndexLast)));
+            }
+            catch (Exception)
+            {
+                return new SuccessDataResult<string>(data: "Bulunamadı");
+
+            }
+
+
+        }
+        public IDataResult<List<Frequance>> CreateFrequency(string content)
+        {
+            List<Frequance> frequances = new List<Frequance>();
+            var keywords = content.Split(" ");
+            foreach (var keyword in keywords)
+            {
+                if (keyword != "" && keyword != " ")
+                {
+                    if (frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower()) != null)
+                    {
+                        var frequance = frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower());
+                        frequance.Piece += 1;
+                    }
+                    else
+                    {
+                        frequances.Add(new Frequance
+                        {
+                            Piece = 1,
+                            Keyword = keyword.ToLower()
+                        });
+                    }
+                }
+            }
+            frequances = RemoveWordsToExclude(frequances).Data;
+            return new SuccessDataResult<List<Frequance>>(frequances.OrderByDescending(p => p.Piece).ToList());
         }
     }
 }
