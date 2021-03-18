@@ -28,8 +28,8 @@ namespace Business
             string siteAllData = responseData.ReadToEnd(); //6
             webSite.StringWebSite = siteAllData;
             webSite.Content = _htmlClearer.RemoveHtml(siteAllData).Data;
-            webSite.Frequances = _keywordOperation.CreateFrequency(webSite.Content).Data;
             webSite.Title = _keywordOperation.GetTitle(webSite.StringWebSite).Data;
+            webSite.Frequances = _keywordOperation.CreateFrequency(webSite.Content).Data;
             return new SuccessDataResult<WebSite>(webSite);
         }
     }

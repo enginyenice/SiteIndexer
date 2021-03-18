@@ -52,7 +52,7 @@ namespace Business
                 try
                 {
                     firstCount = StringWebSite.IndexOf(before, firstCount);
-                    lastCount = StringWebSite.IndexOf(after, firstCount) + 5;
+                    lastCount = StringWebSite.IndexOf(after, firstCount) + after.Length;
                     allData += _htmlClearer.RemoveHtml(StringWebSite.Substring(firstCount, (lastCount - firstCount))).Data;
                 }
                 catch (Exception)
@@ -88,7 +88,7 @@ namespace Business
             }
             catch (Exception)
             {
-                return new SuccessDataResult<string>(data: "Bulunamadı");
+                return new SuccessDataResult<string>(data: "");
 
             }
 
@@ -96,6 +96,7 @@ namespace Business
         }
         public IDataResult<List<Frequance>> CreateFrequency(string content)
         {
+
             List<Frequance> frequances = new List<Frequance>();
             var keywords = content.Split(" ");
             foreach (var keyword in keywords)

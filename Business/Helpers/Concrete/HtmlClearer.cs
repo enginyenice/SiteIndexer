@@ -52,7 +52,7 @@ namespace Business
         }
         public IDataResult<string> ReplaceText(string text)
         {
-            text = text.Replace("&bull;", "•"); // •
+            text = text.Replace("&bull;", " "); // •
             
             text = text.Replace(",", " "); // ,
             text = text.Replace(":", " "); // ,
@@ -62,6 +62,7 @@ namespace Business
             text = text.Replace("&#39;", "'");
             text = text.Replace("&#x27;", "'");
             text = text.Replace("&#8217;", "\"");
+            text = text.Replace("&#8211;", " ");
             text = text.Replace("&#8221;", "\"");
             text = text.Replace("&#8220;", "\"");
             text = text.Replace("&#231;", "ç");
