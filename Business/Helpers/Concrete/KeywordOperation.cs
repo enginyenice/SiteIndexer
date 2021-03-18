@@ -24,6 +24,30 @@ namespace Business
         public IDataResult<WebSite> KeywordGenerator(WebSite webSite)
         {
 
+            #region Title FrequencyList
+            /* TODO: Title FrequencyList */
+            var titleFrequencyList = CreateFrequency(_htmlClearer.RemoveHtml(GetTitle(webSite.StringWebSite).Data).Data);
+            foreach (var item in titleFrequencyList.Data)
+            {
+                var selectedFrequency = webSite.Frequances.SingleOrDefault(p => p.Keyword == item.Keyword);
+                if (selectedFrequency != null)
+                {
+                    int piece = (item.Piece * 20) + selectedFrequency.Piece - item.Piece;
+                    selectedFrequency.Piece = piece;
+                }
+                else
+                {
+                    int piece = (item.Piece * 20) - item.Piece;
+                    webSite.Frequances.Add(new Frequance
+                    {
+                        Keyword = item.Keyword,
+                        Piece = piece
+                    });
+                }
+            }
+            #endregion Title FrequencyList
+
+            #region TagAndPoint FrequencyList
             foreach (var tagAndPoint in _tagAndPointDal.GetAll())
             {
                 List<Frequance> Frequencies = FrequencyList(tagAndPoint.before, tagAndPoint.after, webSite.StringWebSite).Data;
@@ -35,6 +59,11 @@ namespace Business
 
                 }
             }
+            #endregion TagAndPoint FrequencyList
+
+
+            webSite.Frequances =  webSite.Frequances.OrderByDescending(p => p.Piece).ToList();
+            var result = webSite.Frequances;
             foreach (var item in webSite.Frequances)
             {
                 if (webSite.Keywords.Count >= 10) break;
