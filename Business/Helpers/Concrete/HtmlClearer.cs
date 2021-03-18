@@ -23,7 +23,7 @@ namespace Business
             Regex regexNewLine3 = new Regex(@"\n");
             Regex regexRN = new Regex(@"\r\n?|\n");
             Regex regexAdditional = new Regex(@"’[a-z]+");
-            Regex regexMark = new Regex(@"\\[“”!'^+%&/()=?_#½{[\]}\\|\-.,,~:;><•*+]");
+            Regex regexMark = new Regex(@"\\[>£#$½{@€₺¨~`´ßæ}\|“”!'^+%&/()=?_#½{[\]}\\|\-.,,~:;><•*+]");
 
 
             #region Regex Replace
@@ -55,6 +55,10 @@ namespace Business
             text = text.Replace("&bull;", " "); // •
             
             text = text.Replace(",", " "); // ,
+            text = text.Replace("-", " "); // ,
+            text = text.Replace("·", " "); // ,
+            text = text.Replace("&#160;", " "); // ,
+            text = text.Replace("&#32;", " "); // ,
             text = text.Replace(":", " "); // ,
             text = text.Replace(".", " "); // ,
             text = text.Replace("&#8217;", "'");
