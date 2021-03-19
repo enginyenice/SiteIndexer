@@ -62,7 +62,6 @@ namespace Business
             }
             return new SuccessDataResult<List<Word>>(tempWordsList.ToList());
         }
-
         //Keyword Generator
         public IDataResult<WebSite> KeywordGenerator(WebSite webSite)
         {
@@ -117,7 +116,6 @@ namespace Business
             }
             return new SuccessDataResult<List<Word>>(tagWords);
         }
-
         //Website Operations
         public IDataResult<string> GetTitle(string stringWebSite)
         {

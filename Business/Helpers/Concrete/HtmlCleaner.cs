@@ -25,7 +25,8 @@ namespace Business
             Regex regexRN = new Regex(@"\r\n?|\n");
             Regex regexAdditional = new Regex(@"’[a-z]+");
             Regex regexUnicodeCleaner = new Regex(@"&#?[a-z-A-Z-0-9]+;");
-            Regex regexMark = new Regex(@"\\[>£#$½{@€₺¨~`´ßæ}\|“”‘’!'^+%&/()=?_#½{[\]}\\|\-.,,~:;><•*+]");
+            //Regex regexMark = new Regex(@"[>£#$½{@€₺¨~`´ßæ}\|“”‘’!'^+%&/()=?_#½{[\]}\\|\-.,~:;><•*+]*");
+            Regex regexMark = new Regex(@"[^a-zA-Z0-9ığĞüÜşŞİöÖçÇ ]");
 
             #region Regex Replace
 
@@ -44,6 +45,7 @@ namespace Business
             text = regexUnicodeCleaner.Replace(text, " ");
             text = regexAdditional.Replace(text, " ");
             text = regexMark.Replace(text, " ");
+            
 
             #endregion Regex Replace
 
