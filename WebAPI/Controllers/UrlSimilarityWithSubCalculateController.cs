@@ -27,19 +27,19 @@ namespace WebAPI.Controllers
         [HttpGet]
         public IActionResult Guide()
         {
-            return Ok(new InputModelDto
+            return Ok(new guideDto
             {
-                webSite = new WebSite
+                Website = new website
                 {
                     Url = "http://www.example.com"
                 },
-                webSitePool = new List<WebSite>
+                WebsitePool = new List<website>
                 {
-                    new WebSite
+                    new website
                     {
                         Url="http://www.example.com"
                     },
-                    new WebSite
+                    new website
                     {
                         Url="http://www.example.com"
                     }

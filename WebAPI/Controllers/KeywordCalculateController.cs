@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         public IActionResult Guide()
         {
-            return Ok(new WebSite
+            return Ok(new website
             {
                 Url = "http://www.example.com"
             }
