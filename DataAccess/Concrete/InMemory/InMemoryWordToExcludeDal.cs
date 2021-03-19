@@ -92,6 +92,7 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "da"},
                 new Word { word = "de"},
                 new Word { word = "dahi"},
+                new Word { word = "daha"},
                 new Word { word = "demek"},
                 new Word { word = "dışında"},
                 new Word { word = "dört"},
@@ -187,6 +188,7 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "kırk"},
                 new Word { word = "kötü"},
                 new Word { word = "kim"},
+                new Word { word = "ki"},
                 new Word { word = "kimi"},
                 new Word { word = "kimin"},
                 new Word { word = "kaçmak"},
@@ -219,6 +221,8 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "lakin"},
                 // M
                 new Word { word = "madem"},
+                new Word { word = "mı"},
+                new Word { word = "mi"},
                 new Word { word = "mademki"},
                 new Word { word = "maydamı"},
                 new Word { word = "meğerki"},
@@ -396,7 +400,7 @@ namespace DataAccess.Concrete.InMemory
 
         public bool CheckWord(string word)
         {
-            if(words.Any(p => p.word == word))
+            if (words.Any(p => p.word == word))
             {
                 return true;
             }

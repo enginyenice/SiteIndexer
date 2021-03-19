@@ -6,149 +6,141 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Business
 {
     public class KeywordOperation : IKeywordOperation
     {
         ITagAndPointDal _tagAndPointDal;
-        IHtmlClearer _htmlClearer;
+        IHtmlCleaner _htmlCleaner;
         IWordToExcludeDal _wordToExcludeDal;
-        public KeywordOperation(ITagAndPointDal tagAndPointDal, IHtmlClearer htmlClearer, IWordToExcludeDal wordToExcludeDal)
+
+        public KeywordOperation(ITagAndPointDal tagAndPointDal, IHtmlCleaner htmlClearer, IWordToExcludeDal wordToExcludeDal)
         {
             _tagAndPointDal = tagAndPointDal;
-            _htmlClearer = htmlClearer;
+            _htmlCleaner = htmlClearer;
             _wordToExcludeDal = wordToExcludeDal;
         }
 
+        //Frequency Generater
+        public IDataResult<List<Word>> FrequencyGenerater(string content)
+        {
+            List<Word> tempWordsList = new List<Word>();
+            var words = content.Split(" ");
+            foreach (var word in words)
+            {
+                if (word != "" && word != " ")
+                {
+                    if (tempWordsList.SingleOrDefault(p => p.word == word.ToLower()) != null)
+                    {
+                        var frequance = tempWordsList.SingleOrDefault(p => p.word == word.ToLower());
+                        frequance.frequency += 1;
+                    }
+                    else
+                    {
+                        tempWordsList.Add(new Word
+                        {
+                            word = word.ToLower(),
+                            frequency = 1
+                        });
+                    }
+                }
+            }
+            tempWordsList = RemoveWordsToExclude(tempWordsList).Data;
+            return new SuccessDataResult<List<Word>>(tempWordsList.OrderByDescending(p => p.frequency).ToList());
+        }
+        public IDataResult<List<Word>> RemoveWordsToExclude(List<Word> Words)
+        {
+            List<Word> tempWordsList = new List<Word>();
+            foreach (var item in Words)
+            {
+                if (_wordToExcludeDal.CheckWord(item.word) == false && item.word.Length >= 1)
+                {
+                    tempWordsList.Add(item);
+                }
+            }
+            return new SuccessDataResult<List<Word>>(tempWordsList.ToList());
+        }
+
+        //Keyword Generator
         public IDataResult<WebSite> KeywordGenerator(WebSite webSite)
         {
+            List<Keyword> TempKeywords = new List<Keyword>();
 
-            #region Title FrequencyList
-            /* TODO: Title FrequencyList */
-            var titleFrequencyList = CreateFrequency(_htmlClearer.RemoveHtml(GetTitle(webSite.StringWebSite).Data).Data);
-            foreach (var item in titleFrequencyList.Data)
+            foreach (var word in webSite.Words)
             {
-                var selectedFrequency = webSite.Frequances.SingleOrDefault(p => p.Keyword == item.Keyword);
-                if (selectedFrequency != null)
-                {
-                    int piece = (item.Piece * 20) + selectedFrequency.Piece - item.Piece;
-                    selectedFrequency.Piece = piece;
-                }
-                else
-                {
-                    int piece = (item.Piece * 20) - item.Piece;
-                    webSite.Frequances.Add(new Frequance
-                    {
-                        Keyword = item.Keyword,
-                        Piece = piece
-                    });
-                }
+                //Default score = 1
+                TempKeywords.Add(new Keyword { word = word.word, frequency = word.frequency, score = (1 * word.frequency) });
             }
-            #endregion Title FrequencyList
 
-            #region TagAndPoint FrequencyList
+            // Keywords score calculate
             foreach (var tagAndPoint in _tagAndPointDal.GetAll())
             {
-                List<Frequance> Frequencies = FrequencyList(tagAndPoint.before, tagAndPoint.after, webSite.StringWebSite).Data;
-                foreach (var item in Frequencies)
+                List<Word> tagWords = ExtractWordInTag(tagAndPoint.before, tagAndPoint.after, webSite.StringHtmlPage).Data;
+                foreach (var keyword in TempKeywords)
                 {
-                    var selectedFrequency = webSite.Frequances.SingleOrDefault(p => p.Keyword == item.Keyword);
-                    int piece = (item.Piece * tagAndPoint.point) + selectedFrequency.Piece - item.Piece;
-                    selectedFrequency.Piece = piece;
-
+                    if (tagWords.Any(p => p.word == keyword.word) == true)
+                    {
+                        keyword.score = tagAndPoint.score * keyword.frequency;
+                    }
                 }
             }
-            #endregion TagAndPoint FrequencyList
+            webSite.Keywords = TempKeywords.OrderByDescending(p => p.score).Take(20).ToList();
 
-
-            webSite.Frequances =  webSite.Frequances.OrderByDescending(p => p.Piece).ToList();
-            var result = webSite.Frequances;
-            foreach (var item in webSite.Frequances)
-            {
-                if (webSite.Keywords.Count >= 10) break;
-                webSite.Keywords.Add(item.Keyword);
-            }
             return new SuccessDataResult<WebSite>(webSite);
         }
-        private IDataResult<List<Frequance>> FrequencyList(string before, string after, string StringWebSite)
+        private IDataResult<List<Word>> ExtractWordInTag(string before, string after, string StringHtmlPage)
         {
-            int firstCount = 0;
-            int lastCount = 0;
-            string allData = "";
-            while (firstCount != -1 || lastCount != -1)
+            int firstIndex = 0;
+            int lastIndex = 0;
+            string stringTagWords = "";
+            while (firstIndex != -1 || lastIndex != -1)
             {
                 try
                 {
-                    firstCount = StringWebSite.IndexOf(before, firstCount);
-                    lastCount = StringWebSite.IndexOf(after, firstCount) + after.Length;
-                    allData += _htmlClearer.RemoveHtml(StringWebSite.Substring(firstCount, (lastCount - firstCount))).Data;
+                    firstIndex = StringHtmlPage.IndexOf(before, firstIndex);
+                    lastIndex = StringHtmlPage.IndexOf(after, firstIndex) + after.Length;
+                    stringTagWords += _htmlCleaner.RemoveHtmlTags(StringHtmlPage.Substring(firstIndex, (lastIndex - firstIndex))).Data;
                 }
                 catch (Exception)
                 {
-
                     break;
                 }
-
-                firstCount += 1;
+                firstIndex += 1;
             }
-            var result = CreateFrequency(allData);
-            return result;
-        }
-        public IDataResult<List<Frequance>> RemoveWordsToExclude(List<Frequance> frequances)
-        {
-            List<Frequance> Tempfrequances = new List<Frequance>();
-            foreach (var item in frequances)
+            var words = stringTagWords.Split(" ");
+            List<Word> tagWords = new List<Word>();
+            foreach (var word in words)
             {
-                if (_wordToExcludeDal.CheckWord(item.Keyword) == false && item.Keyword.Length >= 1)
-                {
-                    Tempfrequances.Add(item);
-                }
+                tagWords.Add(new Word { word = word });
             }
-            return new SuccessDataResult<List<Frequance>>(Tempfrequances);
+            return new SuccessDataResult<List<Word>>(tagWords);
         }
+
+        //Website Operations
         public IDataResult<string> GetTitle(string stringWebSite)
         {
             try
             {
                 int titleIndexFirst = stringWebSite.IndexOf("<title>", StringComparison.Ordinal) + 7;
                 int titleIndexLast = stringWebSite[titleIndexFirst..].IndexOf("</title>", StringComparison.Ordinal); //8
-                return new SuccessDataResult<string>(data: _htmlClearer.ReplaceText(stringWebSite.Substring(titleIndexFirst, titleIndexLast)).Data);
+                return new SuccessDataResult<string>(data: stringWebSite.Substring(titleIndexFirst, titleIndexLast));
             }
             catch (Exception)
             {
-                return new SuccessDataResult<string>(data: "");
-
+                return new ErrorDataResult<string>(data: "");
             }
-
-
         }
-        public IDataResult<List<Frequance>> CreateFrequency(string content)
+        public IDataResult<WebSite> GetSubWebSite(WebSite webSite)
         {
-
-            List<Frequance> frequances = new List<Frequance>();
-            var keywords = content.Split(" ");
-            foreach (var keyword in keywords)
+            webSite.SubUrl = new WebSite
             {
-                if (keyword != "" && keyword != " ")
-                {
-                    if (frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower()) != null)
-                    {
-                        var frequance = frequances.SingleOrDefault(p => p.Keyword == keyword.ToLower());
-                        frequance.Piece += 1;
-                    }
-                    else
-                    {
-                        frequances.Add(new Frequance
-                        {
-                            Piece = 1,
-                            Keyword = keyword.ToLower()
-                        });
-                    }
-                }
-            }
-            frequances = RemoveWordsToExclude(frequances).Data;
-            return new SuccessDataResult<List<Frequance>>(frequances.OrderByDescending(p => p.Piece).ToList());
+                Url = "https://stackoverflow.com/questions/2248411/get-all-links-on-html-page"
+            };
+
+            return new SuccessDataResult<WebSite>(data: webSite);
         }
+
     }
 }

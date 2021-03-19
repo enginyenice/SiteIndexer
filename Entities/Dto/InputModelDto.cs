@@ -9,10 +9,9 @@ using System.Text;
 
 namespace Entities.Dto
 {
-    public class FrequencyWebSiteDto : IDto
+    public class InputModelDto : IDto
     {
-        public string Url { get; set; }
-        public string Title { get; set; }
-        public List<Word> Words { get; set; }
+        public WebSite webSite { get; set; }
+        public List<WebSite> webSitePool { get; set; }
     }
 }

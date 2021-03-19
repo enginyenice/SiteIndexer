@@ -6,9 +6,8 @@ using System.Text;
 
 namespace Business.Helpers.Abstract
 {
-    public interface IHtmlClearer
+    public interface IHtmlCleaner
     {
-        IDataResult<string> RemoveHtml(string content);
-        IDataResult<string> ReplaceText(string text);
+        IDataResult<string> RemoveHtmlTags(string StringHtmlPage);
     }
 }

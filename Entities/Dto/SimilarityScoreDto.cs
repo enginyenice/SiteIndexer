@@ -9,9 +9,9 @@ using System.Text;
 
 namespace Entities.Dto
 {
-    public class UrlRankingControllerDtos : IDto
+    public class SimilarityScoreDto : IDto
     {
-        public WebSite targetWebSite { get; set; }
-        public List<WebSite> pool { get; set; }
+        public float SimilarityScore { get; set; }
+        public KeywordWebSiteDto webSite { get; set; } 
     }
 }

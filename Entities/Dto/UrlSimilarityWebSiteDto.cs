@@ -9,10 +9,10 @@ using System.Text;
 
 namespace Entities.Dto
 {
-    public class FrequencyWebSiteDto : IDto
-    {
-        public string Url { get; set; }
-        public string Title { get; set; }
-        public List<Word> Words { get; set; }
+    public class UrlSimilarityWebSiteDto : IDto
+    {        
+        public KeywordWebSiteDto webSite { get; set; }
+        public List<SimilarityScoreDto> webSitePool { get; set; }
+
     }
 }

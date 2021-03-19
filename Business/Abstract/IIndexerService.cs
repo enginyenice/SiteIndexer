@@ -13,9 +13,8 @@ namespace Business.Abstract
     public interface IIndexerService
     {
         IDataResult<WebSite> FrequanceCalculate(WebSite webSite);
-
-        IDataResult<WebSite> KeywordGenerator(WebSite webSite);
-
-        IDataResult<List<WebSiteRankingDto>> UrlRanking(WebSite targetSite, List<WebSite> pool);
+        IDataResult<WebSite> KeywordCalculate(WebSite webSite);
+        IDataResult<UrlSimilarityWebSiteDto> UrlSimilarityCalculate(WebSite webSite, List<WebSite> webSitePool);
+        IDataResult<UrlSimilarityWithSubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool);
     }
 }

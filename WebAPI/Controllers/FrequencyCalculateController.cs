@@ -16,26 +16,36 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FrequencyCalculatorsController : ControllerBase
+    public class FrequencyCalculateController : ControllerBase
     {
         private IIndexerService _indexerService;
 
-        public FrequencyCalculatorsController(IIndexerService indexerService)
+        public FrequencyCalculateController(IIndexerService indexerService)
         {
             _indexerService = indexerService;
         }
 
+        [HttpGet]
+        public IActionResult Guide()
+        {
+            return Ok(new WebSite
+            {
+                Url = "http://www.example.com"
+            }
+            );
+        }
+
         [HttpPost]
-        public IActionResult FrequanceCalculate(WebSite webSite)
+        public IActionResult FrequencyCalculate(WebSite webSite)
         {
             var result = _indexerService.FrequanceCalculate(webSite).Data;
             FrequencyWebSiteDto frequencyWebSiteDto = new FrequencyWebSiteDto
             {
-                Frequances = result.Frequances,
+                Url = result.Url,
                 Title = result.Title,
-                Url = result.Url
+                Words = result.Words
             };
-            
+
             return Ok(new SuccessDataResult<FrequencyWebSiteDto>(frequencyWebSiteDto));
         }
     }

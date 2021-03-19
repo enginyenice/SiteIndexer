@@ -1,15 +1,16 @@
 ﻿using Business.Helpers.Abstract;
 using Core.Utilities.Results;
 using Entities.Concrete;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Business
 {
-    public class HtmlClearer : IHtmlClearer
+    public class HtmlCleaner : IHtmlCleaner
     {
-        public IDataResult<string> RemoveHtml(string content)
+        public IDataResult<string> RemoveHtmlTags(string StringHtmlPage)
         {
-            string text = content.ToLower();
+            string text = StringHtmlPage.ToLower();
             Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
             Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
             Regex regexStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
@@ -23,10 +24,8 @@ namespace Business
             Regex regexNewLine3 = new Regex(@"\n");
             Regex regexRN = new Regex(@"\r\n?|\n");
             Regex regexAdditional = new Regex(@"’[a-z]+");
-            Regex regexUnicodeClearer = new Regex(@"&#?[a-z-A-Z-0-9]+;");
-            Regex regexMark = new Regex(@"[>£#$½{@€₺¨~`´ßæ}\|“”!'^+%&/()=?_#½{[\]}\\|\-.,,~:;><•*+]");
-            
-
+            Regex regexUnicodeCleaner = new Regex(@"&#?[a-z-A-Z-0-9]+;");
+            Regex regexMark = new Regex(@"\\[>£#$½{@€₺¨~`´ßæ}\|“”‘’!'^+%&/()=?_#½{[\]}\\|\-.,,~:;><•*+]");
 
             #region Regex Replace
 
@@ -42,31 +41,14 @@ namespace Business
             text = regexNewLine3.Replace(text, " ");
             text = regexRN.Replace(text, " ");
             text = regexHtml.Replace(text, " ");
-            text = ReplaceText(text).Data;
-            text = regexUnicodeClearer.Replace(text, " ");
+            text = regexUnicodeCleaner.Replace(text, " ");
             text = regexAdditional.Replace(text, " ");
             text = regexMark.Replace(text, " ");
 
             #endregion Regex Replace
 
-           
-            return new SuccessDataResult<string>(data:text);
-        }
-        public IDataResult<string> ReplaceText(string text)
-        {
-            text = text.Replace("&#231;", "ç");
-            text = text.Replace("&#199;", "Ç");
-            text = text.Replace("&#287;", "ğ");
-            text = text.Replace("&#286;", "Ğ");
-            text = text.Replace("&#351;", "ş");
-            text = text.Replace("&#350;", "Ş");
-            text = text.Replace("&#305;", "ı");
-            text = text.Replace("&#304;", "İ");
-            text = text.Replace("&#252;", "ü");
-            text = text.Replace("&#220;", "ü");
-            text = text.Replace("&#214;", "Ö");
-            text = text.Replace("&#246;", "ö");
             return new SuccessDataResult<string>(data: text);
         }
+
     }
 }

@@ -9,27 +9,26 @@ using System.Text;
 
 namespace Business
 {
-    public class WebSiteOperation :IWebSiteOperation
+    public class WebSiteOperation : IWebSiteOperation
     {
-        IHtmlClearer _htmlClearer;
+        IHtmlCleaner _htmlCleaner;
         IKeywordOperation _keywordOperation;
 
-        public WebSiteOperation(IHtmlClearer htmlClearer, IKeywordOperation keywordOperation)
+        public WebSiteOperation(IHtmlCleaner htmlCleaner, IKeywordOperation keywordOperation)
         {
-            _htmlClearer = htmlClearer;
+            _htmlCleaner = htmlCleaner;
             _keywordOperation = keywordOperation;
         }
 
         public IDataResult<WebSite> GetWebSite(WebSite webSite)
         {
-            WebRequest request = WebRequest.Create(webSite.Url); //2
-            WebResponse response = request.GetResponse(); //4
-            StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, false); //5
-            string siteAllData = responseData.ReadToEnd(); //6
-            webSite.StringWebSite = siteAllData;
-            webSite.Content = _htmlClearer.RemoveHtml(siteAllData).Data;
-            webSite.Title = _keywordOperation.GetTitle(webSite.StringWebSite).Data;
-            webSite.Frequances = _keywordOperation.CreateFrequency(webSite.Content).Data;
+            WebRequest request = WebRequest.Create(webSite.Url);
+            WebResponse response = request.GetResponse();
+            StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, false);
+            webSite.StringHtmlPage = WebUtility.HtmlDecode(responseData.ReadToEnd());
+            webSite.Title = _keywordOperation.GetTitle(webSite.StringHtmlPage).Data;
+            webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data;
+            webSite.Words = _keywordOperation.FrequencyGenerater(webSite.Content).Data;
             return new SuccessDataResult<WebSite>(webSite);
         }
     }
