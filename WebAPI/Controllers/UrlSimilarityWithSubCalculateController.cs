@@ -50,7 +50,7 @@ namespace WebAPI.Controllers
         [HttpPost]
         public IActionResult UrlSimilarityWithSubCalculate(InputModelDto input)
         {
-            return Ok(_indexerService.UrlSimilarityWithSubCalculate(input.webSite, input.webSitePool).Data);
+            return Ok(_indexerService.UrlSimilarityWithSubCalculate(input.webSite, input.webSitePool));
         }
 
     }
