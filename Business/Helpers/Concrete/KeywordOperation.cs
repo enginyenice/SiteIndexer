@@ -121,9 +121,20 @@ namespace Business
         {
             try
             {
-                int titleIndexFirst = stringWebSite.IndexOf("<title>", StringComparison.Ordinal) + 7;
-                int titleIndexLast = stringWebSite[titleIndexFirst..].IndexOf("</title>", StringComparison.Ordinal); //8
-                return new SuccessDataResult<string>(data: stringWebSite.Substring(titleIndexFirst, titleIndexLast));
+                Regex regexTitleAttr = new Regex("<title[^>]*>[\\s\\S]*</title>");
+                Regex regexTitle= new Regex(">[^>]*[^</title>]");
+                string tempWebSite = stringWebSite;
+
+
+
+                var result = regexTitleAttr.Matches(tempWebSite);
+                string tempTitle = result[0].ToString();
+                result = regexTitle.Matches(tempTitle.ToString());
+                tempTitle = result[0].ToString();
+                int lenght = tempTitle.Length - 1;
+                string title = tempTitle.Substring(1, lenght);
+                return new SuccessDataResult<string>(data: title);
+
             }
             catch (Exception)
             {

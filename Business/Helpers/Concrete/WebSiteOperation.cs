@@ -109,6 +109,7 @@ namespace Business
         public IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList)
         {
 
+            Regex regexDocType = new Regex(@"<!DOCTYPE[^>]*>");
             Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
             Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
             Regex regexStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
@@ -117,6 +118,8 @@ namespace Business
             Regex regexHref = new Regex("href=['|\"][a-zA-Z0-9:/.]+[^' | \"]+");
             string temp = webSite.StringHtmlPage;
 
+
+            temp = regexDocType.Replace(temp, " ");
             temp = regexScript.Replace(temp, " ");
             temp = regexHead.Replace(temp, " ");
             temp = regexStyle.Replace(temp, " ");

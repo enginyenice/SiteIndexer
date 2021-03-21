@@ -11,6 +11,7 @@ namespace Business
         public IDataResult<string> RemoveHtmlTags(string StringHtmlPage)
         {
             string text = StringHtmlPage.ToLower();
+            Regex regexDocType = new Regex(@"<!DOCTYPE[^>]*>");
             Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
             Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
             Regex regexStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
@@ -30,6 +31,7 @@ namespace Business
 
             #region Regex Replace
 
+            text = regexDocType.Replace(text, " ");
             text = regexScript.Replace(text, " ");
             text = regexHead.Replace(text, " ");
             text = regexStyle.Replace(text, " ");
