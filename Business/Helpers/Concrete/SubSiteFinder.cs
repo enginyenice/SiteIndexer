@@ -10,7 +10,14 @@ namespace Business.Helpers.Concrete
 {
     public class SubSiteFinder : ISubSiteFinder
     {
-        public IDataResult<WebSite> Finder(WebSite webSite)
+        IWebSiteOperation _webSiteOperation;
+
+        public SubSiteFinder(IWebSiteOperation webSiteOperation)
+        {
+            _webSiteOperation = webSiteOperation;
+        }
+
+        public IDataResult<WebSite> Finder(WebSite webSite,List<string> allUrlList)
         {
             Regex regexATag = new Regex("(<a[^>]*>[\\s\\S]*?</a>)");
             Regex regexHref = new Regex("href=['|\"][a-zA-Z0-9:/.]+[^' | \"]+");
@@ -22,27 +29,55 @@ namespace Business.Helpers.Concrete
             temp = String.Join("  ", result);
             temp = temp.Replace("'", "\"");
             temp = temp.Replace("href=\"", " ");
+            temp = temp.Replace("  ", " ");
             string[] array = temp.Split(' ');
+
+            List<string> clearList = new List<string>();
+            foreach (var item in array)
+            {
+                if (item.Length > 0 && (item.Contains("https://") || item.Contains("http://")))
+                {
+                    if (!clearList.Any(p => p == item) && !allUrlList.Any(p => p == item))
+                    {
+                        clearList.Add(item);
+                    }
+                }
+            }
+
 
             /*TODO: 
              * /web.php /web.asp şeklinde kısa urller gelebilir.
              * Bu urlleri (/) işareti ile tespit edip başına ana site adresi
              * eklenecektir.
             */
-            foreach (var item in array)
+
+            int i = 0;
+            foreach (var item in clearList)
             {
-                if (item.Length > 0 && !webSite.TestSubUrls.Any(sub => sub.Url == item))
+
+                try
                 {
-                    webSite.TestSubUrls.Add(new WebSite
+                    WebSite subSite = new WebSite
                     {
                         Url = item
-                    });
+                    };
+                    subSite = _webSiteOperation.GetWebSite(subSite).Data;
+                    webSite.TestSubUrls.Add(subSite);
+                    i++;
                 }
-                 
-            }
-            //Debug atıyorum..
-            throw new NotImplementedException();
+                catch (Exception)
+                {
 
+                    // throw new Exception("URL BAĞLANTI HATASI");
+                }
+                if(i == 5)
+                {
+                    break;
+                }
+            }
+
+            //Debug atıyorum..
+            return new SuccessDataResult<WebSite>(webSite);
         }
     }
 }

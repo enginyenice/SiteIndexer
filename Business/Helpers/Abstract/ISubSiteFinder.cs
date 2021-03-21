@@ -8,6 +8,6 @@ namespace Business.Helpers.Abstract
 {
     public interface ISubSiteFinder
     {
-        IDataResult<WebSite> Finder(WebSite webSite);
+        IDataResult<WebSite> Finder(WebSite webSite,List<string> allUrlList);
     }
 }

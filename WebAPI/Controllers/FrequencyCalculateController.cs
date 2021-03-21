@@ -38,7 +38,7 @@ namespace WebAPI.Controllers
         [HttpPost]
         public IActionResult FrequencyCalculate(WebSite webSite)
         {
-            var result = _indexerService.FrequanceCalculate(webSite).Data;
+            var result = _indexerService.WebSiteCalculate(webSite).Data;
             FrequencyWebSiteDto frequencyWebSiteDto = new FrequencyWebSiteDto
             {
                 Url = result.Url,

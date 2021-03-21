@@ -28,6 +28,12 @@ namespace Business
             webSite.Title = _keywordOperation.GetTitle(webSite.StringHtmlPage).Data;
             webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data;
             webSite.Words = _keywordOperation.FrequencyGenerater(webSite.Content).Data;
+         
+            
+            webSite.Keywords = _keywordOperation.KeywordGenerator(webSite).Data.Keywords;
+            
+            
+            
             return new SuccessDataResult<WebSite>(webSite);
         }
     }
