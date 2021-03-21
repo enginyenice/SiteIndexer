@@ -16,6 +16,5 @@ namespace Business.Abstract
         //IDataResult<WebSite> KeywordCalculate(WebSite webSite);
         IDataResult<UrlSimilarityWebSiteDto> UrlSimilarityCalculate(WebSite webSite, List<WebSite> webSitePool);
         IDataResult<UrlSimilarityWithSubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool);
-        IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite);
     }
 }

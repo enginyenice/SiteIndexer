@@ -16,99 +16,31 @@ namespace Business.Concrete
        // IWordToExcludeDal _wordToExcludeDal;
         IWebSiteOperation _webSiteOperation;
         IKeywordOperation _keywordOperation;
-        ISubSiteFinder _subSiteFinder;
+       
 
-        public IndexerManager(/*IWordToExcludeDal wordToExcludeDal,*/ IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation, ISubSiteFinder subSiteFinder)
+        public IndexerManager(/*IWordToExcludeDal wordToExcludeDal,*/ IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation)
         {
             // _wordToExcludeDal = wordToExcludeDal;
             _webSiteOperation = webSiteOperation;
             _keywordOperation = keywordOperation;
-            _subSiteFinder = subSiteFinder;
+            
         }
 
         //Stage One - Frequancy Calculation
+        //Stage Two - Keyword Calculate
         public IDataResult<WebSite> WebSiteCalculate(WebSite webSite)
         {
             webSite = _webSiteOperation.GetWebSite(webSite).Data;
             return new SuccessDataResult<WebSite>(webSite);
         }
 
-        public IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite)
-        {
-            List<string> allUrlList = new List<string>();
-            webSite = _subSiteFinder.Finder(webSite,allUrlList).Data;
-            allUrlList = UpdateAllUrlList(webSite.SubUrls, allUrlList);
-
-
-            
-            foreach (var subSite in webSite.SubUrls)
-            {
-                var sub = webSite.SubUrls.SingleOrDefault(p => p.Url == subSite.Url);
-                sub = _subSiteFinder.Finder(sub, allUrlList).Data;
-                allUrlList = UpdateAllUrlList(sub.SubUrls, allUrlList);
-
-            }
-
-
-            //Sub Url Tree
-            UrlTreeDto tempUrlsTree = new UrlTreeDto(); //1.Seviye
-            tempUrlsTree.Url = webSite.Url;
-            tempUrlsTree.Title = webSite.Title;
-            tempUrlsTree.SubUrls = new List<UrlTreeDto>(); //2.Seviye
-            if (webSite.SubUrls.Count > 0)
-            {
-                foreach (var subUrl in webSite.SubUrls)
-                {
-                    var treeSubUrl = new UrlTreeDto
-                    {
-                        Title = subUrl.Title,
-                        Url = subUrl.Url,
-                        SubUrls = new List<UrlTreeDto>() //3.Seviye
-                        
-
-                    };
-                    if (subUrl.SubUrls.Count > 0)
-                    {
-                        var subsubUrlList = new List<UrlTreeDto>();
-                        foreach (var subsubUrl in subUrl.SubUrls)
-                        {
-                            var treeSubSubUrl = new UrlTreeDto
-                            {
-                                Title = subsubUrl.Title,
-                                Url = subsubUrl.Url
-                            };
-                            subsubUrlList.Add(treeSubSubUrl);
-                        }
-                        treeSubUrl.SubUrls = subsubUrlList;
-                    }
-                    tempUrlsTree.SubUrls.Add(treeSubUrl);
-                }
-            }
-
-            return new SuccessDataResult<UrlTreeDto>(tempUrlsTree);
-        }
-
-        private List<string> UpdateAllUrlList(List<WebSite> testSubUrls, List<string> allUrlList)
-        {
-
-            foreach (var subSite in testSubUrls)
-            {
-                if(!allUrlList.Any(p => p == subSite.Url))
-                {
-                    allUrlList.Add(subSite.Url);
-                }
-            }
-
-            return allUrlList;
-        }
-
         //Stage Three - Ranking of a url and url set similarity
         public IDataResult<UrlSimilarityWebSiteDto> UrlSimilarityCalculate(WebSite webSite, List<WebSite> webSitePool)
         {
-
             //Similarity calculating
             foreach (var item in webSitePool)
             {
+                //MaxValue = 3.40282347E+38F
                 float machedKeywordsScore = 0;
                 float allKeywordsScore = 0; 
 
@@ -121,30 +53,55 @@ namespace Business.Concrete
                 }
 
                 // if have SubUrl 
-                /*
-                if (item.SubUrl != null) //2.seviye %20
+                
+                if (item.SubUrls.Count > 0) //2.Seviye %20
                 {
-                    foreach (var keyword in item.SubUrl.Keywords)
-                    {
-                        allKeywordsScore += keyword.frequency * keyword.score;
+                    float subUrlMachedKeyword = 0;
+                    float subUrlAllKeyword = 0;
 
-                        if (webSite.Keywords.Any(p => p.word == keyword.word))
-                            machedKeywordsScore += keyword.frequency * keyword.score;
-
-                    }
-                    if (item.SubUrl.SubUrl != null)  // 3.SEViYE %5
-                    {
-                        
-                        foreach (var keyword in item.SubUrl.SubUrl.Keywords)
+                    foreach(var subUrl in item.SubUrls){
+                        foreach (var keyword in subUrl)
                         {
-                            allKeywordsScore += keyword.frequency * keyword.score;
+                            subUrlAllKeyword += keyword.frequency * keyword.score;
 
                             if (webSite.Keywords.Any(p => p.word == keyword.word))
-                                machedKeywordsScore += keyword.frequency * keyword.score;
+                                subUrlMachedKeyword += keyword.frequency * keyword.score;
+                        }
+
+                        if (item.SubUrls.Count > 0) //3.Seviye %10
+                        {
+                            float subUrlMachedKeyword = 0;
+                            float subUrlAllKeyword = 0;
+
+                            foreach (var subUrl in item.SubUrls)
+                            {
+                                foreach (var keyword in subUrl)
+                                {
+                                    subUrlAllKeyword += keyword.frequency * keyword.score;
+
+                                    if (webSite.Keywords.Any(p => p.word == keyword.word))
+                                        subUrlMachedKeyword += keyword.frequency * keyword.score;
+                                }
+
+                            }
                         }
                     }
                 }
-                */
+
+
+                /*
+                   if (item.SubUrl.SubUrl != null)  // 3.Seviye %10
+                   {
+
+                       foreach (var keyword in item.SubUrl.SubUrl.Keywords)
+                       {
+                           allKeywordsScore += keyword.frequency * keyword.score;
+
+                           if (webSite.Keywords.Any(p => p.word == keyword.word))
+                               machedKeywordsScore += keyword.frequency * keyword.score;
+                       }
+                   }*/
+
                 item.SimilarityScore = (machedKeywordsScore / allKeywordsScore) * 100;
             }
 
@@ -263,7 +220,7 @@ namespace Business.Concrete
         {
           //  webSite = KeywordCalculate(webSite).Data;
 //               webSitePool.ForEach(p => FrequanceCalculate(p));
-            webSitePool.ForEach(p => SubUrlFinder(p));
+            webSitePool.ForEach(p => _webSiteOperation.SubUrlFinder(p));
 
 
 
