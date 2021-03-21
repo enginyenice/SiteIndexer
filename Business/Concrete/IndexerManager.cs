@@ -53,60 +53,50 @@ namespace Business.Concrete
                 }
 
                 // if have SubUrl 
-                
                 if (item.SubUrls.Count > 0) //2.Seviye %20
                 {
-                    float subUrlMachedKeyword = 0;
-                    float subUrlAllKeyword = 0;
+                    float lvl2MachedKeyword = 0;
+                    float lvl2UrlAllKeyword = 0;
 
+                    //lvl 2
                     foreach(var subUrl in item.SubUrls){
-                        foreach (var keyword in subUrl)
+
+                        foreach (var keyword in subUrl.Keywords)
                         {
-                            subUrlAllKeyword += keyword.frequency * keyword.score;
+                            lvl2UrlAllKeyword += keyword.frequency * keyword.score;
 
                             if (webSite.Keywords.Any(p => p.word == keyword.word))
-                                subUrlMachedKeyword += keyword.frequency * keyword.score;
+                                lvl2MachedKeyword += keyword.frequency * keyword.score;
                         }
 
-                        if (item.SubUrls.Count > 0) //3.Seviye %10
+                        if (subUrl.SubUrls.Count > 0) //3.Seviye %10
                         {
-                            float subUrlMachedKeyword = 0;
-                            float subUrlAllKeyword = 0;
+                            float lvl3MachedKeyword = 0;
+                            float lvl3UrlAllKeyword = 0;
 
-                            foreach (var subUrl in item.SubUrls)
+                            //lvl 3
+                            foreach (var subUrl2 in subUrl.SubUrls)
                             {
-                                foreach (var keyword in subUrl)
+                                foreach (var keyword in subUrl2.Keywords)
                                 {
-                                    subUrlAllKeyword += keyword.frequency * keyword.score;
+                                    lvl3UrlAllKeyword += keyword.frequency * keyword.score;
 
                                     if (webSite.Keywords.Any(p => p.word == keyword.word))
-                                        subUrlMachedKeyword += keyword.frequency * keyword.score;
+                                        lvl3MachedKeyword += keyword.frequency * keyword.score;
                                 }
-
                             }
+                            lvl2MachedKeyword += lvl3MachedKeyword;
+                            lvl2UrlAllKeyword += lvl3UrlAllKeyword * 10;
                         }
                     }
+                    machedKeywordsScore += lvl2MachedKeyword;
+                    allKeywordsScore += lvl2UrlAllKeyword * 5;
                 }
-
-
-                /*
-                   if (item.SubUrl.SubUrl != null)  // 3.Seviye %10
-                   {
-
-                       foreach (var keyword in item.SubUrl.SubUrl.Keywords)
-                       {
-                           allKeywordsScore += keyword.frequency * keyword.score;
-
-                           if (webSite.Keywords.Any(p => p.word == keyword.word))
-                               machedKeywordsScore += keyword.frequency * keyword.score;
-                       }
-                   }*/
 
                 item.SimilarityScore = (machedKeywordsScore / allKeywordsScore) * 100;
             }
 
             List<SimilarityScoreDto> tempWebSitesPool = new List<SimilarityScoreDto>();
-
             webSitePool.ForEach(p =>
             {
                 tempWebSitesPool.Add(
@@ -135,53 +125,25 @@ namespace Business.Concrete
         }
 
         //Stage Four - Ranking of a url with sub urls and url set with sub urls similarity 
-        /*
         public IDataResult<UrlSimilarityWithSubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool)
         {
-            webSite = KeywordCalculate(webSite).Data;
-            webSitePool.ForEach(p => p = KeywordCalculate(p).Data);
-            webSitePool.ForEach(p => p = _keywordOperation.GetSubWebSite(p).Data);
-            webSitePool.ForEach(p => p.SubUrl = KeywordCalculate(p.SubUrl).Data);
-            webSitePool.ForEach(p => p.SubUrl = _keywordOperation.GetSubWebSite(p.SubUrl).Data);
-            webSitePool.ForEach(p => p.SubUrl.SubUrl = KeywordCalculate(p.SubUrl.SubUrl).Data);
-
-            //Sub Url Tree
             List<UrlTreeDto> tempUrlTree = new List<UrlTreeDto>();
-            foreach (var item in webSitePool)
-            {
-                UrlTreeDto UrlTree = new UrlTreeDto
-                {
-                    Url = item.Url,
-                    Title = item.Title,
-                };
-
-                if (item.SubUrl != null)
-                {
-                    UrlTree.SubUrl = new UrlTreeDto
-                    {
-                        Url = item.SubUrl.Url,
-                        Title = item.SubUrl.Title,
-                    };
-                    if (item.SubUrl.SubUrl != null)
-                    {
-                        UrlTree.SubUrl.SubUrl = new UrlTreeDto
-                        {
-                            Url = item.SubUrl.Url,
-                            Title = item.SubUrl.Title,
-                        };
-                    }
-                }
-                tempUrlTree.Add(UrlTree);
-            }
-
+            webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p).Data));
+            
             //Adding sub urls to webSitePool
-            List<WebSite> tempSubUrl = new List<WebSite>();
-            webSitePool.ForEach(p => { tempSubUrl.Add(p.SubUrl); tempSubUrl.Add(p.SubUrl.SubUrl); });
-            webSitePool = webSitePool.Concat(tempSubUrl).ToList();
+            List<WebSite> tempSubUrls = new List<WebSite>();
+            webSitePool.ForEach(p => {
+                p.SubUrls.ForEach(l=> { 
+                    tempSubUrls.Add(l);
+                    l.SubUrls.ForEach(m => {
+                        tempSubUrls.Add(m);
+                    });
+                }); 
+            });
+            webSitePool = webSitePool.Concat(tempSubUrls).ToList();
 
             //Similarity calculating
             var result = UrlSimilarityCalculate(webSite, webSitePool).Data;
-
 
             KeywordWebSiteDto tempWebSite = new KeywordWebSiteDto
             {
@@ -214,20 +176,7 @@ namespace Business.Concrete
                 }
             );
         }
-          
-        */
-        public IDataResult<UrlSimilarityWithSubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool)
-        {
-          //  webSite = KeywordCalculate(webSite).Data;
-//               webSitePool.ForEach(p => FrequanceCalculate(p));
-            webSitePool.ForEach(p => _webSiteOperation.SubUrlFinder(p));
-
-
-
-            return null;
-
-        }
-
+        
         //Stage Five - Stage four and Semantic Analysis
 
 

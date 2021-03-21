@@ -11,5 +11,7 @@ namespace Business.Helpers.Abstract
     {
         IDataResult<WebSite> GetWebSite(WebSite webSite);
         IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite);
+        IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList);
+
     }
 }

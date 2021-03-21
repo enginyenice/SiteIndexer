@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Linq;
 using Entities.Dto;
+using System.Text.RegularExpressions;
 
 namespace Business
 {
@@ -15,13 +16,11 @@ namespace Business
     {
         IHtmlCleaner _htmlCleaner;
         IKeywordOperation _keywordOperation;
-        ISubSiteFinder _subSiteFinder;
 
-        public WebSiteOperation(IHtmlCleaner htmlCleaner, IKeywordOperation keywordOperation, ISubSiteFinder subSiteFinder)
+        public WebSiteOperation(IHtmlCleaner htmlCleaner, IKeywordOperation keywordOperation)
         {
             _htmlCleaner = htmlCleaner;
             _keywordOperation = keywordOperation;
-            _subSiteFinder = subSiteFinder;
         }
         public IDataResult<WebSite> GetWebSite(WebSite webSite)
         {
@@ -43,7 +42,7 @@ namespace Business
         public IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite)
         {
             List<string> allUrlList = new List<string>();
-            webSite = _subSiteFinder.Finder(webSite, allUrlList).Data;
+            webSite = Finder(webSite, allUrlList).Data;
             allUrlList = UpdateAllUrlList(webSite.SubUrls, allUrlList);
 
 
@@ -51,11 +50,10 @@ namespace Business
             foreach (var subSite in webSite.SubUrls)
             {
                 var sub = webSite.SubUrls.SingleOrDefault(p => p.Url == subSite.Url);
-                sub = _subSiteFinder.Finder(sub, allUrlList).Data;
+                sub = Finder(sub, allUrlList).Data;
                 allUrlList = UpdateAllUrlList(sub.SubUrls, allUrlList);
 
             }
-
 
             //Sub Url Tree
             UrlTreeDto tempUrlsTree = new UrlTreeDto(); //1.Seviye
@@ -107,6 +105,78 @@ namespace Business
             }
 
             return allUrlList;
+        }
+        public IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList)
+        {
+
+            Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+            Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
+            Regex regexStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
+            Regex regexCode = new Regex(@"<code[^>]*>[\s\S]*?</code>");
+            Regex regexATag = new Regex("(<a[^>]*>[\\s\\S]*?</a>)");
+            Regex regexHref = new Regex("href=['|\"][a-zA-Z0-9:/.]+[^' | \"]+");
+            string temp = webSite.StringHtmlPage;
+
+            temp = regexScript.Replace(temp, " ");
+            temp = regexHead.Replace(temp, " ");
+            temp = regexStyle.Replace(temp, " ");
+            temp = regexCode.Replace(temp, " ");
+
+            var result = regexATag.Matches(temp);
+            temp = String.Join("  ", result);
+            result = regexHref.Matches(temp);
+            temp = String.Join("  ", result);
+            temp = temp.Replace("'", "\"");
+            temp = temp.Replace("href=\"", " ");
+            temp = temp.Replace("  ", " ");
+            string[] array = temp.Split(' ');
+
+            List<string> clearList = new List<string>();
+            foreach (var item in array)
+            {
+                if (item.Length > 0 && (item.Contains("https://") || item.Contains("http://")))
+                {
+                    if (!clearList.Any(p => p == item) && !allUrlList.Any(p => p == item))
+                    {
+                        clearList.Add(item);
+                    }
+                }
+            }
+
+
+            /*TODO: 
+             * /web.php /web.asp şeklinde kısa urller gelebilir.
+             * Bu urlleri (/) işareti ile tespit edip başına ana site adresi
+             * eklenecektir.
+            */
+
+            int i = 0;
+            foreach (var item in clearList)
+            {
+
+                try
+                {
+                    WebSite subSite = new WebSite
+                    {
+                        Url = item
+                    };
+                    subSite = GetWebSite(subSite).Data;
+                    webSite.SubUrls.Add(subSite);
+                    i++;
+                }
+                catch (Exception)
+                {
+
+                    // throw new Exception("URL BAĞLANTI HATASI");
+                }
+                if (i == 5)
+                {
+                    break;
+                }
+            }
+
+            //Debug atıyorum..
+            return new SuccessDataResult<WebSite>(webSite);
         }
     }
 }
