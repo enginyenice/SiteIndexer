@@ -12,7 +12,7 @@ namespace Entities.Concrete
     {
         public WebSite()
         {
-            TestSubUrls = new List<WebSite>();
+            SubUrls = new List<WebSite>();
         }
 
         public int Id { get; set; }
@@ -23,8 +23,7 @@ namespace Entities.Concrete
         public string StringHtmlPage { get; set; } // Html page with tags. 
         public List<Word> Words { get; set; }
         public List<Keyword> Keywords { get; set; }
-        public WebSite SubUrl { get; set; }
-        public List<WebSite> TestSubUrls { get; set; }
+        public List<WebSite> SubUrls { get; set; }
 
     }
 }

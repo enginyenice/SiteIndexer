@@ -13,14 +13,6 @@ namespace Entities.Dto
     {
         public string Title { get; set; }
         public string Url { get; set; }
-        public UrlTreeDto SubUrl { get; set; } 
-    }
-
-    public class UrlsTreeDto : IDto
-    {
-
-        public string Title { get; set; }
-        public string Url { get; set; }
-        public List<UrlsTreeDto> SubUrls { get; set; }
+        public List<UrlTreeDto> SubUrls { get; set; }
     }
 }

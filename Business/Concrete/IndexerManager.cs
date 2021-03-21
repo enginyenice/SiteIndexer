@@ -33,46 +33,46 @@ namespace Business.Concrete
             return new SuccessDataResult<WebSite>(webSite);
         }
 
-        public IDataResult<UrlsTreeDto> SubUrlFinder(WebSite webSite)
+        public IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite)
         {
             List<string> allUrlList = new List<string>();
             webSite = _subSiteFinder.Finder(webSite,allUrlList).Data;
-            allUrlList = UpdateAllUrlList(webSite.TestSubUrls, allUrlList);
+            allUrlList = UpdateAllUrlList(webSite.SubUrls, allUrlList);
 
 
             
-            foreach (var subSite in webSite.TestSubUrls)
+            foreach (var subSite in webSite.SubUrls)
             {
-                var sub = webSite.TestSubUrls.SingleOrDefault(p => p.Url == subSite.Url);
+                var sub = webSite.SubUrls.SingleOrDefault(p => p.Url == subSite.Url);
                 sub = _subSiteFinder.Finder(sub, allUrlList).Data;
-                allUrlList = UpdateAllUrlList(sub.TestSubUrls, allUrlList);
+                allUrlList = UpdateAllUrlList(sub.SubUrls, allUrlList);
 
             }
 
 
             //Sub Url Tree
-            UrlsTreeDto tempUrlsTree = new UrlsTreeDto(); //1.Seviye
+            UrlTreeDto tempUrlsTree = new UrlTreeDto(); //1.Seviye
             tempUrlsTree.Url = webSite.Url;
             tempUrlsTree.Title = webSite.Title;
-            tempUrlsTree.SubUrls = new List<UrlsTreeDto>(); //2.Seviye
-            if (webSite.TestSubUrls.Count > 0)
+            tempUrlsTree.SubUrls = new List<UrlTreeDto>(); //2.Seviye
+            if (webSite.SubUrls.Count > 0)
             {
-                foreach (var subUrl in webSite.TestSubUrls)
+                foreach (var subUrl in webSite.SubUrls)
                 {
-                    var treeSubUrl = new UrlsTreeDto
+                    var treeSubUrl = new UrlTreeDto
                     {
                         Title = subUrl.Title,
                         Url = subUrl.Url,
-                        SubUrls = new List<UrlsTreeDto>() //3.Seviye
+                        SubUrls = new List<UrlTreeDto>() //3.Seviye
                         
 
                     };
-                    if (subUrl.TestSubUrls.Count > 0)
+                    if (subUrl.SubUrls.Count > 0)
                     {
-                        var subsubUrlList = new List<UrlsTreeDto>();
-                        foreach (var subsubUrl in subUrl.TestSubUrls)
+                        var subsubUrlList = new List<UrlTreeDto>();
+                        foreach (var subsubUrl in subUrl.SubUrls)
                         {
-                            var treeSubSubUrl = new UrlsTreeDto
+                            var treeSubSubUrl = new UrlTreeDto
                             {
                                 Title = subsubUrl.Title,
                                 Url = subsubUrl.Url
@@ -85,7 +85,7 @@ namespace Business.Concrete
                 }
             }
 
-            return new SuccessDataResult<UrlsTreeDto>(tempUrlsTree);
+            return new SuccessDataResult<UrlTreeDto>(tempUrlsTree);
         }
 
         private List<string> UpdateAllUrlList(List<WebSite> testSubUrls, List<string> allUrlList)
@@ -121,6 +121,7 @@ namespace Business.Concrete
                 }
 
                 // if have SubUrl 
+                /*
                 if (item.SubUrl != null) //2.seviye %20
                 {
                     foreach (var keyword in item.SubUrl.Keywords)
@@ -143,7 +144,7 @@ namespace Business.Concrete
                         }
                     }
                 }
-
+                */
                 item.SimilarityScore = (machedKeywordsScore / allKeywordsScore) * 100;
             }
 

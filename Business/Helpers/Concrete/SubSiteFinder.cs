@@ -62,7 +62,7 @@ namespace Business.Helpers.Concrete
                         Url = item
                     };
                     subSite = _webSiteOperation.GetWebSite(subSite).Data;
-                    webSite.TestSubUrls.Add(subSite);
+                    webSite.SubUrls.Add(subSite);
                     i++;
                 }
                 catch (Exception)

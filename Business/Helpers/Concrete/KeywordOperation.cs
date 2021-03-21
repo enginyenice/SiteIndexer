@@ -132,10 +132,10 @@ namespace Business
         }
         public IDataResult<WebSite> GetSubWebSite(WebSite webSite)
         {
-            webSite.SubUrl = new WebSite
+            webSite.SubUrls.Add(new WebSite
             {
                 Url = "https://stackoverflow.com/questions/2248411/get-all-links-on-html-page"
-            };
+            });
 
             return new SuccessDataResult<WebSite>(data: webSite);
         }
