@@ -19,7 +19,6 @@ namespace Business
             _htmlCleaner = htmlCleaner;
             _keywordOperation = keywordOperation;
         }
-
         public IDataResult<WebSite> GetWebSite(WebSite webSite)
         {
             WebRequest request = WebRequest.Create(webSite.Url);

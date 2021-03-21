@@ -1,7 +1,4 @@
-﻿//Created By Engin Yenice
-//enginyenice2626@gmail.com
-
-using Business.Abstract;
+﻿using Business.Abstract;
 using Business.Helpers.Abstract;
 using Core.Entities;
 using Core.Utilities.Results;
@@ -15,22 +12,23 @@ namespace Business.Concrete
 {
     public class IndexerManager : IIndexerService
     {
-        IWordToExcludeDal _wordToExcludeDal;
+       // IWordToExcludeDal _wordToExcludeDal;
         IWebSiteOperation _webSiteOperation;
         IKeywordOperation _keywordOperation;
+        ISubSiteFinder _subSiteFinder;
 
-        public IndexerManager(IWordToExcludeDal wordToExcludeDal, IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation)
+        public IndexerManager(/*IWordToExcludeDal wordToExcludeDal,*/ IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation, ISubSiteFinder subSiteFinder)
         {
-            _wordToExcludeDal = wordToExcludeDal;
+            // _wordToExcludeDal = wordToExcludeDal;
             _webSiteOperation = webSiteOperation;
             _keywordOperation = keywordOperation;
+            _subSiteFinder = subSiteFinder;
         }
 
         //Stage One - Frequancy Calculation
         public IDataResult<WebSite> FrequanceCalculate(WebSite webSite)
         {
             webSite = _webSiteOperation.GetWebSite(webSite).Data;
-
             return new SuccessDataResult<WebSite>(webSite);
         }
 
@@ -125,6 +123,7 @@ namespace Business.Concrete
         public IDataResult<UrlSimilarityWithSubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool)
         {
             webSite = KeywordCalculate(webSite).Data;
+            webSite = _subSiteFinder.Finder(webSite).Data;
             webSitePool.ForEach(p => p = KeywordCalculate(p).Data);
 
             webSitePool.ForEach(p => p = _keywordOperation.GetSubWebSite(p).Data);
@@ -203,6 +202,7 @@ namespace Business.Concrete
         }
 
         //Stage Five - Stage four and Semantic Analysis
+
 
     }
 }

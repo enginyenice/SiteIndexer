@@ -10,6 +10,11 @@ namespace Entities.Concrete
 {
     public class WebSite : IEntity
     {
+        public WebSite()
+        {
+            TestSubUrls = new List<WebSite>();
+        }
+
         public int Id { get; set; }
         public string Url { get; set; }
         public string Title { get; set; }
@@ -19,6 +24,7 @@ namespace Entities.Concrete
         public List<Word> Words { get; set; }
         public List<Keyword> Keywords { get; set; }
         public WebSite SubUrl { get; set; }
+        public List<WebSite> TestSubUrls { get; set; }
 
     }
 }
