@@ -85,7 +85,7 @@ namespace Business
                     }
                 }
             }
-            webSite.Keywords = TempKeywords.OrderByDescending(p => p.score).Take(20).ToList();
+            webSite.Keywords = TempKeywords.OrderByDescending(p => p.score).Take(10).ToList();
 
             return new SuccessDataResult<WebSite>(webSite);
         }

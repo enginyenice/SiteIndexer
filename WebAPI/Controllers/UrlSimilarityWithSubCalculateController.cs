@@ -48,6 +48,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
+        [DisableRequestSizeLimit]
+        
         public IActionResult UrlSimilarityWithSubCalculate(InputModelDto input)
         {
             input.webSitePool.ForEach(p => p = _indexerService.WebSiteCalculate(p).Data);

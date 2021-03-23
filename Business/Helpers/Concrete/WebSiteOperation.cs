@@ -24,16 +24,32 @@ namespace Business
         }
         public IDataResult<WebSite> GetWebSite(WebSite webSite)
         {
-            WebRequest request = WebRequest.Create(webSite.Url);
-            WebResponse response = request.GetResponse();
-            StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, false);
-            webSite.StringHtmlPage = WebUtility.HtmlDecode(responseData.ReadToEnd());
-            webSite.Title = _keywordOperation.GetTitle(webSite.StringHtmlPage).Data;
-            webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data;
-            webSite.Words = _keywordOperation.FrequencyGenerater(webSite.Content).Data;
-         
+            try
+            {
+                WebRequest request = WebRequest.Create(webSite.Url);
+                WebResponse response = request.GetResponse();
+                StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, false);
+                webSite.StringHtmlPage = WebUtility.HtmlDecode(responseData.ReadToEnd());
+                webSite.Title = _keywordOperation.GetTitle(webSite.StringHtmlPage).Data;
+                webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data;
+                webSite.Words = _keywordOperation.FrequencyGenerater(webSite.Content).Data;
+
+
+                webSite.Keywords = _keywordOperation.KeywordGenerator(webSite).Data.Keywords;
+            }
+            catch (Exception)
+            {
+
+                webSite.Keywords = new List<Keyword>();
+                webSite.Title = "";
+                webSite.Content = "";
+                webSite.StringHtmlPage = "";
+                webSite.Words = new List<Word>();
+                webSite.SimilarityScore = 0;
+                webSite.SubUrls = new List<WebSite>();
+            }
+
             
-            webSite.Keywords = _keywordOperation.KeywordGenerator(webSite).Data.Keywords;
             
             
             
@@ -59,16 +75,18 @@ namespace Business
             UrlTreeDto tempUrlsTree = new UrlTreeDto(); //1.Seviye
             tempUrlsTree.Url = webSite.Url;
             tempUrlsTree.Title = webSite.Title;
-            tempUrlsTree.SubUrls = new List<UrlTreeDto>(); //2.Seviye
+            tempUrlsTree.Key = Guid.NewGuid().ToString("D");
+            tempUrlsTree.Children = new List<UrlTreeDto>(); //2.Seviye
             if (webSite.SubUrls.Count > 0)
             {
                 foreach (var subUrl in webSite.SubUrls)
                 {
                     var treeSubUrl = new UrlTreeDto
                     {
+                        Key = Guid.NewGuid().ToString("D"),
                         Title = subUrl.Title,
                         Url = subUrl.Url,
-                        SubUrls = new List<UrlTreeDto>() //3.Seviye
+                        Children = new List<UrlTreeDto>() //3.Seviye
 
 
                     };
@@ -79,14 +97,15 @@ namespace Business
                         {
                             var treeSubSubUrl = new UrlTreeDto
                             {
+                                Key = Guid.NewGuid().ToString("D"),
                                 Title = subsubUrl.Title,
                                 Url = subsubUrl.Url
                             };
                             subsubUrlList.Add(treeSubSubUrl);
                         }
-                        treeSubUrl.SubUrls = subsubUrlList;
+                        treeSubUrl.Children = subsubUrlList;
                     }
-                    tempUrlsTree.SubUrls.Add(treeSubUrl);
+                    tempUrlsTree.Children.Add(treeSubUrl);
                 }
             }
 
