@@ -94,6 +94,10 @@ namespace Business.Concrete
                 }
 
                 item.SimilarityScore = (machedKeywordsScore / allKeywordsScore) * 100;
+                if(float.IsNaN(item.SimilarityScore) || float.IsNegative(item.SimilarityScore))
+                {
+                    item.SimilarityScore = 0;
+                }
             }
 
             List<SimilarityScoreDto> tempWebSitesPool = new List<SimilarityScoreDto>();

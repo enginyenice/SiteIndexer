@@ -16,16 +16,30 @@ namespace Business
     {
         IHtmlCleaner _htmlCleaner;
         IKeywordOperation _keywordOperation;
-
+        List<String> BlackList;
         public WebSiteOperation(IHtmlCleaner htmlCleaner, IKeywordOperation keywordOperation)
         {
             _htmlCleaner = htmlCleaner;
             _keywordOperation = keywordOperation;
+
+            BlackList = new List<String> { "php", "xps", "aspx", "axd", "chm", "do", "jhtml",
+                                                        "jnlp", "json", "mht", "gg", "gsp", "adr", "css",
+                                                        "mvc", "pac", "url", "xul", "_eml", "!bt", "asp",
+                                                        "att", "cer", "cfm", "con", "htc", "htm", "html",
+                                                        "js", "jsf", "jsp", "mhtml", "nzb", "rss", "vbd",
+                                                        "web", "wsdl", "xfdl", "aex", "pem", "wrf", "xbel",
+                                                        "alx", "ap", "ascx", "asr", "dap", "dml", "dwt",
+                                                        "email", "mai", "phtml", "shtml", "wgt", "wml", "xhtml",
+                                                        "crl", "pando", "pfc", "qbo"};
+
         }
         public IDataResult<WebSite> GetWebSite(WebSite webSite)
         {
             try
             {
+                webSite.Url = webSite.Url.Trim();
+                webSite.Url = (webSite.Url.Substring(webSite.Url.Length - 1, 1) == "/") ? webSite.Url.Substring(0, webSite.Url.Length - 1) : webSite.Url;
+                Console.WriteLine(webSite.Url);
                 WebRequest request = WebRequest.Create(webSite.Url);
                 WebResponse response = request.GetResponse();
                 StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, false);
@@ -33,31 +47,25 @@ namespace Business
                 webSite.Title = _keywordOperation.GetTitle(webSite.StringHtmlPage).Data;
                 webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data;
                 webSite.Words = _keywordOperation.FrequencyGenerater(webSite.Content).Data;
-
-
                 webSite.Keywords = _keywordOperation.KeywordGenerator(webSite).Data.Keywords;
             }
             catch (Exception)
             {
-
+                webSite.StringHtmlPage = " ";
                 webSite.Keywords = new List<Keyword>();
-                webSite.Title = "";
-                webSite.Content = "";
-                webSite.StringHtmlPage = "";
-                webSite.Words = new List<Word>();
-                webSite.SimilarityScore = 0;
-                webSite.SubUrls = new List<WebSite>();
+                //Console.WriteLine(webSite.Url);
             }
 
-            
-            
-            
-            
+
+
+
+
             return new SuccessDataResult<WebSite>(webSite);
         }
         public IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite)
         {
             List<string> allUrlList = new List<string>();
+            allUrlList.Add(webSite.Url);
             webSite = Finder(webSite, allUrlList).Data;
             allUrlList = UpdateAllUrlList(webSite.SubUrls, allUrlList);
 
@@ -156,21 +164,25 @@ namespace Business
             List<string> clearList = new List<string>();
             foreach (var item in array)
             {
-                if (item.Length > 0 && (item.Contains("https://") || item.Contains("http://")))
+                try
                 {
-                    if (!clearList.Any(p => p == item) && !allUrlList.Any(p => p == item))
+                    if (item.Length > 0 && (item.Substring(0, 8) == "https://" || item.Substring(0, 7) == "http://"))
                     {
-                        clearList.Add(item);
+
+                        string url = (item.Substring(item.Length - 1, 1) == "/") ? item.Substring(0, item.Length - 1) : item;
+                        if (UrlControl(url, clearList, allUrlList, webSite.SubUrls).Data)
+                        {
+                            clearList.Add(url);
+                        }
                     }
+                }
+                catch (Exception)
+                {
+
+                    Console.WriteLine("Kısa Url: " + item);
                 }
             }
 
-
-            /*TODO: 
-             * /web.php /web.asp şeklinde kısa urller gelebilir.
-             * Bu urlleri (/) işareti ile tespit edip başına ana site adresi
-             * eklenecektir.
-            */
 
             int i = 0;
             foreach (var item in clearList)
@@ -178,27 +190,73 @@ namespace Business
 
                 try
                 {
-                    WebSite subSite = new WebSite
-                    {
-                        Url = item
-                    };
-                    subSite = GetWebSite(subSite).Data;
-                    webSite.SubUrls.Add(subSite);
-                    i++;
+                        WebSite subSite = new WebSite
+                        {
+                            Url = item
+                        };
+                        subSite = GetWebSite(subSite).Data;
+                        if (subSite.StringHtmlPage != "" && !webSite.SubUrls.Any(p => p.Url == item))
+                        {
+                            webSite.SubUrls.Add(subSite);
+                            i++;
+                        }
+                   
                 }
                 catch (Exception)
                 {
 
                     // throw new Exception("URL BAĞLANTI HATASI");
                 }
+                //////////////////////////////////////
+                ///           SUB COUNT            ///
+                //////////////////////////////////////
                 if (i == 5)
                 {
                     break;
                 }
+                /////////////////////////////////////
             }
-
-            //Debug atıyorum..
             return new SuccessDataResult<WebSite>(webSite);
+        }
+        private IDataResult<bool> UrlControl(string url, List<string> clearList, List<string> allUrlList,List<WebSite> SubUrls)
+        {
+
+            string tempUrl = url;
+            //https://
+            int startIndex = tempUrl.IndexOf("/", 9, (tempUrl.Length - 9));
+            if (startIndex != -1)
+            {
+                tempUrl = tempUrl.Substring((startIndex + 1), (tempUrl.Length - 1) - startIndex);
+                Console.Write(tempUrl);
+
+
+                while (startIndex != -1)
+                {
+                    startIndex = 0;
+                    startIndex = tempUrl.IndexOf(".", startIndex, (tempUrl.Length - 1));
+
+                    if (startIndex != -1)
+                    {
+                        tempUrl = tempUrl.Substring((startIndex + 1), (tempUrl.Length - 1) - startIndex);
+                    }
+                }
+                
+                //TODO: Düzenlenecek..
+                if (!BlackList.Any(p => p == tempUrl) && tempUrl.Length <= 5)
+                {
+                    return new ErrorDataResult<bool>(false);
+                }
+
+                if (clearList.Any(p => p == url) || allUrlList.Any(p => p == url))
+                {
+                    return new ErrorDataResult<bool>(false);
+                }
+            }
+            if (SubUrls.Any(p => p.Url == url))
+            {
+                return new ErrorDataResult<bool>(false);
+            }
+            return new SuccessDataResult<bool>(true);
         }
     }
 }
