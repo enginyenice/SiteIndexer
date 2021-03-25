@@ -9,21 +9,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace Business.Concrete
 {
     public class IndexerManager : IIndexerService
     {
-       // IWordToExcludeDal _wordToExcludeDal;
         IWebSiteOperation _webSiteOperation;
         IKeywordOperation _keywordOperation;
-       
+        IJsonReader _jsonReader;
 
-        public IndexerManager(/*IWordToExcludeDal wordToExcludeDal,*/ IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation)
+        public IndexerManager( IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation,IJsonReader jsonReader)
         {
-            // _wordToExcludeDal = wordToExcludeDal;
             _webSiteOperation = webSiteOperation;
             _keywordOperation = keywordOperation;
-            
+            _jsonReader = jsonReader;
         }
 
         //Stage One - Frequancy Calculation
@@ -36,8 +35,7 @@ namespace Business.Concrete
 
         //Stage Three - Ranking of a url and url set similarity
         public IDataResult<UrlSimilarityWebSiteDto> UrlSimilarityCalculate(WebSite webSite, List<WebSite> webSitePool)
-        {
-            //Similarity calculating
+        {   //Similarity calculating
             foreach (var item in webSitePool)
             {
                 //MaxValue = 3.40282347E+38F
@@ -129,7 +127,7 @@ namespace Business.Concrete
         }
 
         //Stage Four - Ranking of a url with sub urls and url set with sub urls similarity 
-        public IDataResult<UrlSimilarityWithSubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool)
+        public IDataResult<UrlSimilaritySubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool)
         {
             List<UrlTreeDto> tempUrlTree = new List<UrlTreeDto>();
             webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p).Data));
@@ -171,8 +169,8 @@ namespace Business.Concrete
                 });
             });
 
-            return new SuccessDataResult<UrlSimilarityWithSubWebSiteDto>(
-                data: new UrlSimilarityWithSubWebSiteDto
+            return new SuccessDataResult<UrlSimilaritySubWebSiteDto>(
+                data: new UrlSimilaritySubWebSiteDto
                 {
                     webSite = tempWebSite,
                     webSitePool = tempWebSitesPool,
@@ -182,7 +180,69 @@ namespace Business.Concrete
         }
         
         //Stage Five - Stage four and Semantic Analysis
+        public IDataResult<UrlSimilaritySubSemanticWebSiteDto> UrlSimilarityWithSemanticCalculate(WebSite webSite, List<WebSite> webSitePool)
+        {
+            List<UrlTreeDto> tempUrlTree = new List<UrlTreeDto>();
+            webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p).Data));
 
+            //Adding sub urls to webSitePool
+            List<WebSite> tempSubUrls = new List<WebSite>();
+            webSitePool.ForEach(p => {
+                p.SubUrls.ForEach(l => {
+                    tempSubUrls.Add(l);
+                    l.SubUrls.ForEach(m => {
+                        tempSubUrls.Add(m);
+                    });
+                });
+            });
+            webSitePool = webSitePool.Concat(tempSubUrls).ToList();
+
+
+            //Semantic keyword generate
+            List<SemanticWordJsonDto> Dictionary = _jsonReader.getSemanticKeywords().Data;
+            webSitePool.ForEach(p=> p = _keywordOperation.SemanticKeywordGenerator(p, ref Dictionary).Data);
+            
+
+            //Url similarity calculate with SubUrl
+            var result = UrlSimilarityCalculate(webSite, webSitePool).Data;
+
+            KeywordWebSiteDto tempWebSite = new KeywordWebSiteDto
+            {
+                Url = result.webSite.Url,
+                Title = result.webSite.Title,
+                Keywords = result.webSite.Keywords
+            };
+
+            List<SimilarityScoreSemanticDto> tempWebSitesPool = new List<SimilarityScoreSemanticDto>();
+            result.webSitePool.ForEach(p =>
+            {
+                List<SemanticKeyword> tempSemanticKeywords = new List<SemanticKeyword>();
+                webSitePool.ForEach(a => {
+                    if (a.Url == p.webSite.Url && a.Title == p.webSite.Title)
+                        tempSemanticKeywords = a.SemanticKeywords;
+                });
+
+                tempWebSitesPool.Add(new SimilarityScoreSemanticDto
+                {
+                    SimilarityScore = p.SimilarityScore,
+                    webSite = new KeywordWebSiteSemanticDto
+                    {
+                        Url = p.webSite.Url,
+                        Title = p.webSite.Title,
+                        Keywords = p.webSite.Keywords,
+                        SemanticKeyword = new List<SemanticKeyword>(tempSemanticKeywords)
+                    }
+                });
+            });
+
+            return new SuccessDataResult<UrlSimilaritySubSemanticWebSiteDto>(
+                data: new UrlSimilaritySubSemanticWebSiteDto
+                {
+                    webSite = tempWebSite,
+                    webSitePool = tempWebSitesPool,
+                    UrlTree = tempUrlTree
+                });
+        }
 
     }
 }

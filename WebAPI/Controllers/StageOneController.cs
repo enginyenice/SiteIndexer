@@ -16,11 +16,11 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FrequencyCalculateController : ControllerBase
+    public class StageOneController : ControllerBase
     {
         private IIndexerService _indexerService;
 
-        public FrequencyCalculateController(IIndexerService indexerService)
+        public StageOneController(IIndexerService indexerService)
         {
             _indexerService = indexerService;
         }

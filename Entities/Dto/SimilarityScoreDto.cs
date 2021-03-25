@@ -14,4 +14,9 @@ namespace Entities.Dto
         public float SimilarityScore { get; set; }
         public KeywordWebSiteDto webSite { get; set; } 
     }
+    public class SimilarityScoreSemanticDto : IDto
+    {
+        public float SimilarityScore { get; set; }
+        public KeywordWebSiteSemanticDto webSite { get; set; } 
+    }
 }

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Entities.Dto
 {
-    public class guideDto : IDto
+    public class GuideDto : IDto
     {
         public website Website { get; set; }
         public List<website> WebsitePool { get; set; }

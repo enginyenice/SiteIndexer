@@ -15,11 +15,11 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UrlSimilarityCalculateController : ControllerBase
+    public class StageThreeController : ControllerBase
     {
         private IIndexerService _indexerService;
 
-        public UrlSimilarityCalculateController(IIndexerService indexerService)
+        public StageThreeController(IIndexerService indexerService)
         {
             _indexerService = indexerService;
         }
@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         public IActionResult Guide()
         {
-            return Ok(new guideDto
+            return Ok(new GuideDto
             {
                 Website = new website
                 {
@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult UrlSimilarityCalculate(InputModelDto input)
+        public IActionResult UrlSimilarityCalculate(InputDto input)
         {
             input.webSitePool.ForEach(p => p = _indexerService.WebSiteCalculate(p).Data);
             return Ok(_indexerService.UrlSimilarityCalculate(_indexerService.WebSiteCalculate(input.webSite).Data,input.webSitePool));

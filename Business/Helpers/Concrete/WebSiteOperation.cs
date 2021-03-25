@@ -45,7 +45,7 @@ namespace Business
                 StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, false);
                 webSite.StringHtmlPage = WebUtility.HtmlDecode(responseData.ReadToEnd());
                 webSite.Title = _keywordOperation.GetTitle(webSite.StringHtmlPage).Data;
-                webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data;
+                webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data + " " +webSite.Title;
                 webSite.Words = _keywordOperation.FrequencyGenerater(webSite.Content).Data;
                 webSite.Keywords = _keywordOperation.KeywordGenerator(webSite).Data.Keywords;
             }
@@ -55,11 +55,6 @@ namespace Business
                 webSite.Keywords = new List<Keyword>();
                 //Console.WriteLine(webSite.Url);
             }
-
-
-
-
-
             return new SuccessDataResult<WebSite>(webSite);
         }
         public IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite)
@@ -69,8 +64,6 @@ namespace Business
             webSite = Finder(webSite, allUrlList).Data;
             allUrlList = UpdateAllUrlList(webSite.SubUrls, allUrlList);
 
-
-
             foreach (var subSite in webSite.SubUrls)
             {
                 var sub = webSite.SubUrls.SingleOrDefault(p => p.Url == subSite.Url);
@@ -78,7 +71,6 @@ namespace Business
                 allUrlList = UpdateAllUrlList(sub.SubUrls, allUrlList);
 
             }
-
             //Sub Url Tree
             UrlTreeDto tempUrlsTree = new UrlTreeDto(); //1.Seviye
             tempUrlsTree.Url = webSite.Url;
@@ -119,7 +111,6 @@ namespace Business
 
             return new SuccessDataResult<UrlTreeDto>(tempUrlsTree);
         }
-
         private List<string> UpdateAllUrlList(List<WebSite> testSubUrls, List<string> allUrlList)
         {
 
@@ -135,7 +126,6 @@ namespace Business
         }
         public IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList)
         {
-
             Regex regexDocType = new Regex(@"<!DOCTYPE[^>]*>");
             Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
             Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
@@ -144,7 +134,6 @@ namespace Business
             Regex regexATag = new Regex("(<a[^>]*>[\\s\\S]*?</a>)");
             Regex regexHref = new Regex("href=['|\"][a-zA-Z0-9:/.]+[^' | \"]+");
             string temp = webSite.StringHtmlPage;
-
 
             temp = regexDocType.Replace(temp, " ");
             temp = regexScript.Replace(temp, " ");
@@ -182,7 +171,6 @@ namespace Business
                     Console.WriteLine("Kısa Url: " + item);
                 }
             }
-
 
             int i = 0;
             foreach (var item in clearList)
@@ -258,5 +246,6 @@ namespace Business
             }
             return new SuccessDataResult<bool>(true);
         }
+        
     }
 }

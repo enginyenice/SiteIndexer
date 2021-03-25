@@ -12,11 +12,11 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class KeywordCalculateController : Controller
+    public class StageTwoController : Controller
     {
         private IIndexerService _indexerService;
 
-        public KeywordCalculateController(IIndexerService indexerService)
+        public StageTwoController(IIndexerService indexerService)
         {
             _indexerService = indexerService;
         }

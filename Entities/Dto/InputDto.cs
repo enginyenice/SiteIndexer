@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Entities.Dto
 {
-    public class InputModelDto : IDto
+    public class InputDto : IDto
     {
         public WebSite webSite { get; set; }
         public List<WebSite> webSitePool { get; set; }

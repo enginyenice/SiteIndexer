@@ -2,12 +2,13 @@
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using Snowball;
 namespace Business
 {
     public class KeywordOperation : IKeywordOperation
@@ -15,19 +16,30 @@ namespace Business
         ITagAndPointDal _tagAndPointDal;
         IHtmlCleaner _htmlCleaner;
         IWordToExcludeDal _wordToExcludeDal;
+        IJsonReader _jsonReader;
 
-        public KeywordOperation(ITagAndPointDal tagAndPointDal, IHtmlCleaner htmlClearer, IWordToExcludeDal wordToExcludeDal)
+        public KeywordOperation(ITagAndPointDal tagAndPointDal, IHtmlCleaner htmlClearer, IWordToExcludeDal wordToExcludeDal, IJsonReader jsonReader)
         {
             _tagAndPointDal = tagAndPointDal;
             _htmlCleaner = htmlClearer;
             _wordToExcludeDal = wordToExcludeDal;
+            _jsonReader = jsonReader;
         }
 
         //Frequency Generater
         public IDataResult<List<Word>> FrequencyGenerater(string content)
         {
+
             List<Word> tempWordsList = new List<Word>();
             var words = content.Split(" ");
+            /*TurkishStemmer turkishStemmer = new TurkishStemmer();
+            var tempword = words;
+            foreach (var item in tempword)
+            {
+                var temp = item;
+                temp = turkishStemmer.Stem(item);
+            }
+            */
             foreach (var word in words)
             {
                 if (word != "" && word != " ")
@@ -53,15 +65,20 @@ namespace Business
         public IDataResult<List<Word>> RemoveWordsToExclude(List<Word> Words)
         {
             List<Word> tempWordsList = new List<Word>();
+            Regex numberCheck = new Regex("([0-9])");
             foreach (var item in Words)
             {
-                if (_wordToExcludeDal.CheckWord(item.word) == false && item.word.Length >= 1)
+                if ((_wordToExcludeDal.CheckWord(item.word) == false && item.word.Length >= 2) 
+                    || 
+                    (item.word.Length == 1 && numberCheck.Match(item.word).Success))
                 {
                     tempWordsList.Add(item);
                 }
+
             }
             return new SuccessDataResult<List<Word>>(tempWordsList.ToList());
         }
+        
         //Keyword Generator
         public IDataResult<WebSite> KeywordGenerator(WebSite webSite)
         {
@@ -116,6 +133,65 @@ namespace Business
             }
             return new SuccessDataResult<List<Word>>(tagWords);
         }
+        public IDataResult<WebSite> SemanticKeywordGenerator(WebSite webSite,ref List<SemanticWordJsonDto> Dictionary)
+        {
+            List<SemanticKeyword> TempSemanticKeywords = new List<SemanticKeyword>();
+
+            //Semantic keyword find
+            foreach (var keyword in webSite.Keywords)// website keywords
+            {
+                List<string> tempSemantic = new List<string>();
+
+                foreach (var part in Dictionary) // dictionary letter 'a' ,'b'....
+                {
+                    if (part.letter == keyword.word[0])
+                    {
+                        foreach (var semantic in part.data) // semantic word
+                        {
+                            if (keyword.word == semantic.word)
+                            {
+                                semantic.similarWords.ForEach(p => { tempSemantic.Add(p); });
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                if (tempSemantic.Count > 0)
+                {
+                    tempSemantic.ForEach(p =>
+                        webSite.Words.ForEach(m =>
+                        {
+                            if (m.word == p)
+                                TempSemanticKeywords.Add(new SemanticKeyword
+                                {
+                                    word = p,
+                                    similar = keyword.word,
+                                    frequency = m.frequency,
+                                    score = m.frequency
+                                });
+                        }
+                    ));
+                }
+            }
+
+            // Keywords score calculate
+            foreach (var tagAndPoint in _tagAndPointDal.GetAll())
+            {
+                List<Word> tagWords = ExtractWordInTag(tagAndPoint.before, tagAndPoint.after, webSite.StringHtmlPage).Data;
+                foreach (var semanticKeyword in TempSemanticKeywords)
+                {
+                    if (tagWords.Any(p => p.word == semanticKeyword.word) == true)
+                    {
+                        semanticKeyword.score = tagAndPoint.score * semanticKeyword.frequency;
+                    }
+                }
+            }
+            webSite.SemanticKeywords = TempSemanticKeywords.OrderByDescending(p => p.score).ToList();
+
+            return new SuccessDataResult<WebSite>(data: webSite);
+        }
+
         //Website Operations
         public IDataResult<string> GetTitle(string stringWebSite)
         {
@@ -141,15 +217,7 @@ namespace Business
                 return new ErrorDataResult<string>(data: "");
             }
         }
-        public IDataResult<WebSite> GetSubWebSite(WebSite webSite)
-        {
-            webSite.SubUrls.Add(new WebSite
-            {
-                Url = "https://stackoverflow.com/questions/2248411/get-all-links-on-html-page"
-            });
 
-            return new SuccessDataResult<WebSite>(data: webSite);
-        }
 
     }
 }
