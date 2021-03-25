@@ -3,10 +3,6 @@ using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Dto;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {

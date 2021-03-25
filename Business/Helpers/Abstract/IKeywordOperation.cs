@@ -1,19 +1,20 @@
 ﻿using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Dto;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Business.Helpers.Abstract
 {
     public interface IKeywordOperation
     {
         IDataResult<List<Word>> FrequencyGenerater(string content);
-        IDataResult<List<Word>> RemoveWordsToExclude(List<Word> Words);
-        IDataResult<WebSite> KeywordGenerator(WebSite webSite);
-        IDataResult<WebSite> SemanticKeywordGenerator(WebSite webSite,ref List<SemanticWordJsonDto> Dictionary);
-        IDataResult<string> GetTitle(string StringHtmlPage);
 
+        IDataResult<List<Word>> RemoveWordsToExclude(List<Word> Words);
+
+        IDataResult<WebSite> KeywordGenerator(WebSite webSite);
+
+        IDataResult<WebSite> SemanticKeywordGenerator(WebSite webSite, ref List<SemanticWordJsonDto> Dictionary);
+
+        IDataResult<string> GetTitle(string StringHtmlPage);
     }
 }

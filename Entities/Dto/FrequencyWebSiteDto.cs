@@ -1,11 +1,6 @@
-﻿//Created By Engin Yenice
-//enginyenice2626@gmail.com
-
-using Core.Entities;
+﻿using Core.Entities;
 using Entities.Concrete;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Entities.Dto
 {

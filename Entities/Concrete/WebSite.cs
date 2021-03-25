@@ -1,10 +1,5 @@
-﻿//Created By Engin Yenice
-//enginyenice2626@gmail.com
-
-using Core.Entities;
-using System;
+﻿using Core.Entities;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Entities.Concrete
 {
@@ -20,11 +15,10 @@ namespace Entities.Concrete
         public string Title { get; set; }
         public float SimilarityScore { get; set; }
         public string Content { get; set; } // Html page with all tags removed.
-        public string StringHtmlPage { get; set; } // Html page with tags. 
+        public string StringHtmlPage { get; set; } // Html page with tags.
         public List<Word> Words { get; set; }
         public List<Keyword> Keywords { get; set; }
         public List<SemanticKeyword> SemanticKeywords { get; set; }
         public List<WebSite> SubUrls { get; set; }
-
     }
 }

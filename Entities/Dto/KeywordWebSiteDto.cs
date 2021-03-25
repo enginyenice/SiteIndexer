@@ -1,8 +1,6 @@
 ﻿using Core.Entities;
 using Entities.Concrete;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Entities.Dto
 {
@@ -12,6 +10,7 @@ namespace Entities.Dto
         public string Url { get; set; }
         public List<Keyword> Keywords { get; set; }
     }
+
     public class KeywordWebSiteSemanticDto : IDto
     {
         public string Title { get; set; }

@@ -1,7 +1,4 @@
 ﻿using Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Entities.Concrete
 {
@@ -9,6 +6,7 @@ namespace Entities.Concrete
     {
         public int score { get; set; }
     }
+
     public class SemanticKeyword : Word, IEntity
     {
         public int score { get; set; }

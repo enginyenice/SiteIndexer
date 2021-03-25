@@ -1,7 +1,5 @@
 ﻿using Business.Helpers.Abstract;
 using Core.Utilities.Results;
-using Entities.Concrete;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Business
@@ -47,12 +45,10 @@ namespace Business
             text = regexUnicodeCleaner.Replace(text, " ");
             text = regexAdditional.Replace(text, " ");
             text = regexMark.Replace(text, " ");
-            
 
             #endregion Regex Replace
 
             return new SuccessDataResult<string>(data: text);
         }
-
     }
 }

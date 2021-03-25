@@ -6,17 +6,16 @@ using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using Snowball;
+
 namespace Business
 {
     public class KeywordOperation : IKeywordOperation
     {
-        ITagAndPointDal _tagAndPointDal;
-        IHtmlCleaner _htmlCleaner;
-        IWordToExcludeDal _wordToExcludeDal;
-        IJsonReader _jsonReader;
+        private ITagAndPointDal _tagAndPointDal;
+        private IHtmlCleaner _htmlCleaner;
+        private IWordToExcludeDal _wordToExcludeDal;
+        private IJsonReader _jsonReader;
 
         public KeywordOperation(ITagAndPointDal tagAndPointDal, IHtmlCleaner htmlClearer, IWordToExcludeDal wordToExcludeDal, IJsonReader jsonReader)
         {
@@ -29,17 +28,8 @@ namespace Business
         //Frequency Generater
         public IDataResult<List<Word>> FrequencyGenerater(string content)
         {
-
             List<Word> tempWordsList = new List<Word>();
-            var words = content.Split(" ");
-            /*TurkishStemmer turkishStemmer = new TurkishStemmer();
-            var tempword = words;
-            foreach (var item in tempword)
-            {
-                var temp = item;
-                temp = turkishStemmer.Stem(item);
-            }
-            */
+            var words = content.Replace("  ", " ").Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
             foreach (var word in words)
             {
                 if (word != "" && word != " ")
@@ -62,23 +52,23 @@ namespace Business
             tempWordsList = RemoveWordsToExclude(tempWordsList).Data;
             return new SuccessDataResult<List<Word>>(tempWordsList.OrderByDescending(p => p.frequency).ToList());
         }
+
         public IDataResult<List<Word>> RemoveWordsToExclude(List<Word> Words)
         {
             List<Word> tempWordsList = new List<Word>();
             Regex numberCheck = new Regex("([0-9])");
             foreach (var item in Words)
             {
-                if ((_wordToExcludeDal.CheckWord(item.word) == false && item.word.Length >= 2) 
-                    || 
+                if ((_wordToExcludeDal.CheckWord(item.word) == false && item.word.Length >= 2)
+                    ||
                     (item.word.Length == 1 && numberCheck.Match(item.word).Success))
                 {
                     tempWordsList.Add(item);
                 }
-
             }
             return new SuccessDataResult<List<Word>>(tempWordsList.ToList());
         }
-        
+
         //Keyword Generator
         public IDataResult<WebSite> KeywordGenerator(WebSite webSite)
         {
@@ -106,6 +96,7 @@ namespace Business
 
             return new SuccessDataResult<WebSite>(webSite);
         }
+
         private IDataResult<List<Word>> ExtractWordInTag(string before, string after, string StringHtmlPage)
         {
             int firstIndex = 0;
@@ -133,7 +124,8 @@ namespace Business
             }
             return new SuccessDataResult<List<Word>>(tagWords);
         }
-        public IDataResult<WebSite> SemanticKeywordGenerator(WebSite webSite,ref List<SemanticWordJsonDto> Dictionary)
+
+        public IDataResult<WebSite> SemanticKeywordGenerator(WebSite webSite, ref List<SemanticWordJsonDto> Dictionary)
         {
             List<SemanticKeyword> TempSemanticKeywords = new List<SemanticKeyword>();
 
@@ -198,10 +190,8 @@ namespace Business
             try
             {
                 Regex regexTitleAttr = new Regex("<title[^>]*>[\\s\\S]*</title>");
-                Regex regexTitle= new Regex(">[^>]*[^</title>]");
+                Regex regexTitle = new Regex(">[^>]*[^</title>]");
                 string tempWebSite = stringWebSite;
-
-
 
                 var result = regexTitleAttr.Matches(tempWebSite);
                 string tempTitle = result[0].ToString();
@@ -210,14 +200,11 @@ namespace Business
                 int lenght = tempTitle.Length - 1;
                 string title = tempTitle.Substring(1, lenght);
                 return new SuccessDataResult<string>(data: title);
-
             }
             catch (Exception)
             {
                 return new ErrorDataResult<string>(data: "");
             }
         }
-
-
     }
 }

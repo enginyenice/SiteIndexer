@@ -1,20 +1,20 @@
 ﻿using DataAccess.Abstract;
 using Entities.Concrete;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DataAccess.Concrete.InMemory
 {
     public class InMemoryWordToExcludeDal : IWordToExcludeDal
     {
-        List<Word> words;
+        private List<Word> words;
+
         public InMemoryWordToExcludeDal()
         {
             words = new List<Word>
             {
             #region Türkçe
+
                 // A
                 new Word { word = "a'nî"},
                 new Word { word = "ama"},
@@ -39,7 +39,6 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "ayrılmak"},
                 new Word { word = "azalmak"},
 
-               
                 // B
                 new Word { word = "belki"},
                 new Word { word = "bile"},
@@ -87,7 +86,6 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "çıkmak"},
                 new Word { word = "çizmek"},
 
-                
                 // D
                 new Word { word = "da"},
                 new Word { word = "de"},
@@ -127,8 +125,6 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "etmek"},
                 new Word { word = "evlenmek"},
 
-
-
                 // F
                 new Word { word = "fakat"},
                 // G
@@ -153,7 +149,7 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "göstermek"},
                 new Word { word = "götürmek"},
                 new Word { word = "gülmek"},
-                
+
                 // H
                 new Word { word = "ha"},
                 new Word { word = "hâlbuki"},
@@ -252,7 +248,6 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "oturmak"},
                 new Word { word = "oynamak"},
 
-
                 // Ö
                 new Word { word = "ödemek"},
                 new Word { word = "öğrenmek"},
@@ -296,7 +291,7 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "toplanmak"},
                 new Word { word = "tutmak"},
                 new Word { word = "tutulmak"},
-                // U 
+                // U
                 new Word { word = "uğraşmak"},
                 new Word { word = "ulaşmak"},
                 new Word { word = "unutmak"},
@@ -321,7 +316,7 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "verilmek"},
                 new Word { word = "vermek"},
                 new Word { word = "vurmak"},
-                
+
                 // Y
                 new Word { word = "yedi"},
                 new Word { word = "yirmi"},
@@ -349,8 +344,11 @@ namespace DataAccess.Concrete.InMemory
 
                 // Z
                 new Word { word = "zira"},
+
                 #endregion Türkçe
+
             #region İngilizce
+
                 // A
                 new Word { word = "and"},
                 new Word { word = "am"},
@@ -394,7 +392,8 @@ namespace DataAccess.Concrete.InMemory
                 new Word { word = "your"},
                 new Word { word = "you"},
                 // Z
-            #endregion
+
+            #endregion İngilizce
             };
         }
 

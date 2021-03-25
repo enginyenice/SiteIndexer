@@ -1,15 +1,7 @@
-﻿//Created By Engin Yenice
-//enginyenice2626@gmail.com
-
-using Business.Abstract;
-using Entities.Concrete;
+﻿using Business.Abstract;
 using Entities.Dto;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
@@ -49,12 +41,10 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [DisableRequestSizeLimit]
-        
         public IActionResult UrlSimilarityWithSubCalculate(InputDto input)
         {
             input.webSitePool.ForEach(p => p = _indexerService.WebSiteCalculate(p).Data);
             return Ok(_indexerService.UrlSimilarityWithSubCalculate(_indexerService.WebSiteCalculate(input.webSite).Data, input.webSitePool));
         }
-
     }
 }

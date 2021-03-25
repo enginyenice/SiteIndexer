@@ -1,22 +1,23 @@
 ﻿using Business.Helpers.Abstract;
 using Core.Utilities.Results;
 using Entities.Concrete;
+using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
-using System.Linq;
-using Entities.Dto;
 using System.Text.RegularExpressions;
 
 namespace Business
 {
     public class WebSiteOperation : IWebSiteOperation
     {
-        IHtmlCleaner _htmlCleaner;
-        IKeywordOperation _keywordOperation;
-        List<String> BlackList;
+        private IHtmlCleaner _htmlCleaner;
+        private IKeywordOperation _keywordOperation;
+        private List<String> BlackList;
+
         public WebSiteOperation(IHtmlCleaner htmlCleaner, IKeywordOperation keywordOperation)
         {
             _htmlCleaner = htmlCleaner;
@@ -31,8 +32,8 @@ namespace Business
                                                         "alx", "ap", "ascx", "asr", "dap", "dml", "dwt",
                                                         "email", "mai", "phtml", "shtml", "wgt", "wml", "xhtml",
                                                         "crl", "pando", "pfc", "qbo"};
-
         }
+
         public IDataResult<WebSite> GetWebSite(WebSite webSite)
         {
             try
@@ -45,7 +46,7 @@ namespace Business
                 StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, false);
                 webSite.StringHtmlPage = WebUtility.HtmlDecode(responseData.ReadToEnd());
                 webSite.Title = _keywordOperation.GetTitle(webSite.StringHtmlPage).Data;
-                webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data + " " +webSite.Title;
+                webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data + " " + webSite.Title;
                 webSite.Words = _keywordOperation.FrequencyGenerater(webSite.Content).Data;
                 webSite.Keywords = _keywordOperation.KeywordGenerator(webSite).Data.Keywords;
             }
@@ -57,6 +58,7 @@ namespace Business
             }
             return new SuccessDataResult<WebSite>(webSite);
         }
+
         public IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite)
         {
             List<string> allUrlList = new List<string>();
@@ -69,7 +71,6 @@ namespace Business
                 var sub = webSite.SubUrls.SingleOrDefault(p => p.Url == subSite.Url);
                 sub = Finder(sub, allUrlList).Data;
                 allUrlList = UpdateAllUrlList(sub.SubUrls, allUrlList);
-
             }
             //Sub Url Tree
             UrlTreeDto tempUrlsTree = new UrlTreeDto(); //1.Seviye
@@ -87,8 +88,6 @@ namespace Business
                         Title = subUrl.Title,
                         Url = subUrl.Url,
                         Children = new List<UrlTreeDto>() //3.Seviye
-
-
                     };
                     if (subUrl.SubUrls.Count > 0)
                     {
@@ -111,9 +110,9 @@ namespace Business
 
             return new SuccessDataResult<UrlTreeDto>(tempUrlsTree);
         }
+
         private List<string> UpdateAllUrlList(List<WebSite> testSubUrls, List<string> allUrlList)
         {
-
             foreach (var subSite in testSubUrls)
             {
                 if (!allUrlList.Any(p => p == subSite.Url))
@@ -124,6 +123,7 @@ namespace Business
 
             return allUrlList;
         }
+
         public IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList)
         {
             Regex regexDocType = new Regex(@"<!DOCTYPE[^>]*>");
@@ -157,7 +157,6 @@ namespace Business
                 {
                     if (item.Length > 0 && (item.Substring(0, 8) == "https://" || item.Substring(0, 7) == "http://"))
                     {
-
                         string url = (item.Substring(item.Length - 1, 1) == "/") ? item.Substring(0, item.Length - 1) : item;
                         if (UrlControl(url, clearList, allUrlList, webSite.SubUrls).Data)
                         {
@@ -167,7 +166,6 @@ namespace Business
                 }
                 catch (Exception)
                 {
-
                     Console.WriteLine("Kısa Url: " + item);
                 }
             }
@@ -175,24 +173,21 @@ namespace Business
             int i = 0;
             foreach (var item in clearList)
             {
-
                 try
                 {
-                        WebSite subSite = new WebSite
-                        {
-                            Url = item
-                        };
-                        subSite = GetWebSite(subSite).Data;
-                        if (subSite.StringHtmlPage != "" && !webSite.SubUrls.Any(p => p.Url == item))
-                        {
-                            webSite.SubUrls.Add(subSite);
-                            i++;
-                        }
-                   
+                    WebSite subSite = new WebSite
+                    {
+                        Url = item
+                    };
+                    subSite = GetWebSite(subSite).Data;
+                    if (subSite.StringHtmlPage != "" && !webSite.SubUrls.Any(p => p.Url == item))
+                    {
+                        webSite.SubUrls.Add(subSite);
+                        i++;
+                    }
                 }
                 catch (Exception)
                 {
-
                     // throw new Exception("URL BAĞLANTI HATASI");
                 }
                 //////////////////////////////////////
@@ -206,9 +201,9 @@ namespace Business
             }
             return new SuccessDataResult<WebSite>(webSite);
         }
-        private IDataResult<bool> UrlControl(string url, List<string> clearList, List<string> allUrlList,List<WebSite> SubUrls)
-        {
 
+        private IDataResult<bool> UrlControl(string url, List<string> clearList, List<string> allUrlList, List<WebSite> SubUrls)
+        {
             string tempUrl = url;
             //https://
             int startIndex = tempUrl.IndexOf("/", 9, (tempUrl.Length - 9));
@@ -216,7 +211,6 @@ namespace Business
             {
                 tempUrl = tempUrl.Substring((startIndex + 1), (tempUrl.Length - 1) - startIndex);
                 Console.Write(tempUrl);
-
 
                 while (startIndex != -1)
                 {
@@ -228,7 +222,7 @@ namespace Business
                         tempUrl = tempUrl.Substring((startIndex + 1), (tempUrl.Length - 1) - startIndex);
                     }
                 }
-                
+
                 //TODO: Düzenlenecek..
                 if (!BlackList.Any(p => p == tempUrl) && tempUrl.Length <= 5)
                 {
@@ -246,6 +240,5 @@ namespace Business
             }
             return new SuccessDataResult<bool>(true);
         }
-        
     }
 }

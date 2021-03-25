@@ -1,24 +1,20 @@
 ﻿using Business.Abstract;
 using Business.Helpers.Abstract;
-using Core.Entities;
 using Core.Utilities.Results;
-using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Dto;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-
 
 namespace Business.Concrete
 {
     public class IndexerManager : IIndexerService
     {
-        IWebSiteOperation _webSiteOperation;
-        IKeywordOperation _keywordOperation;
-        IJsonReader _jsonReader;
+        private IWebSiteOperation _webSiteOperation;
+        private IKeywordOperation _keywordOperation;
+        private IJsonReader _jsonReader;
 
-        public IndexerManager( IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation,IJsonReader jsonReader)
+        public IndexerManager(IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation, IJsonReader jsonReader)
         {
             _webSiteOperation = webSiteOperation;
             _keywordOperation = keywordOperation;
@@ -40,7 +36,7 @@ namespace Business.Concrete
             {
                 //MaxValue = 3.40282347E+38F
                 float machedKeywordsScore = 0;
-                float allKeywordsScore = 0; 
+                float allKeywordsScore = 0;
 
                 foreach (var keyword in item.Keywords)
                 {
@@ -50,15 +46,15 @@ namespace Business.Concrete
                         machedKeywordsScore += keyword.frequency * keyword.score;
                 }
 
-                // if have SubUrl 
+                // if have SubUrl
                 if (item.SubUrls.Count > 0) //2.Seviye %20
                 {
                     float lvl2MachedKeyword = 0;
                     float lvl2UrlAllKeyword = 0;
 
                     //lvl 2
-                    foreach(var subUrl in item.SubUrls){
-
+                    foreach (var subUrl in item.SubUrls)
+                    {
                         foreach (var keyword in subUrl.Keywords)
                         {
                             lvl2UrlAllKeyword += keyword.frequency * keyword.score;
@@ -92,7 +88,7 @@ namespace Business.Concrete
                 }
 
                 item.SimilarityScore = (machedKeywordsScore / allKeywordsScore) * 100;
-                if(float.IsNaN(item.SimilarityScore) || float.IsNegative(item.SimilarityScore))
+                if (float.IsNaN(item.SimilarityScore) || float.IsNegative(item.SimilarityScore))
                 {
                     item.SimilarityScore = 0;
                 }
@@ -126,21 +122,24 @@ namespace Business.Concrete
             return new SuccessDataResult<UrlSimilarityWebSiteDto>(data: result);
         }
 
-        //Stage Four - Ranking of a url with sub urls and url set with sub urls similarity 
+        //Stage Four - Ranking of a url with sub urls and url set with sub urls similarity
         public IDataResult<UrlSimilaritySubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool)
         {
             List<UrlTreeDto> tempUrlTree = new List<UrlTreeDto>();
             webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p).Data));
-            
+
             //Adding sub urls to webSitePool
             List<WebSite> tempSubUrls = new List<WebSite>();
-            webSitePool.ForEach(p => {
-                p.SubUrls.ForEach(l=> { 
+            webSitePool.ForEach(p =>
+            {
+                p.SubUrls.ForEach(l =>
+                {
                     tempSubUrls.Add(l);
-                    l.SubUrls.ForEach(m => {
+                    l.SubUrls.ForEach(m =>
+                    {
                         tempSubUrls.Add(m);
                     });
-                }); 
+                });
             });
             webSitePool = webSitePool.Concat(tempSubUrls).ToList();
 
@@ -178,7 +177,7 @@ namespace Business.Concrete
                 }
             );
         }
-        
+
         //Stage Five - Stage four and Semantic Analysis
         public IDataResult<UrlSimilaritySubSemanticWebSiteDto> UrlSimilarityWithSemanticCalculate(WebSite webSite, List<WebSite> webSitePool)
         {
@@ -187,21 +186,22 @@ namespace Business.Concrete
 
             //Adding sub urls to webSitePool
             List<WebSite> tempSubUrls = new List<WebSite>();
-            webSitePool.ForEach(p => {
-                p.SubUrls.ForEach(l => {
+            webSitePool.ForEach(p =>
+            {
+                p.SubUrls.ForEach(l =>
+                {
                     tempSubUrls.Add(l);
-                    l.SubUrls.ForEach(m => {
+                    l.SubUrls.ForEach(m =>
+                    {
                         tempSubUrls.Add(m);
                     });
                 });
             });
             webSitePool = webSitePool.Concat(tempSubUrls).ToList();
 
-
             //Semantic keyword generate
             List<SemanticWordJsonDto> Dictionary = _jsonReader.getSemanticKeywords().Data;
-            webSitePool.ForEach(p=> p = _keywordOperation.SemanticKeywordGenerator(p, ref Dictionary).Data);
-            
+            webSitePool.ForEach(p => p = _keywordOperation.SemanticKeywordGenerator(p, ref Dictionary).Data);
 
             //Url similarity calculate with SubUrl
             var result = UrlSimilarityCalculate(webSite, webSitePool).Data;
@@ -217,7 +217,8 @@ namespace Business.Concrete
             result.webSitePool.ForEach(p =>
             {
                 List<SemanticKeyword> tempSemanticKeywords = new List<SemanticKeyword>();
-                webSitePool.ForEach(a => {
+                webSitePool.ForEach(a =>
+                {
                     if (a.Url == p.webSite.Url && a.Title == p.webSite.Title)
                         tempSemanticKeywords = a.SemanticKeywords;
                 });
@@ -243,6 +244,5 @@ namespace Business.Concrete
                     UrlTree = tempUrlTree
                 });
         }
-
     }
 }

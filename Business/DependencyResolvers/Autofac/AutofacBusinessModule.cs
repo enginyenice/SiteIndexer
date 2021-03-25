@@ -1,16 +1,10 @@
-﻿//Created By Engin Yenice
-//enginyenice2626@gmail.com
-
-using Autofac;
+﻿using Autofac;
 using Business.Abstract;
 using Business.Concrete;
 using Business.Helpers.Abstract;
 using Business.Helpers.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Concrete.InMemory;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Business.DependencyResolvers.Autofac
 {
@@ -24,7 +18,6 @@ namespace Business.DependencyResolvers.Autofac
             //DataAccess
             builder.RegisterType<InMemoryWordToExcludeDal>().As<IWordToExcludeDal>();
             builder.RegisterType<InMemoryTagAndPoint>().As<ITagAndPointDal>();
-
 
             //Helpers
             builder.RegisterType<HtmlCleaner>().As<IHtmlCleaner>();

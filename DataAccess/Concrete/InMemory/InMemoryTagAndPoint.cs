@@ -1,14 +1,13 @@
 ﻿using DataAccess.Abstract;
 using Entities.Concrete;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DataAccess.Concrete.InMemory
 {
     public class InMemoryTagAndPoint : ITagAndPointDal
     {
-        List<TagAndPoint> tagAndPoints;
+        private List<TagAndPoint> tagAndPoints;
+
         public InMemoryTagAndPoint()
         {
             tagAndPoints = new List<TagAndPoint>
