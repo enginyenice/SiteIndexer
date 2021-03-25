@@ -2,7 +2,6 @@
 using Business.Abstract;
 using Business.Concrete;
 using Business.Helpers.Abstract;
-using Business.Helpers.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Concrete.InMemory;
 
@@ -17,13 +16,12 @@ namespace Business.DependencyResolvers.Autofac
 
             //DataAccess
             builder.RegisterType<InMemoryWordToExcludeDal>().As<IWordToExcludeDal>();
-            builder.RegisterType<InMemoryTagAndPoint>().As<ITagAndPointDal>();
-
+            builder.RegisterType<InMemoryTagAndPointDal>().As<ITagAndPointDal>();
             //Helpers
             builder.RegisterType<HtmlCleaner>().As<IHtmlCleaner>();
             builder.RegisterType<KeywordOperation>().As<IKeywordOperation>();
             builder.RegisterType<WebSiteOperation>().As<IWebSiteOperation>();
-            builder.RegisterType<JsonReader>().As<IJsonReader>();
+        
         }
     }
 }

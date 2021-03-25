@@ -1,3 +1,4 @@
+using Business.Helpers.Static;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ namespace WebAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            GlobalSemanticWord.GetGlobalSemanticWordList();
             app.UseCors(builder => builder.WithOrigins("http://localhost:4200/").AllowAnyHeader().AllowAnyOrigin());
             app.UseHttpsRedirection();
 

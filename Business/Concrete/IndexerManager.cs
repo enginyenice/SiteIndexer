@@ -1,6 +1,9 @@
 ﻿using Business.Abstract;
 using Business.Helpers.Abstract;
+using Business.Helpers.Static;
 using Core.Utilities.Results;
+using DataAccess.Abstract;
+using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
 using Entities.Dto;
 using System.Collections.Generic;
@@ -12,13 +15,13 @@ namespace Business.Concrete
     {
         private IWebSiteOperation _webSiteOperation;
         private IKeywordOperation _keywordOperation;
-        private IJsonReader _jsonReader;
+        
 
-        public IndexerManager(IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation, IJsonReader jsonReader)
+        public IndexerManager(IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation)
         {
             _webSiteOperation = webSiteOperation;
             _keywordOperation = keywordOperation;
-            _jsonReader = jsonReader;
+
         }
 
         //Stage One - Frequancy Calculation
@@ -200,7 +203,7 @@ namespace Business.Concrete
             webSitePool = webSitePool.Concat(tempSubUrls).ToList();
 
             //Semantic keyword generate
-            List<SemanticWordJsonDto> Dictionary = _jsonReader.getSemanticKeywords().Data;
+            List<SemanticWordJsonDto> Dictionary = GlobalSemanticWord.GetGlobalSemanticWordList();
             webSitePool.ForEach(p => p = _keywordOperation.SemanticKeywordGenerator(p, ref Dictionary).Data);
 
             //Url similarity calculate with SubUrl

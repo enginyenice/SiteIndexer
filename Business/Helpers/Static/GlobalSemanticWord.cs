@@ -1,38 +1,35 @@
-﻿using Business.Helpers.Abstract;
-using Core.Utilities.Results;
+﻿using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Dto;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Text;
 
-namespace Business.Helpers.Concrete
+namespace Business.Helpers.Static
 {
-    public class JsonReader : IJsonReader
+    public static class GlobalSemanticWord
     {
-        private string semanticJsonPath = Path.Combine(Environment.CurrentDirectory, "wwwroot\\resource", "semanticJson.json");
-
-        public IDataResult<List<SemanticWordJsonDto>> getSemanticKeywords()
+        public static List<SemanticWordJsonDto> GlobalSemanticWordList { get; set; }
+        public static List<SemanticWordJsonDto> GetGlobalSemanticWordList()
         {
+            if(GlobalSemanticWordList != null) { }
+            else { 
+            string semanticJsonPath = Path.Combine(Environment.CurrentDirectory, "wwwroot", "resource", "semanticJson.json");
+                GlobalSemanticWordList = new List<SemanticWordJsonDto>();
             using (StreamReader reader = new StreamReader(semanticJsonPath, Encoding.UTF8, false))
             {
-                string semanticJson = WebUtility.HtmlDecode(reader.ReadToEnd());
-                List<SemanticWord> semanticWordList = JsonConvert.DeserializeObject<List<SemanticWord>>(semanticJson);
-
+                List<SemanticWord> semanticWordList = JsonConvert.DeserializeObject<List<SemanticWord>>(reader.ReadToEnd().ToString());
                 List<char> alfabe = new List<char> { 'a', 'b', 'c', 'ç', 'd', 'e',
                                                      'f', 'g', 'ğ', 'h', 'ı', 'i',
                                                      'j', 'k', 'l', 'm', 'n', 'o',
                                                      'ö', 'p', 'q', 'r', 's', 'ş',
                                                      't', 'u', 'ü', 'v', 'w', 'x',
                                                      'y', 'z' };
-                List<SemanticWordJsonDto> dictionary = new List<SemanticWordJsonDto>();
-
                 for (int i = 0; i < alfabe.Count; i++)
                 {
-                    dictionary.Add(new SemanticWordJsonDto
+                        GlobalSemanticWordList.Add(new SemanticWordJsonDto
                     {
                         letter = alfabe[i],
                         data = new List<SemanticWord>()
@@ -40,14 +37,15 @@ namespace Business.Helpers.Concrete
                 }
                 foreach (var kelime in semanticWordList)
                 {
-                    int index = dictionary.FindIndex(p => p.letter == kelime.word[0]);
+                    int index = GlobalSemanticWordList.FindIndex(p => p.letter == kelime.word[0]);
                     if (index != -1)
                     {
-                        dictionary[index].data.Add(kelime);
+                            GlobalSemanticWordList[index].data.Add(kelime);
                     }
                 }
-                return new SuccessDataResult<List<SemanticWordJsonDto>>(data: dictionary);
             }
+            }
+            return GlobalSemanticWordList;
         }
     }
 }

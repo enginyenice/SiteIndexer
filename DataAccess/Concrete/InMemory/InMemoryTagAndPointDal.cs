@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace DataAccess.Concrete.InMemory
 {
-    public class InMemoryTagAndPoint : ITagAndPointDal
+    public class InMemoryTagAndPointDal : ITagAndPointDal
     {
         private List<TagAndPoint> tagAndPoints;
 
-        public InMemoryTagAndPoint()
+        public InMemoryTagAndPointDal()
         {
             tagAndPoints = new List<TagAndPoint>
             {

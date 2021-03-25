@@ -15,14 +15,12 @@ namespace Business
         private ITagAndPointDal _tagAndPointDal;
         private IHtmlCleaner _htmlCleaner;
         private IWordToExcludeDal _wordToExcludeDal;
-        private IJsonReader _jsonReader;
 
-        public KeywordOperation(ITagAndPointDal tagAndPointDal, IHtmlCleaner htmlClearer, IWordToExcludeDal wordToExcludeDal, IJsonReader jsonReader)
+        public KeywordOperation(ITagAndPointDal tagAndPointDal, IHtmlCleaner htmlClearer, IWordToExcludeDal wordToExcludeDal)
         {
             _tagAndPointDal = tagAndPointDal;
             _htmlCleaner = htmlClearer;
             _wordToExcludeDal = wordToExcludeDal;
-            _jsonReader = jsonReader;
         }
 
         //Frequency Generater
