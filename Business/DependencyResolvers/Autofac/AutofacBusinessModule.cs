@@ -21,7 +21,6 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<HtmlCleaner>().As<IHtmlCleaner>();
             builder.RegisterType<KeywordOperation>().As<IKeywordOperation>();
             builder.RegisterType<WebSiteOperation>().As<IWebSiteOperation>();
-        
         }
     }
 }

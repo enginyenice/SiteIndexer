@@ -2,8 +2,6 @@
 using Business.Helpers.Abstract;
 using Business.Helpers.Static;
 using Core.Utilities.Results;
-using DataAccess.Abstract;
-using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
 using Entities.Dto;
 using System.Collections.Generic;
@@ -15,13 +13,12 @@ namespace Business.Concrete
     {
         private IWebSiteOperation _webSiteOperation;
         private IKeywordOperation _keywordOperation;
-        
+        private List<WebSite> globalList;
 
         public IndexerManager(IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation)
         {
             _webSiteOperation = webSiteOperation;
             _keywordOperation = keywordOperation;
-
         }
 
         //Stage One - Frequancy Calculation
@@ -35,10 +32,10 @@ namespace Business.Concrete
         //Stage Three - Ranking of a url and url set similarity
         public IDataResult<UrlSimilarityWebSiteDto> UrlSimilarityCalculate(WebSite webSite, List<WebSite> webSitePool)
         {
-            InputDto input = _keywordOperation.SimilarityCalculate(webSite,webSitePool).Data;
+            InputDto input = _keywordOperation.SimilarityCalculate(webSite, webSitePool).Data;
 
             UrlSimilarityWebSiteDto result = new UrlSimilarityWebSiteDto();
-            
+
             List<SimilarityScoreDto> tempWebSitesPool = new List<SimilarityScoreDto>();
             input.webSitePool.ForEach(p =>
             {
@@ -69,9 +66,15 @@ namespace Business.Concrete
         //Stage Four - Ranking of a url with sub urls and url set with sub urls similarity
         public IDataResult<UrlSimilaritySubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool)
         {
-            //Sub Url Tree 
+            //Sub Url Tree
+            globalList = new List<WebSite>();
+            foreach (var item in webSitePool)
+            {
+                globalList.Add(item);
+            }
+            globalList.Add(webSite);
             List<UrlTreeDto> tempUrlTree = new List<UrlTreeDto>();
-            webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p).Data));
+            webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p, globalList).Data));
 
             //Adding sub urls to webSitePool
             List<WebSite> tempSubUrls = new List<WebSite>();
@@ -87,10 +90,9 @@ namespace Business.Concrete
                 });
             });
             webSitePool = webSitePool.Concat(tempSubUrls).ToList();
-            
-            //Similarity calculating
-            InputDto input = _keywordOperation.SimilarityCalculate(webSite, webSitePool,true).Data;
 
+            //Similarity calculating
+            InputDto input = _keywordOperation.SimilarityCalculate(webSite, webSitePool, true).Data;
 
             //Return Object
             KeywordWebSiteDto tempWebSite = new KeywordWebSiteDto
@@ -128,9 +130,15 @@ namespace Business.Concrete
         //Stage Five - Stage four and Semantic Analysis
         public IDataResult<UrlSimilaritySubSemanticWebSiteDto> UrlSimilarityWithSemanticCalculate(WebSite webSite, List<WebSite> webSitePool)
         {
-            //Sub Url Tree 
+            globalList = new List<WebSite>();
+            foreach (var item in webSitePool)
+            {
+                globalList.Add(item);
+            }
+            globalList.Add(webSite);
+            //Sub Url Tree
             List<UrlTreeDto> tempUrlTree = new List<UrlTreeDto>();
-            webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p).Data));
+            webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p, globalList).Data));
 
             //Adding sub urls to webSitePool
             List<WebSite> tempSubUrls = new List<WebSite>();

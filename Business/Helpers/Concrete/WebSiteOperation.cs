@@ -16,14 +16,14 @@ namespace Business
     {
         private IHtmlCleaner _htmlCleaner;
         private IKeywordOperation _keywordOperation;
-        private List<String> BlackList;
+        private List<String> WhiteList;
 
         public WebSiteOperation(IHtmlCleaner htmlCleaner, IKeywordOperation keywordOperation)
         {
             _htmlCleaner = htmlCleaner;
             _keywordOperation = keywordOperation;
 
-            BlackList = new List<String> { "php", "xps", "aspx", "axd", "chm", "do", "jhtml",
+            WhiteList = new List<String> { "php", "xps", "aspx", "axd", "chm", "do", "jhtml",
                                                         "jnlp", "json", "mht", "gg", "gsp", "adr", "css",
                                                         "mvc", "pac", "url", "xul", "_eml", "!bt", "asp",
                                                         "att", "cer", "cfm", "con", "htc", "htm", "html",
@@ -34,16 +34,128 @@ namespace Business
                                                         "crl", "pando", "pfc", "qbo"};
         }
 
+        public IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList, List<WebSite> globalList)
+        {
+            int subUrlFinderCount = 5;
+
+            Regex regexDocType = new Regex(@"<!DOCTYPE[^>]*>");
+            Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+            Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
+            Regex regexStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
+            Regex regexCode = new Regex(@"<code[^>]*>[\s\S]*?</code>");
+            Regex regexATag = new Regex("(<a[^>]*>[\\s\\S]*?</a>)");
+            Regex regexHref = new Regex("href=['|\"][a-zA-Z0-9:/.]+[^' | \"]+");
+            Regex regexLastParams = new Regex("#+[^$]*");
+            Regex regexBadLinkRemove = new Regex(" /[^ ]*");
+            string temp = webSite.StringHtmlPage;
+
+            temp = regexDocType.Replace(temp, " ");
+            temp = regexScript.Replace(temp, " ");
+            temp = regexHead.Replace(temp, " ");
+            temp = regexStyle.Replace(temp, " ");
+            temp = regexCode.Replace(temp, " ");
+
+            var result = regexATag.Matches(temp);
+            temp = String.Join("  ", result);
+            result = regexHref.Matches(temp);
+            temp = String.Join("  ", result);
+            temp = temp.Replace("'", "\"");
+            temp = temp.Replace("href=\"", " ");
+            temp = regexBadLinkRemove.Replace(temp, " ");
+            temp = temp.Replace("javascript:;", " ");
+            temp = temp.Replace("  ", " ");
+
+            //Standart Order
+            //List<string> urlList = temp.Replace("  ", " ").Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            //Random Order
+            List<string> urlList = temp.Replace("  ", " ").Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => Guid.NewGuid()).ToList();
+
+            List<string> clearList = new List<string>();
+
+            foreach (var item in urlList)
+            {
+                try
+                {
+                    if (item.Length > 7 && (item.Substring(0, 8) == "https://" || item.Substring(0, 7) == "http://"))
+                    {
+                        string url = (item.Substring(item.Length - 1, 1) == "/") ? item.Substring(0, item.Length - 1) : item;
+                        url = regexLastParams.Replace(url, "");
+                        if (UrlControl(url, clearList, allUrlList, webSite.SubUrls).Data)
+                        {
+                            clearList.Add(url);
+                        }
+                        if (clearList.Count > (subUrlFinderCount * subUrlFinderCount * 2))
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            int i = 0;
+            foreach (var item in clearList)
+            {
+                try
+                {
+                    WebSite subSite = new WebSite
+                    {
+                        Url = item
+                    };
+                    if (globalList.Any(p => p.Url == subSite.Url))
+                    {
+                        var selectedSite = globalList.SingleOrDefault(p => p.Url == subSite.Url);
+                        //Console.WriteLine("Virtual Cache: " + selectedSite.Url);
+                        subSite.Id = selectedSite.Id;
+                        subSite.Url = selectedSite.Url;
+                        subSite.Title = selectedSite.Title;
+                        subSite.SimilarityScore = selectedSite.SimilarityScore;
+                        subSite.Content = selectedSite.Content;
+                        subSite.StringHtmlPage = selectedSite.StringHtmlPage;
+                        subSite.Words = selectedSite.Words;
+                        subSite.Keywords = selectedSite.Keywords;
+                        subSite.SemanticKeywordsList = selectedSite.SemanticKeywordsList;
+                        subSite.SemanticKeywords = selectedSite.SemanticKeywords;
+                    }
+                    else
+                    {
+                        subSite = GetWebSite(subSite).Data;
+                        globalList.Add(subSite);
+                    }
+                    if (subSite.StringHtmlPage != "" && !webSite.SubUrls.Any(p => p.Url == item))
+                    {
+                        webSite.SubUrls.Add(subSite);
+                        i++;
+                    }
+                }
+                catch (Exception)
+                {
+                    // throw new Exception("URL BAĞLANTI HATASI");
+                }
+                //////////////////////////////////////
+                ///           SUB COUNT            ///
+                //////////////////////////////////////
+                if (i == subUrlFinderCount)
+                {
+                    break;
+                }
+            }
+            return new SuccessDataResult<WebSite>(webSite);
+        }
+
         public IDataResult<WebSite> GetWebSite(WebSite webSite)
         {
             try
             {
                 webSite.Url = webSite.Url.Trim();
                 webSite.Url = (webSite.Url.Substring(webSite.Url.Length - 1, 1) == "/") ? webSite.Url.Substring(0, webSite.Url.Length - 1) : webSite.Url;
-                Console.WriteLine(webSite.Url);
+                //Console.WriteLine(webSite.Url);
                 WebRequest request = WebRequest.Create(webSite.Url);
                 WebResponse response = request.GetResponse();
-                StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, false);
+                StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, true);
                 webSite.StringHtmlPage = WebUtility.HtmlDecode(responseData.ReadToEnd());
                 webSite.Title = _keywordOperation.GetTitle(webSite.StringHtmlPage).Data;
                 webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data + " " + webSite.Title;
@@ -59,17 +171,17 @@ namespace Business
             return new SuccessDataResult<WebSite>(webSite);
         }
 
-        public IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite)
+        public IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite, List<WebSite> globalList)
         {
             List<string> allUrlList = new List<string>();
             allUrlList.Add(webSite.Url);
-            webSite = Finder(webSite, allUrlList).Data;
+            webSite = Finder(webSite, allUrlList, globalList).Data;
             allUrlList = UpdateAllUrlList(webSite.SubUrls, allUrlList);
 
             foreach (var subSite in webSite.SubUrls)
             {
                 var sub = webSite.SubUrls.SingleOrDefault(p => p.Url == subSite.Url);
-                sub = Finder(sub, allUrlList).Data;
+                sub = Finder(sub, allUrlList, globalList).Data;
                 allUrlList = UpdateAllUrlList(sub.SubUrls, allUrlList);
             }
             //Sub Url Tree
@@ -124,84 +236,6 @@ namespace Business
             return allUrlList;
         }
 
-        public IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList)
-        {
-            Regex regexDocType = new Regex(@"<!DOCTYPE[^>]*>");
-            Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
-            Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
-            Regex regexStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
-            Regex regexCode = new Regex(@"<code[^>]*>[\s\S]*?</code>");
-            Regex regexATag = new Regex("(<a[^>]*>[\\s\\S]*?</a>)");
-            Regex regexHref = new Regex("href=['|\"][a-zA-Z0-9:/.]+[^' | \"]+");
-            string temp = webSite.StringHtmlPage;
-
-            temp = regexDocType.Replace(temp, " ");
-            temp = regexScript.Replace(temp, " ");
-            temp = regexHead.Replace(temp, " ");
-            temp = regexStyle.Replace(temp, " ");
-            temp = regexCode.Replace(temp, " ");
-
-            var result = regexATag.Matches(temp);
-            temp = String.Join("  ", result);
-            result = regexHref.Matches(temp);
-            temp = String.Join("  ", result);
-            temp = temp.Replace("'", "\"");
-            temp = temp.Replace("href=\"", " ");
-            temp = temp.Replace("  ", " ");
-            string[] array = temp.Split(' ');
-
-            List<string> clearList = new List<string>();
-            foreach (var item in array)
-            {
-                try
-                {
-                    if (item.Length > 0 && (item.Substring(0, 8) == "https://" || item.Substring(0, 7) == "http://"))
-                    {
-                        string url = (item.Substring(item.Length - 1, 1) == "/") ? item.Substring(0, item.Length - 1) : item;
-                        if (UrlControl(url, clearList, allUrlList, webSite.SubUrls).Data)
-                        {
-                            clearList.Add(url);
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Kısa Url: " + item);
-                }
-            }
-
-            int i = 0;
-            foreach (var item in clearList)
-            {
-                try
-                {
-                    WebSite subSite = new WebSite
-                    {
-                        Url = item
-                    };
-                    subSite = GetWebSite(subSite).Data;
-                    if (subSite.StringHtmlPage != "" && !webSite.SubUrls.Any(p => p.Url == item))
-                    {
-                        webSite.SubUrls.Add(subSite);
-                        i++;
-                    }
-                }
-                catch (Exception)
-                {
-                    // throw new Exception("URL BAĞLANTI HATASI");
-                }
-                //////////////////////////////////////
-                ///           SUB COUNT            ///
-                //////////////////////////////////////
-                if (i == 5)
-                {
-                    break;
-                }
-                /////////////////////////////////////
-            }
-            return new SuccessDataResult<WebSite>(webSite);
-        }
-
         private IDataResult<bool> UrlControl(string url, List<string> clearList, List<string> allUrlList, List<WebSite> SubUrls)
         {
             string tempUrl = url;
@@ -210,21 +244,22 @@ namespace Business
             if (startIndex != -1)
             {
                 tempUrl = tempUrl.Substring((startIndex + 1), (tempUrl.Length - 1) - startIndex);
-                Console.Write(tempUrl);
-
-                while (startIndex != -1)
+                if (tempUrl.Length > 0)
                 {
-                    startIndex = 0;
-                    startIndex = tempUrl.IndexOf(".", startIndex, (tempUrl.Length - 1));
-
-                    if (startIndex != -1)
+                    while (startIndex != -1)
                     {
-                        tempUrl = tempUrl.Substring((startIndex + 1), (tempUrl.Length - 1) - startIndex);
+                        startIndex = 0;
+                        startIndex = tempUrl.IndexOf(".", startIndex, (tempUrl.Length - 1));
+
+                        if (startIndex != -1)
+                        {
+                            tempUrl = tempUrl.Substring((startIndex + 1), (tempUrl.Length - 1) - startIndex);
+                        }
                     }
                 }
 
                 //TODO: Düzenlenecek..
-                if (!BlackList.Any(p => p == tempUrl) && tempUrl.Length <= 5)
+                if (!WhiteList.Any(p => p == tempUrl) && tempUrl.Length <= 5)
                 {
                     return new ErrorDataResult<bool>(false);
                 }

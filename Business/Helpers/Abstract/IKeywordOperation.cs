@@ -15,7 +15,7 @@ namespace Business.Helpers.Abstract
 
         IDataResult<WebSite> SemanticKeywordGeneratorForTarget(WebSite webSite, ref List<SemanticWordJsonDto> Dictionary);
 
-        IDataResult<InputDto> SimilarityCalculate(WebSite webSite, List<WebSite> webSitePool,bool subUrlCheck=false,bool semanticCheck = false);
+        IDataResult<InputDto> SimilarityCalculate(WebSite webSite, List<WebSite> webSitePool, bool subUrlCheck = false, bool semanticCheck = false);
 
         IDataResult<string> GetTitle(string StringHtmlPage);
     }

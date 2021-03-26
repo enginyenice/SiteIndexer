@@ -8,6 +8,10 @@ namespace Entities.Concrete
         public WebSite()
         {
             SubUrls = new List<WebSite>();
+            Words = new List<Word>();
+            Keywords = new List<Keyword>();
+            SemanticKeywordsList = new List<SemanticWord>();
+            SemanticKeywords = new List<SemanticKeyword>();
         }
 
         public int Id { get; set; }

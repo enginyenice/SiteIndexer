@@ -139,7 +139,7 @@ namespace Business
                         {
                             if (keyword.word == semantic.word)
                             {
-                                if(semantic.similarWords.Count > 0)
+                                if (semantic.similarWords.Count > 0)
                                 {
                                     TempSemanticKeywords.Add(new SemanticWord
                                     {
@@ -152,18 +152,21 @@ namespace Business
                         }
                         break;
                     }
-                }   
+                }
             }
             webSite.SemanticKeywordsList = TempSemanticKeywords;
             return new SuccessDataResult<WebSite>(data: webSite);
         }
 
-        public IDataResult<WebSite> SemanticKeywordGeneratorForPool(WebSite webSite,WebSite webSitePool)
+        public IDataResult<WebSite> SemanticKeywordGeneratorForPool(WebSite webSite, WebSite webSitePool)
         {
             webSitePool.SemanticKeywords = new List<SemanticKeyword>();
-            webSite.SemanticKeywordsList.ForEach(keyword => {
-                keyword.similarWords.ForEach(similar => {
-                    webSitePool.Words.ForEach(p => {
+            webSite.SemanticKeywordsList.ForEach(keyword =>
+            {
+                keyword.similarWords.ForEach(similar =>
+                {
+                    webSitePool.Words.ForEach(p =>
+                    {
                         if (p.word == similar)
                         {
                             int score = GetWordScore(webSitePool, similar).Data;
@@ -189,10 +192,11 @@ namespace Business
                     });
                 });
             });
+
             return new SuccessDataResult<WebSite>(data: webSitePool);
         }
-       
-        public IDataResult<int> GetWordScore(WebSite webSite,string similar)
+
+        public IDataResult<int> GetWordScore(WebSite webSite, string similar)
         {
             int score = 1;
             foreach (var tagAndPoint in _tagAndPointDal.GetAll())
@@ -202,10 +206,10 @@ namespace Business
                 {
                     score = tagAndPoint.score;
                 }
-                
             }
-            return new SuccessDataResult<int>(data:score);
+            return new SuccessDataResult<int>(data: score);
         }
+
         //Website Operations
         public IDataResult<string> GetTitle(string stringWebSite)
         {
@@ -228,14 +232,13 @@ namespace Business
                 return new ErrorDataResult<string>(data: "");
             }
         }
-        
+
         //Similarity Operations
-        public IDataResult<InputDto> SimilarityCalculate(WebSite webSite, List<WebSite> webSitePool, bool subUrlCheck=false, bool semanticCheck = false)
+        public IDataResult<InputDto> SimilarityCalculate(WebSite webSite, List<WebSite> webSitePool, bool subUrlCheck = false, bool semanticCheck = false)
         {
             //Similarity calculating
             foreach (var item in webSitePool)
             {
-                
                 //MaxValue = 3.40282347E+38F
                 float machedKeywordsScore = 0;
                 float allKeywordsScore = 0;
@@ -254,7 +257,8 @@ namespace Business
                     item.SemanticKeywords = temp.SemanticKeywords;
                     foreach (var semantic in item.SemanticKeywords)
                     {
-                        semantic.similarWords.ForEach(p => {
+                        semantic.similarWords.ForEach(p =>
+                        {
                             allKeywordsScore += p.score * p.frequency;
                             machedKeywordsScore += p.score * p.frequency;
                         });
@@ -275,9 +279,8 @@ namespace Business
                             {
                                 if (webSite.Keywords.Any(p => p.word == keyword.word))
                                 {
-                                lvl2UrlAllKeyword += keyword.frequency * keyword.score;
-                                lvl2MachedKeyword += keyword.frequency * keyword.score;
-
+                                    lvl2UrlAllKeyword += keyword.frequency * keyword.score;
+                                    lvl2MachedKeyword += keyword.frequency * keyword.score;
                                 }
                             }
                             //if semantic keyword calculate
@@ -287,7 +290,8 @@ namespace Business
                                 subUrl.SemanticKeywords = temp.SemanticKeywords;
                                 foreach (var semantic in subUrl.SemanticKeywords)
                                 {
-                                    semantic.similarWords.ForEach(p => {
+                                    semantic.similarWords.ForEach(p =>
+                                    {
                                         lvl2UrlAllKeyword += p.score * p.frequency;
                                         lvl2MachedKeyword += p.score * p.frequency;
                                     });
@@ -317,7 +321,8 @@ namespace Business
                                         subUrl2.SemanticKeywords = temp.SemanticKeywords;
                                         foreach (var semantic in subUrl2.SemanticKeywords)
                                         {
-                                            semantic.similarWords.ForEach(p => {
+                                            semantic.similarWords.ForEach(p =>
+                                            {
                                                 lvl3UrlAllKeyword += p.score * p.frequency;
                                                 lvl3MachedKeyword += p.score * p.frequency;
                                             });
@@ -342,10 +347,9 @@ namespace Business
                 {
                     item.SimilarityScore = 100;
                 }
-                
             }
-            webSitePool = webSitePool.OrderByDescending(p=> p.SimilarityScore).ToList();
-            return new SuccessDataResult<InputDto>(data: new InputDto {webSite = webSite,webSitePool = webSitePool});
+            webSitePool = webSitePool.OrderByDescending(p => p.SimilarityScore).ToList();
+            return new SuccessDataResult<InputDto>(data: new InputDto { webSite = webSite, webSitePool = webSitePool });
         }
     }
 }

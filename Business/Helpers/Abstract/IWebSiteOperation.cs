@@ -9,8 +9,8 @@ namespace Business.Helpers.Abstract
     {
         IDataResult<WebSite> GetWebSite(WebSite webSite);
 
-        IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite);
+        IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite, List<WebSite> globalList);
 
-        IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList);
+        IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList, List<WebSite> globalList);
     }
 }
