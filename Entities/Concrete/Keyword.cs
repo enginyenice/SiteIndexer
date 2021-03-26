@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using System.Collections.Generic;
 
 namespace Entities.Concrete
 {
@@ -7,9 +8,9 @@ namespace Entities.Concrete
         public int score { get; set; }
     }
 
-    public class SemanticKeyword : Word, IEntity
+    public class SemanticKeyword : IEntity
     {
-        public int score { get; set; }
-        public string similar { get; set; }
+        public string word { get; set; }
+        public List<Keyword> similarWords { get; set; }
     }
 }
