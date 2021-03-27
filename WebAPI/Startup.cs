@@ -31,7 +31,7 @@ namespace WebAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            InMemoryGlobalSemanticWord.GetGlobalSemanticWordList();
+            InMemoryGlobalSemanticWordDal.GetGlobalSemanticWordList();
             app.UseCors(builder => builder.WithOrigins("http://localhost:4200/").AllowAnyHeader().AllowAnyOrigin());
             app.UseHttpsRedirection();
 

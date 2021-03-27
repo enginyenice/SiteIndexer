@@ -156,7 +156,7 @@ namespace Business.Concrete
             webSitePool = webSitePool.Concat(tempSubUrls).ToList();
 
             //Semantic keyword generate
-            List<SemanticWordJsonDto> Dictionary = InMemoryGlobalSemanticWord.GetGlobalSemanticWordList();
+            List<SemanticWordJsonDto> Dictionary = InMemoryGlobalSemanticWordDal.GetGlobalSemanticWordList();
             webSite = _keywordOperation.SemanticKeywordGeneratorForTarget(webSite, ref Dictionary).Data;
 
             //Similarity calculating

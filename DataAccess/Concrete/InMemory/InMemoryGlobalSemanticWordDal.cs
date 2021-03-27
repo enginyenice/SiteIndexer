@@ -8,7 +8,7 @@ using System.Text;
 
 namespace DataAccess.Concrete.InMemory
 {
-    public static class InMemoryGlobalSemanticWord
+    public static class InMemoryGlobalSemanticWordDal
     {
         public static List<SemanticWordJsonDto> GlobalSemanticWordList { get; set; }
 
