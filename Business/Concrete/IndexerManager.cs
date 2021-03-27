@@ -1,7 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Helpers.Abstract;
-using Business.Helpers.Static;
 using Core.Utilities.Results;
+using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
 using Entities.Dto;
 using System.Collections.Generic;
@@ -156,7 +156,7 @@ namespace Business.Concrete
             webSitePool = webSitePool.Concat(tempSubUrls).ToList();
 
             //Semantic keyword generate
-            List<SemanticWordJsonDto> Dictionary = GlobalSemanticWord.GetGlobalSemanticWordList();
+            List<SemanticWordJsonDto> Dictionary = InMemoryGlobalSemanticWord.GetGlobalSemanticWordList();
             webSite = _keywordOperation.SemanticKeywordGeneratorForTarget(webSite, ref Dictionary).Data;
 
             //Similarity calculating

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Business.Helpers.Static
+namespace DataAccess.Concrete.InMemory
 {
-    public static class GlobalSemanticWord
+    public static class InMemoryGlobalSemanticWord
     {
         public static List<SemanticWordJsonDto> GlobalSemanticWordList { get; set; }
 
