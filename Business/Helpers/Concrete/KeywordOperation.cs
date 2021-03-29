@@ -240,15 +240,16 @@ namespace Business
             foreach (var item in webSitePool)
             {
                 //MaxValue = 3.40282347E+38F
-                float machedKeywordsScore = 0;
-                float allKeywordsScore = 0;
+                float ratelvl1 = 0;
+                float lvl1machedKeyword = 0;
+                float lvl1allKeyword = 0;
 
-                foreach (var keyword in item.Keywords)
+                foreach (var keyword in item.Keywords) // 85% for stage four,five
                 {
-                    allKeywordsScore += keyword.frequency * keyword.score;
+                    lvl1allKeyword += keyword.score;
 
                     if (webSite.Keywords.Any(p => p.word == keyword.word))
-                        machedKeywordsScore += keyword.frequency * keyword.score;
+                        lvl1machedKeyword += keyword.score;
                 }
                 //if semantic keyword calculate
                 if (semanticCheck)
@@ -259,93 +260,95 @@ namespace Business
                     {
                         semantic.similarWords.ForEach(p =>
                         {
-                            allKeywordsScore += p.score * p.frequency;
-                            machedKeywordsScore += p.score * p.frequency;
+                            lvl1allKeyword += p.score * p.frequency;
+                            lvl1machedKeyword += p.score * p.frequency;
                         });
                     }
                 }
-                if (webSite.Url != item.Url)
+                // if have SubUrl
+                if (subUrlCheck) //2.Seviye %20
                 {
-                    // if have SubUrl
-                    if (subUrlCheck) //2.Seviye %20
+                    float ratelvl2 = 0;
+                    float lvl2MachedKeyword = 0;
+                    float lvl2UrlAllKeyword = 0;
+                    float ratelvl3 = 0;
+                    float lvl3MachedKeyword = 0;
+                    float lvl3UrlAllKeyword = 0;
+
+                    //lvl 2
+                    foreach (var subUrl in item.SubUrls)
                     {
-                        float lvl2MachedKeyword = 0;
-                        float lvl2UrlAllKeyword = 0;
-
-                        //lvl 2
-                        foreach (var subUrl in item.SubUrls)
+                        foreach (var keyword in subUrl.Keywords)
                         {
-                            foreach (var keyword in subUrl.Keywords)
-                            {
-                                if (webSite.Keywords.Any(p => p.word == keyword.word))
-                                {
-                                    lvl2UrlAllKeyword += keyword.frequency * keyword.score;
-                                    lvl2MachedKeyword += keyword.frequency * keyword.score;
-                                }
-                            }
-                            //if semantic keyword calculate
-                            if (semanticCheck)
-                            {
-                                var temp = SemanticKeywordGeneratorForPool(webSite, subUrl).Data;
-                                subUrl.SemanticKeywords = temp.SemanticKeywords;
-                                foreach (var semantic in subUrl.SemanticKeywords)
-                                {
-                                    semantic.similarWords.ForEach(p =>
-                                    {
-                                        lvl2UrlAllKeyword += p.score * p.frequency;
-                                        lvl2MachedKeyword += p.score * p.frequency;
-                                    });
-                                }
-                            }
+                            lvl2UrlAllKeyword += keyword.score;
 
-                            if (subUrl.SubUrls.Count > 0) //3.Seviye %10
+                            if (webSite.Keywords.Any(p => p.word == keyword.word))
                             {
-                                float lvl3MachedKeyword = 0;
-                                float lvl3UrlAllKeyword = 0;
-
-                                //lvl 3
-                                foreach (var subUrl2 in subUrl.SubUrls)
-                                {
-                                    foreach (var keyword in subUrl2.Keywords)
-                                    {
-                                        if (webSite.Keywords.Any(p => p.word == keyword.word))
-                                        {
-                                            lvl3UrlAllKeyword += keyword.frequency * keyword.score;
-                                            lvl3MachedKeyword += keyword.frequency * keyword.score;
-                                        }
-                                    }
-                                    //if semantic keyword calculate
-                                    if (semanticCheck)
-                                    {
-                                        var temp = SemanticKeywordGeneratorForPool(webSite, subUrl2).Data;
-                                        subUrl2.SemanticKeywords = temp.SemanticKeywords;
-                                        foreach (var semantic in subUrl2.SemanticKeywords)
-                                        {
-                                            semantic.similarWords.ForEach(p =>
-                                            {
-                                                lvl3UrlAllKeyword += p.score * p.frequency;
-                                                lvl3MachedKeyword += p.score * p.frequency;
-                                            });
-                                        }
-                                    }
-                                }
-                                lvl2MachedKeyword += lvl3MachedKeyword;
-                                lvl2UrlAllKeyword += lvl3UrlAllKeyword * 10;
+                                lvl2MachedKeyword += keyword.score;
                             }
                         }
-                        machedKeywordsScore += lvl2MachedKeyword;
-                        allKeywordsScore += lvl2UrlAllKeyword * 5;
-                    }
+                        //if semantic keyword calculate
+                        if (semanticCheck)
+                        {
+                            var temp = SemanticKeywordGeneratorForPool(webSite, subUrl).Data;
+                            subUrl.SemanticKeywords = temp.SemanticKeywords;
+                            foreach (var semantic in subUrl.SemanticKeywords)
+                            {
+                                semantic.similarWords.ForEach(p =>
+                                {
+                                    lvl2UrlAllKeyword += p.score * p.frequency;
+                                    lvl2MachedKeyword += p.score * p.frequency;
+                                });
+                            }
+                        }
+                        if (subUrl.SubUrls.Count > 0) //3.Seviye %10
+                        {
+                            //lvl 3
+                            foreach (var subUrl2 in subUrl.SubUrls)
+                            {
+                                foreach (var keyword in subUrl2.Keywords)
+                                {
+                                    lvl3UrlAllKeyword += keyword.score;
 
-                    item.SimilarityScore = (machedKeywordsScore / allKeywordsScore) * 100;
-                    if (float.IsNaN(item.SimilarityScore) || float.IsNegative(item.SimilarityScore))
-                    {
-                        item.SimilarityScore = 0;
+                                    if (webSite.Keywords.Any(p => p.word == keyword.word))
+                                    {
+                                        lvl3MachedKeyword += keyword.score;
+                                    }
+                                }
+                                //if semantic keyword calculate
+                                if (semanticCheck)
+                                {
+                                    var temp = SemanticKeywordGeneratorForPool(webSite, subUrl2).Data;
+                                    subUrl2.SemanticKeywords = temp.SemanticKeywords;
+                                    foreach (var semantic in subUrl2.SemanticKeywords)
+                                    {
+                                        semantic.similarWords.ForEach(p =>
+                                        {
+                                            lvl3UrlAllKeyword += p.score * p.frequency;
+                                            lvl3MachedKeyword += p.score * p.frequency;
+                                        });
+                                    }
+                                }
+                            }
+                            
+                        }
                     }
+                    if (lvl3UrlAllKeyword == 0) lvl3UrlAllKeyword = 1;
+                    if (lvl2UrlAllKeyword == 0) lvl2UrlAllKeyword = 1;
+                    if (lvl1allKeyword == 0) lvl1allKeyword = 1;
+
+                    ratelvl3 = (lvl3MachedKeyword * 5)  / (lvl3UrlAllKeyword * 100);
+                    ratelvl2 = (lvl2MachedKeyword * 10) / (lvl2UrlAllKeyword * 100);
+                    ratelvl1 = (lvl1machedKeyword * 85) / (lvl1allKeyword * 100);
+                    item.SimilarityScore = (ratelvl1 + ratelvl2 + ratelvl3) * 100;
                 }
                 else
                 {
-                    item.SimilarityScore = 100;
+                    item.SimilarityScore = (lvl1machedKeyword / lvl1allKeyword) * 100;
+                }
+                if (float.IsNaN(item.SimilarityScore) || float.IsNegative(item.SimilarityScore))
+                {
+                    item.SimilarityScore = 0;
                 }
             }
             webSitePool = webSitePool.OrderByDescending(p => p.SimilarityScore).ToList();

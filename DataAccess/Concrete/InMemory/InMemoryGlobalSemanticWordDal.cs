@@ -28,6 +28,7 @@ namespace DataAccess.Concrete.InMemory
                                                      'ö', 'p', 'q', 'r', 's', 'ş',
                                                      't', 'u', 'ü', 'v', 'w', 'x',
                                                      'y', 'z' };
+
                     for (int i = 0; i < alfabe.Count; i++)
                     {
                         GlobalSemanticWordList.Add(new SemanticWordJsonDto
