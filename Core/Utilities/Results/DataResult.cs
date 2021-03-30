@@ -1,7 +1,4 @@
-﻿//Created By Engin Yenice
-//enginyenice2626@gmail.com
-
-namespace Core.Utilities.Results
+﻿namespace Core.Utilities.Results
 {
     public class DataResult<T> : Result, IDataResult<T>
     {

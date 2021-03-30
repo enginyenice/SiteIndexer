@@ -1,0 +1,2202 @@
+namespace Core.Entities
+{
+    public interface IDto
+    {
+    }
+}
+/* ---------------------------------------- */
+namespace Core.Entities
+{
+    public interface IEntity
+    {
+    }
+}
+/* ---------------------------------------- */
+namespace Core.Utilities.Results
+{
+    public class DataResult<T> : Result, IDataResult<T>
+    {
+        public T Data { get; set; }
+
+        public DataResult(T data, bool success, string message) : base(success, message)
+        {
+            Data = data;
+        }
+
+        public DataResult(T data, bool success) : base(success)
+        {
+            Data = data;
+        }
+    }
+}
+/* ---------------------------------------- */
+namespace Core.Utilities.Results
+{
+    public class ErrorDataResult<T> : DataResult<T>
+    {
+        public ErrorDataResult(T data, string message) : base(data, false, message)
+        {
+        }
+
+        public ErrorDataResult(T data) : base(data, false)
+        {
+        }
+
+        public ErrorDataResult(string message) : base(default, false, message)
+        {
+        }
+
+        public ErrorDataResult() : base(default, false)
+        {
+        }
+    }
+}
+/* ---------------------------------------- */
+namespace Core.Utilities.Results
+{
+    public class ErrorResult : Result
+    {
+        public ErrorResult(string message) : base(false, message)
+        {
+        }
+
+        public ErrorResult() : base(false)
+        {
+        }
+    }
+}
+/* ---------------------------------------- */
+namespace Core.Utilities.Results
+{
+    public interface IDataResult<T> : IResult
+    {
+        public T Data { get; set; }
+    }
+}
+/* ---------------------------------------- */
+namespace Core.Utilities.Results
+{
+    public interface IResult
+    {
+        public string Message { get; set; }
+        public bool Success { get; set; }
+    }
+}
+/* ---------------------------------------- */
+namespace Core.Utilities.Results
+{
+    public class Result : IResult
+    {
+        public Result(bool success, string message) : this(success)
+        {
+            Message = message;
+        }
+
+        public Result(bool success)
+        {
+            Success = success;
+        }
+
+        public string Message { get; set; }
+        public bool Success { get; set; }
+    }
+}
+/* ---------------------------------------- */
+namespace Core.Utilities.Results
+{
+    public class SuccessDataResult<T> : DataResult<T>
+    {
+        public SuccessDataResult(T data, string message) : base(data, true, message)
+        {
+        }
+
+        public SuccessDataResult(T data) : base(data, true)
+        {
+        }
+
+        public SuccessDataResult(string message) : base(default, true, message)
+        {
+        }
+
+        public SuccessDataResult() : base(default, true)
+        {
+        }
+    }
+}
+/* ---------------------------------------- */
+namespace Core.Utilities.Results
+{
+    public class SuccessResult : Result
+    {
+        public SuccessResult(string message) : base(true, message)
+        {
+        }
+
+        public SuccessResult() : base(true)
+        {
+        }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using System.Collections.Generic;
+
+namespace Entities.Concrete
+{
+    public class Keyword : Word, IEntity
+    {
+        public int score { get; set; }
+    }
+
+    public class SemanticKeyword : IEntity
+    {
+        public string word { get; set; }
+        public List<Keyword> similarWords { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using System.Collections.Generic;
+
+namespace Entities.Concrete
+{
+    public class SemanticWord : IEntity
+    {
+        public string word { get; set; }
+        public List<string> similarWords { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+
+namespace Entities.Concrete
+{
+    public class TagAndPoint : IEntity
+    {
+        public string before { get; set; }
+        public string after { get; set; }
+        public int score { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using System.Collections.Generic;
+
+namespace Entities.Concrete
+{
+    public class WebSite : IEntity
+    {
+        public WebSite()
+        {
+            SubUrls = new List<WebSite>();
+            Words = new List<Word>();
+            Keywords = new List<Keyword>();
+            SemanticKeywordsList = new List<SemanticWord>();
+            SemanticKeywords = new List<SemanticKeyword>();
+        }
+
+        public int Id { get; set; }
+        public string Url { get; set; }
+        public string Title { get; set; }
+        public float SimilarityScore { get; set; }
+        public string Content { get; set; } // Html page with all tags removed.
+        public string StringHtmlPage { get; set; } // Html page with tags.
+        public List<Word> Words { get; set; }
+        public List<Keyword> Keywords { get; set; }
+        public List<SemanticWord> SemanticKeywordsList { get; set; }
+        public List<SemanticKeyword> SemanticKeywords { get; set; }
+        public List<WebSite> SubUrls { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+
+namespace Entities.Concrete
+{
+    public class Word : IEntity
+    {
+        public string word { get; set; }
+        public int frequency { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using Entities.Concrete;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class FrequencyWebSiteDto : IDto
+    {
+        public string Url { get; set; }
+        public string Title { get; set; }
+        public List<Word> Words { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class GuideDto : IDto
+    {
+        public website Website { get; set; }
+        public List<website> WebsitePool { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using Entities.Concrete;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class InputDto : IDto
+    {
+        public WebSite webSite { get; set; }
+        public List<WebSite> webSitePool { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using Entities.Concrete;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class KeywordWebSiteDto : IDto
+    {
+        public string Title { get; set; }
+        public string Url { get; set; }
+        public List<Keyword> Keywords { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using Entities.Concrete;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class KeywordWebSiteSemanticDto : IDto
+    {
+        public string Title { get; set; }
+        public string Url { get; set; }
+        public List<Keyword> Keywords { get; set; }
+        public List<SemanticKeyword> SemanticKeywords { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using Entities.Concrete;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class SemanticWordJsonDto : IDto
+    {
+        public char letter { get; set; }
+        public List<SemanticWord> data { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+
+namespace Entities.Dto
+{
+    public class SimilarityScoreDto : IDto
+    {
+        public float SimilarityScore { get; set; }
+        public KeywordWebSiteDto webSite { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+
+namespace Entities.Dto
+{
+    public class SimilarityScoreSemanticDto : IDto
+    {
+        public float SimilarityScore { get; set; }
+        public KeywordWebSiteSemanticDto webSite { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class UrlSimilaritySubSemanticWebSiteDto : IDto
+    {
+        public KeywordWebSiteDto webSite { get; set; }
+        public List<SimilarityScoreSemanticDto> webSitePool { get; set; }
+        public List<UrlTreeDto> UrlTree { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class UrlSimilaritySubWebSiteDto : IDto
+    {
+        public KeywordWebSiteDto webSite { get; set; }
+        public List<SimilarityScoreDto> webSitePool { get; set; }
+        public List<UrlTreeDto> UrlTree { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class UrlSimilarityWebSiteDto : IDto
+    {
+        public KeywordWebSiteDto webSite { get; set; }
+        public List<SimilarityScoreDto> webSitePool { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+using System.Collections.Generic;
+
+namespace Entities.Dto
+{
+    public class UrlTreeDto : IDto
+    {
+        public string Key { get; set; }
+        public string Title { get; set; }
+        public string Url { get; set; }
+        public List<UrlTreeDto> Children { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Core.Entities;
+
+namespace Entities.Dto
+{
+    public class website : IDto
+    {
+        public string Url { get; set; }
+    }
+}
+/* ---------------------------------------- */
+using Entities.Concrete;
+using System.Collections.Generic;
+
+namespace DataAccess.Abstract
+{
+    public interface ITagAndPointDal
+    {
+        List<TagAndPoint> GetAll();
+    }
+}
+/* ---------------------------------------- */
+namespace DataAccess.Abstract
+{
+    public interface IWordToExcludeDal
+    {
+        bool CheckWord(string word);
+    }
+}
+/* ---------------------------------------- */
+using Entities.Concrete;
+using Entities.Dto;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
+namespace DataAccess.Concrete.InMemory
+{
+    public static class InMemoryGlobalSemanticWordDal
+    {
+        public static List<SemanticWordJsonDto> GlobalSemanticWordList { get; set; }
+
+        public static List<SemanticWordJsonDto> GetGlobalSemanticWordList()
+        {
+            if (GlobalSemanticWordList != null) { }
+            else
+            {
+                string semanticJsonPath = Path.Combine(Environment.CurrentDirectory, "wwwroot", "resource", "semanticJson.json");
+                GlobalSemanticWordList = new List<SemanticWordJsonDto>();
+                using (StreamReader reader = new StreamReader(semanticJsonPath, Encoding.UTF8, false))
+                {
+                    List<SemanticWord> semanticWordList = JsonConvert.DeserializeObject<List<SemanticWord>>(reader.ReadToEnd().ToString());
+                    List<char> alfabe = new List<char> { 'a', 'b', 'c', 'ç', 'd', 'e',
+                                                     'f', 'g', 'ğ', 'h', 'ı', 'i',
+                                                     'j', 'k', 'l', 'm', 'n', 'o',
+                                                     'ö', 'p', 'q', 'r', 's', 'ş',
+                                                     't', 'u', 'ü', 'v', 'w', 'x',
+                                                     'y', 'z' };
+
+                    for (int i = 0; i < alfabe.Count; i++)
+                    {
+                        GlobalSemanticWordList.Add(new SemanticWordJsonDto
+                        {
+                            letter = alfabe[i],
+                            data = new List<SemanticWord>()
+                        });
+                    }
+                    foreach (var kelime in semanticWordList)
+                    {
+                        int index = GlobalSemanticWordList.FindIndex(p => p.letter == kelime.word[0]);
+                        if (index != -1)
+                        {
+                            GlobalSemanticWordList[index].data.Add(kelime);
+                        }
+                    }
+                }
+            }
+            return GlobalSemanticWordList;
+        }
+    }
+}
+/* ---------------------------------------- */
+using DataAccess.Abstract;
+using Entities.Concrete;
+using System.Collections.Generic;
+
+namespace DataAccess.Concrete.InMemory
+{
+    public class InMemoryTagAndPointDal : ITagAndPointDal
+    {
+        private List<TagAndPoint> tagAndPoints;
+
+        public InMemoryTagAndPointDal()
+        {
+            tagAndPoints = new List<TagAndPoint>
+            {
+                new TagAndPoint { before = "<p",  after = "</p>",  score = 2 },
+                new TagAndPoint { before = "<u",  after = "</u>",  score = 2 },
+                new TagAndPoint { before = "<b",  after = "</b>",  score = 3 },
+                new TagAndPoint { before = "<strong",  after = "</strong>",  score = 3 },
+                new TagAndPoint { before = "<h6", after = "</h6>", score = 4 },
+                new TagAndPoint { before = "<h5", after = "</h5>", score = 5 },
+                new TagAndPoint { before = "<h4", after = "</h4>", score = 6 },
+                new TagAndPoint { before = "<h3", after = "</h3>", score = 7 },
+                new TagAndPoint { before = "<h2", after = "</h2>", score = 8 },
+                new TagAndPoint { before = "<h1", after = "</h1>", score = 9 },
+                new TagAndPoint { before = "<title", after = "</title>", score = 10 },
+            };
+        }
+
+        public List<TagAndPoint> GetAll()
+        {
+            return tagAndPoints;
+        }
+    }
+}
+/* ---------------------------------------- */
+using DataAccess.Abstract;
+using Entities.Concrete;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace DataAccess.Concrete.InMemory
+{
+    public class InMemoryWordToExcludeDal : IWordToExcludeDal
+    {
+        private List<Word> words;
+
+        public InMemoryWordToExcludeDal()
+        {
+            words = new List<Word>
+            {
+            #region Türkçe
+
+                // A
+                new Word { word = "a'nî"},
+                new Word { word = "ama"},
+                new Word { word = "amma"},
+                new Word { word = "ancak"},
+                new Word { word = "altı"},
+                new Word { word = "altmış"},
+                new Word { word = "az"},
+                new Word { word = "açılmak"},
+                new Word { word = "açmak"},
+                new Word { word = "ağlamak"},
+                new Word { word = "akmak"},
+                new Word { word = "almak"},
+                new Word { word = "anlamak"},
+                new Word { word = "anlatmak"},
+                new Word { word = "aramak"},
+                new Word { word = "artmak"},
+                new Word { word = "aşmak"},
+                new Word { word = "atılmak"},
+                new Word { word = "atmak"},
+                new Word { word = "ayırmak"},
+                new Word { word = "ayrılmak"},
+                new Word { word = "azalmak"},
+
+                // B
+                new Word { word = "belki"},
+                new Word { word = "bile"},
+                new Word { word = "bu"},
+                new Word { word = "ben"},
+                new Word { word = "biz"},
+                new Word { word = "benim"},
+                new Word { word = "bunlar"},
+                new Word { word = "bir"},
+                new Word { word = "beş"},
+                new Word { word = "bin"},
+                new Word { word = "bağırmak"},
+                new Word { word = "bağlamak"},
+                new Word { word = "bakmak"},
+                new Word { word = "basmak"},
+                new Word { word = "başlamak"},
+                new Word { word = "beklemek"},
+                new Word { word = "belirlemek"},
+                new Word { word = "belirlenmek"},
+                new Word { word = "belirtmek"},
+                new Word { word = "benzemek"},
+                new Word { word = "bırakmak"},
+                new Word { word = "bilinmek"},
+                new Word { word = "bilmek"},
+                new Word { word = "binmek"},
+                new Word { word = "bitirmek"},
+                new Word { word = "bitmek"},
+                new Word { word = "bozulmak"},
+                new Word { word = "bulmak"},
+                new Word { word = "bulunmak"},
+                new Word { word = "büyümek"},
+                // C
+                new Word { word = "cevapla"},
+
+                // Ç
+                new Word { word = "çünkü"},
+                new Word { word = "çok"},
+                new Word { word = "çalışmak"},
+                new Word { word = "çalmak"},
+                new Word { word = "çekilmek"},
+                new Word { word = "çekmek"},
+                new Word { word = "çevirmek"},
+                new Word { word = "çıkarılmak"},
+                new Word { word = "çıkarmak"},
+                new Word { word = "çıkmak"},
+                new Word { word = "çizmek"},
+
+                // D
+                new Word { word = "da"},
+                new Word { word = "de"},
+                new Word { word = "dahi"},
+                new Word { word = "daha"},
+                new Word { word = "demek"},
+                new Word { word = "dışında"},
+                new Word { word = "dört"},
+                new Word { word = "dokuz"},
+                new Word { word = "doksan"},
+                new Word { word = "diye"},
+                new Word { word = "dayanmak"},
+                new Word { word = "değerlendirmek"},
+                new Word { word = "değişmek"},
+                new Word { word = "değiştirmek"},
+                new Word { word = "demek"},
+                new Word { word = "dilemek"},
+                new Word { word = "dinlemek"},
+                new Word { word = "doğmak"},
+                new Word { word = "dolaşmak"},
+                new Word { word = "doldurmak"},
+                new Word { word = "dönmek"},
+                new Word { word = "dönüşmek"},
+                new Word { word = "durmak"},
+                new Word { word = "duymak"},
+                new Word { word = "düşmek"},
+                new Word { word = "düşünmek"},
+                new Word { word = "düzenlemek"},
+                new Word { word = "dedi"},
+
+                // E
+                new Word { word = "eğer"},
+                new Word { word = "encami"},
+                new Word { word = "elli"},
+                new Word { word = "eklemek"},
+                new Word { word = "etkilemek"},
+                new Word { word = "etmek"},
+                new Word { word = "evlenmek"},
+
+                // F
+                new Word { word = "fakat"},
+                // G
+                new Word { word = "gâh"},
+                new Word { word = "gelgelelim"},
+                new Word { word = "gibi"},
+                new Word { word = "geçirmek"},
+                new Word { word = "geçmek"},
+                new Word { word = "gelişmek"},
+                new Word { word = "geliştirmek"},
+                new Word { word = "gelmek"},
+                new Word { word = "gerçekleşmek"},
+                new Word { word = "gerekmek"},
+                new Word { word = "getirmek"},
+                new Word { word = "girmek"},
+                new Word { word = "gitmek"},
+                new Word { word = "giymek"},
+                new Word { word = "göndermek"},
+                new Word { word = "görmek"},
+                new Word { word = "görünmek"},
+                new Word { word = "görüşmek"},
+                new Word { word = "göstermek"},
+                new Word { word = "götürmek"},
+                new Word { word = "gülmek"},
+
+                // H
+                new Word { word = "ha"},
+                new Word { word = "hâlbuki"},
+                new Word { word = "hatta"},
+                new Word { word = "hangisi"},
+                new Word { word = "hatırlamak"},
+                new Word { word = "hazırlamak"},
+                new Word { word = "hazırlanmak"},
+                new Word { word = "hissetmek"},
+
+                // I
+                // İ
+                new Word { word = "ile"},
+                new Word { word = "ille"},
+                new Word { word = "imdi"},
+                new Word { word = "iki"},
+                new Word { word = "iyi"},
+                new Word { word = "için"},
+                new Word { word = "içmek"},
+                new Word { word = "ilerlemek"},
+                new Word { word = "ilgilenmek"},
+                new Word { word = "inanmak"},
+                new Word { word = "inmek"},
+                new Word { word = "istemek"},
+                new Word { word = "istenmek"},
+                new Word { word = "izlemek"},
+                // J
+
+                // K
+                new Word { word = "kâh"},
+                new Word { word = "karşın"},
+                new Word { word = "kırk"},
+                new Word { word = "kötü"},
+                new Word { word = "kim"},
+                new Word { word = "ki"},
+                new Word { word = "kimi"},
+                new Word { word = "kimin"},
+                new Word { word = "kaçmak"},
+                new Word { word = "kaldırmak"},
+                new Word { word = "kalkmak"},
+                new Word { word = "kalmak"},
+                new Word { word = "kapanmak"},
+                new Word { word = "kapatmak"},
+                new Word { word = "karışmak"},
+                new Word { word = "karıştırmak"},
+                new Word { word = "karşılamak"},
+                new Word { word = "katılmak"},
+                new Word { word = "kaybetmek"},
+                new Word { word = "kazanmak"},
+                new Word { word = "kesilmek"},
+                new Word { word = "kesmek"},
+                new Word { word = "kılmak"},
+                new Word { word = "konuşmak"},
+                new Word { word = "korkmak"},
+                new Word { word = "korumak"},
+                new Word { word = "koşmak"},
+                new Word { word = "koymak"},
+                new Word { word = "kullanılmak"},
+                new Word { word = "kurmak"},
+                new Word { word = "kurtarmak"},
+                new Word { word = "kurtulmak"},
+                new Word { word = "kurulmak"},
+
+                // L
+                new Word { word = "lakin"},
+                // M
+                new Word { word = "madem"},
+                new Word { word = "mı"},
+                new Word { word = "mi"},
+                new Word { word = "mademki"},
+                new Word { word = "maydamı"},
+                new Word { word = "meğerki"},
+                new Word { word = "meğerse"},
+                // N
+                new Word { word = "neyse"},
+                new Word { word = "ne"},
+                new Word { word = "nerede"},
+                new Word { word = "nereye"},
+                new Word { word = "niçin"},
+                new Word { word = "neden"},
+                new Word { word = "nasıl"},
+                // O
+                new Word { word = "oysa"},
+                new Word { word = "oysaki"},
+                new Word { word = "o"},
+                new Word { word = "onlar"},
+                new Word { word = "onun"},
+                new Word { word = "onların"},
+                new Word { word = "on"},
+                new Word { word = "otuz"},
+                new Word { word = "olan"},
+                new Word { word = "olarak"},
+                new Word { word = "okumak"},
+                new Word { word = "olmak"},
+                new Word { word = "oluşmak"},
+                new Word { word = "oturmak"},
+                new Word { word = "oynamak"},
+
+                // Ö
+                new Word { word = "ödemek"},
+                new Word { word = "öğrenmek"},
+                new Word { word = "öldürmek"},
+                new Word { word = "ölmek"},
+
+                // P
+                new Word { word = "paylaşmak"},
+
+                // R
+
+                // S
+                new Word { word = "seksle"},
+                new Word { word = "sen"},
+                new Word { word = "siz"},
+                new Word { word = "senin"},
+                new Word { word = "sizin"},
+                new Word { word = "şunlar"},
+                new Word { word = "sekiz"},
+                new Word { word = "seksen"},
+                new Word { word = "sağlamak"},
+                new Word { word = "sağlanmak"},
+                new Word { word = "saymak"},
+                new Word { word = "seçmek"},
+                new Word { word = "sevmek"},
+                new Word { word = "seyretmek"},
+                new Word { word = "sokmak"},
+                new Word { word = "sormak"},
+                new Word { word = "söylemek"},
+                new Word { word = "söylenmek"},
+                new Word { word = "sunmak"},
+                new Word { word = "sunulmak"},
+                new Word { word = "sürdürmek"},
+                new Word { word = "sürmek"},
+                // Ş
+
+                // T
+                new Word { word = "tanımak"},
+                new Word { word = "taşımak"},
+                new Word { word = "toplamak"},
+                new Word { word = "toplanmak"},
+                new Word { word = "tutmak"},
+                new Word { word = "tutulmak"},
+                // U
+                new Word { word = "uğraşmak"},
+                new Word { word = "ulaşmak"},
+                new Word { word = "unutmak"},
+                new Word { word = "uygulamak"},
+                new Word { word = "uygulanmak"},
+                new Word { word = "uymak"},
+                new Word { word = "uzanmak"},
+
+                // Ü
+                new Word { word = "üç"},
+                new Word { word = "üretmek"},
+
+                // V
+                new Word { word = "ve"},
+                new Word { word = "velakin"},
+                new Word { word = "velev"},
+                new Word { word = "velhâsıl"},
+                new Word { word = "velhâsılıkelâm"},
+                new Word { word = "veya"},
+                new Word { word = "veyahut"},
+                new Word { word = "varmak"},
+                new Word { word = "verilmek"},
+                new Word { word = "vermek"},
+                new Word { word = "vurmak"},
+
+                // Y
+                new Word { word = "yedi"},
+                new Word { word = "yirmi"},
+                new Word { word = "yetmiş"},
+                new Word { word = "yüz"},
+                new Word { word = "yakalamak"},
+                new Word { word = "yaklaşmak"},
+                new Word { word = "yakmak"},
+                new Word { word = "yanmak"},
+                new Word { word = "yapılmak"},
+                new Word { word = "yapmak"},
+                new Word { word = "yaptırmak"},
+                new Word { word = "yararlanmak"},
+                new Word { word = "yaratmak"},
+                new Word { word = "yaşamak"},
+                new Word { word = "yatmak"},
+                new Word { word = "yayılmak"},
+                new Word { word = "yayımlanmak"},
+                new Word { word = "yazılmak"},
+                new Word { word = "yazmak"},
+                new Word { word = "yemek"},
+                new Word { word = "yetmek"},
+                new Word { word = "yükselmek"},
+                new Word { word = "yürümek"},
+
+                // Z
+                new Word { word = "zira"},
+
+                #endregion Türkçe
+
+            #region İngilizce
+
+                // A
+                new Word { word = "and"},
+                new Word { word = "am"},
+                new Word { word = "are"},
+                // B
+                new Word { word = "by"},
+                // C
+                // D
+                // E
+                // F
+                new Word { word = "follow"},
+                // G
+                // H
+                new Word { word = "he"},
+                new Word { word = "her"},
+                new Word { word = "has"},
+                // I
+                new Word { word = "is"},
+                new Word { word = "in"},
+                new Word { word = "it"},
+                // J
+                // K
+                // L
+                // M
+                // N
+                // O
+                new Word { word = "on"},
+                // P
+                // R
+                // S
+                new Word { word = "she"},
+                // T
+                new Word { word = "to"},
+                new Word { word = "they"},
+                new Word { word = "there"},
+                new Word { word = "this"},
+                new Word { word = "the"},
+                // U
+                // V
+                // Y
+                new Word { word = "your"},
+                new Word { word = "you"},
+                // Z
+
+            #endregion İngilizce
+            };
+        }
+
+        public bool CheckWord(string word)
+        {
+            if (words.Any(p => p.word == word))
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+}
+/* ---------------------------------------- */
+using Core.Utilities.Results;
+using Entities.Concrete;
+using Entities.Dto;
+using System.Collections.Generic;
+
+namespace Business.Abstract
+{
+    public interface IIndexerService
+    {
+        IDataResult<WebSite> WebSiteCalculate(WebSite webSite);
+
+        IDataResult<UrlSimilarityWebSiteDto> UrlSimilarityCalculate(WebSite webSite, List<WebSite> webSitePool);
+
+        IDataResult<UrlSimilaritySubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool);
+
+        IDataResult<UrlSimilaritySubSemanticWebSiteDto> UrlSimilarityWithSemanticCalculate(WebSite webSite, List<WebSite> webSitePool);
+    }
+}
+/* ---------------------------------------- */
+using Business.Abstract;
+using Business.Helpers.Abstract;
+using Core.Utilities.Results;
+using DataAccess.Concrete.InMemory;
+using Entities.Concrete;
+using Entities.Dto;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Business.Concrete
+{
+    public class IndexerManager : IIndexerService
+    {
+        private IWebSiteOperation _webSiteOperation;
+        private IKeywordOperation _keywordOperation;
+        private List<WebSite> globalList;
+
+        public IndexerManager(IWebSiteOperation webSiteOperation, IKeywordOperation keywordOperation)
+        {
+            _webSiteOperation = webSiteOperation;
+            _keywordOperation = keywordOperation;
+        }
+
+        //Stage One - Frequancy Calculation
+        //Stage Two - Keyword Calculate
+        public IDataResult<WebSite> WebSiteCalculate(WebSite webSite)
+        {
+            webSite = _webSiteOperation.GetWebSite(webSite).Data;
+            return new SuccessDataResult<WebSite>(webSite);
+        }
+
+        //Stage Three - Ranking of a url and url set similarity
+        public IDataResult<UrlSimilarityWebSiteDto> UrlSimilarityCalculate(WebSite webSite, List<WebSite> webSitePool)
+        {
+            InputDto input = _keywordOperation.SimilarityCalculate(webSite, webSitePool).Data;
+
+            UrlSimilarityWebSiteDto result = new UrlSimilarityWebSiteDto();
+
+            List<SimilarityScoreDto> tempWebSitesPool = new List<SimilarityScoreDto>();
+            input.webSitePool.ForEach(p =>
+            {
+                tempWebSitesPool.Add(
+                    new SimilarityScoreDto
+                    {
+                        SimilarityScore = p.SimilarityScore,
+                        webSite = new KeywordWebSiteDto
+                        {
+                            Url = p.Url,
+                            Title = p.Title,
+                            Keywords = p.Keywords
+                        }
+                    });
+            });
+
+            result.webSite = new KeywordWebSiteDto
+            {
+                Url = input.webSite.Url,
+                Title = input.webSite.Title,
+                Keywords = input.webSite.Keywords
+            };
+            result.webSitePool = tempWebSitesPool.OrderByDescending(p => p.SimilarityScore).ToList();
+
+            return new SuccessDataResult<UrlSimilarityWebSiteDto>(data: result);
+        }
+
+        //Stage Four - Ranking of a url with sub urls and url set with sub urls similarity
+        public IDataResult<UrlSimilaritySubWebSiteDto> UrlSimilarityWithSubCalculate(WebSite webSite, List<WebSite> webSitePool)
+        {
+            //Sub Url Tree
+            globalList = new List<WebSite>();
+            foreach (var item in webSitePool)
+            {
+                globalList.Add(item);
+            }
+            globalList.Add(webSite);
+            List<UrlTreeDto> tempUrlTree = new List<UrlTreeDto>();
+            webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p, globalList).Data));
+
+            //Adding sub urls to webSitePool
+            List<WebSite> tempSubUrls = new List<WebSite>();
+            webSitePool.ForEach(p =>
+            {
+                p.SubUrls.ForEach(l =>
+                {
+                    tempSubUrls.Add(l);
+                    l.SubUrls.ForEach(m =>
+                    {
+                        tempSubUrls.Add(m);
+                    });
+                });
+            });
+            webSitePool = webSitePool.Concat(tempSubUrls).ToList();
+
+            //Similarity calculating
+            InputDto input = _keywordOperation.SimilarityCalculate(webSite, webSitePool, true).Data;
+
+            //Return Object
+            KeywordWebSiteDto tempWebSite = new KeywordWebSiteDto
+            {
+                Url = input.webSite.Url,
+                Title = input.webSite.Title,
+                Keywords = input.webSite.Keywords
+            };
+
+            List<SimilarityScoreDto> tempWebSitesPool = new List<SimilarityScoreDto>();
+            input.webSitePool.ForEach(p =>
+            {
+                tempWebSitesPool.Add(new SimilarityScoreDto
+                {
+                    SimilarityScore = p.SimilarityScore,
+                    webSite = new KeywordWebSiteDto
+                    {
+                        Url = p.Url,
+                        Title = p.Title,
+                        Keywords = p.Keywords,
+                    }
+                });
+            });
+
+            return new SuccessDataResult<UrlSimilaritySubWebSiteDto>(
+                data: new UrlSimilaritySubWebSiteDto
+                {
+                    webSite = tempWebSite,
+                    webSitePool = tempWebSitesPool,
+                    UrlTree = tempUrlTree
+                }
+            );
+        }
+
+        //Stage Five - Stage four and Semantic Analysis
+        public IDataResult<UrlSimilaritySubSemanticWebSiteDto> UrlSimilarityWithSemanticCalculate(WebSite webSite, List<WebSite> webSitePool)
+        {
+            globalList = new List<WebSite>();
+            foreach (var item in webSitePool)
+            {
+                globalList.Add(item);
+            }
+            globalList.Add(webSite);
+            //Sub Url Tree
+            List<UrlTreeDto> tempUrlTree = new List<UrlTreeDto>();
+            webSitePool.ForEach(p => tempUrlTree.Add(_webSiteOperation.SubUrlFinder(p, globalList).Data));
+
+            //Adding sub urls to webSitePool
+            List<WebSite> tempSubUrls = new List<WebSite>();
+            webSitePool.ForEach(p =>
+            {
+                p.SubUrls.ForEach(l =>
+                {
+                    tempSubUrls.Add(l);
+                    l.SubUrls.ForEach(m =>
+                    {
+                        tempSubUrls.Add(m);
+                    });
+                });
+            });
+            webSitePool = webSitePool.Concat(tempSubUrls).ToList();
+
+            //Semantic keyword generate
+            List<SemanticWordJsonDto> Dictionary = InMemoryGlobalSemanticWordDal.GetGlobalSemanticWordList();
+            webSite = _keywordOperation.SemanticKeywordGeneratorForTarget(webSite, ref Dictionary).Data;
+
+            //Similarity calculating
+            InputDto input = _keywordOperation.SimilarityCalculate(webSite, webSitePool, true, true).Data;
+
+            //Return Object
+            KeywordWebSiteDto tempWebSite = new KeywordWebSiteDto
+            {
+                Url = input.webSite.Url,
+                Title = input.webSite.Title,
+                Keywords = input.webSite.Keywords
+            };
+
+            List<SimilarityScoreSemanticDto> tempWebSitesPool = new List<SimilarityScoreSemanticDto>();
+            input.webSitePool.ForEach(p =>
+            {
+                tempWebSitesPool.Add(new SimilarityScoreSemanticDto
+                {
+                    SimilarityScore = p.SimilarityScore,
+                    webSite = new KeywordWebSiteSemanticDto
+                    {
+                        Url = p.Url,
+                        Title = p.Title,
+                        Keywords = p.Keywords,
+                        SemanticKeywords = p.SemanticKeywords
+                    }
+                });
+            });
+
+            return new SuccessDataResult<UrlSimilaritySubSemanticWebSiteDto>(
+                data: new UrlSimilaritySubSemanticWebSiteDto
+                {
+                    webSite = tempWebSite,
+                    webSitePool = tempWebSitesPool,
+                    UrlTree = tempUrlTree
+                });
+        }
+    }
+}
+/* ---------------------------------------- */
+using Autofac;
+using Business.Abstract;
+using Business.Concrete;
+using Business.Helpers.Abstract;
+using DataAccess.Abstract;
+using DataAccess.Concrete.InMemory;
+
+namespace Business.DependencyResolvers.Autofac
+{
+    public class AutofacBusinessModule : Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            //Business
+            builder.RegisterType<IndexerManager>().As<IIndexerService>();
+
+            //DataAccess
+            builder.RegisterType<InMemoryWordToExcludeDal>().As<IWordToExcludeDal>();
+            builder.RegisterType<InMemoryTagAndPointDal>().As<ITagAndPointDal>();
+            //Helpers
+            builder.RegisterType<HtmlCleaner>().As<IHtmlCleaner>();
+            builder.RegisterType<KeywordOperation>().As<IKeywordOperation>();
+            builder.RegisterType<WebSiteOperation>().As<IWebSiteOperation>();
+        }
+    }
+}
+/* ---------------------------------------- */
+using Core.Utilities.Results;
+
+namespace Business.Helpers.Abstract
+{
+    public interface IHtmlCleaner
+    {
+        IDataResult<string> RemoveHtmlTags(string StringHtmlPage);
+    }
+}
+/* ---------------------------------------- */
+using Core.Utilities.Results;
+using Entities.Concrete;
+using Entities.Dto;
+using System.Collections.Generic;
+
+namespace Business.Helpers.Abstract
+{
+    public interface IKeywordOperation
+    {
+        IDataResult<List<Word>> FrequencyGenerater(string content);
+
+        IDataResult<List<Word>> RemoveWordsToExclude(List<Word> Words);
+
+        IDataResult<WebSite> KeywordGenerator(WebSite webSite);
+
+        IDataResult<WebSite> SemanticKeywordGeneratorForTarget(WebSite webSite, ref List<SemanticWordJsonDto> Dictionary);
+
+        IDataResult<InputDto> SimilarityCalculate(WebSite webSite, List<WebSite> webSitePool, bool subUrlCheck = false, bool semanticCheck = false);
+
+        IDataResult<string> GetTitle(string StringHtmlPage);
+    }
+}
+/* ---------------------------------------- */
+using Core.Utilities.Results;
+using Entities.Concrete;
+using Entities.Dto;
+using System.Collections.Generic;
+
+namespace Business.Helpers.Abstract
+{
+    public interface IWebSiteOperation
+    {
+        IDataResult<WebSite> GetWebSite(WebSite webSite);
+
+        IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite, List<WebSite> globalList);
+
+        IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList, List<WebSite> globalList);
+    }
+}
+/* ---------------------------------------- */
+using Business.Helpers.Abstract;
+using Core.Utilities.Results;
+using System.Text.RegularExpressions;
+
+namespace Business
+{
+    public class HtmlCleaner : IHtmlCleaner
+    {
+        public IDataResult<string> RemoveHtmlTags(string StringHtmlPage)
+        {
+            string text = StringHtmlPage.ToLower();
+            Regex regexDocType = new Regex(@"<!DOCTYPE[^>]*>");
+            Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+            Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
+            Regex regexStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
+            Regex regexCode = new Regex(@"<code[^>]*>[\s\S]*?</code>");
+            Regex regexImage = new Regex(@"<img[^>]* />");
+            Regex regexHtml = new Regex(@"<(.|\n)*?>");
+            Regex regexTab = new Regex(@"\t");
+            Regex regexWhiteSpace = new Regex(@"&nbsp;");
+            Regex regexNewLine = new Regex(@"<br>");
+            Regex regexNewLine2 = new Regex(@"</br>");
+            Regex regexNewLine3 = new Regex(@"\n");
+            Regex regexRN = new Regex(@"\r\n?|\n");
+            Regex regexAdditional = new Regex(@"’[a-z]+");
+            Regex regexUnicodeCleaner = new Regex(@"&#?[a-z-A-Z-0-9]+;");
+            //Regex regexMark = new Regex(@"[>£#$½{@€₺¨~`´ßæ}\|“”‘’!'^+%&/()=?_#½{[\]}\\|\-.,~:;><•*+]*");
+            Regex regexMark = new Regex(@"[^a-zA-Z0-9ığĞüÜşŞİöÖçÇ ]");
+
+            #region Regex Replace
+
+            text = regexDocType.Replace(text, " ");
+            text = regexScript.Replace(text, " ");
+            text = regexHead.Replace(text, " ");
+            text = regexStyle.Replace(text, " ");
+            text = regexCode.Replace(text, " ");
+            text = regexImage.Replace(text, " ");
+            text = regexTab.Replace(text, " ");
+            text = regexWhiteSpace.Replace(text, " ");
+            text = regexNewLine.Replace(text, " ");
+            text = regexNewLine2.Replace(text, " ");
+            text = regexNewLine3.Replace(text, " ");
+            text = regexRN.Replace(text, " ");
+            text = regexHtml.Replace(text, " ");
+            text = regexUnicodeCleaner.Replace(text, " ");
+            text = regexAdditional.Replace(text, " ");
+            text = regexMark.Replace(text, " ");
+
+            #endregion Regex Replace
+
+            return new SuccessDataResult<string>(data: text);
+        }
+    }
+}
+/* ---------------------------------------- */
+using Business.Helpers.Abstract;
+using Core.Utilities.Results;
+using DataAccess.Abstract;
+using Entities.Concrete;
+using Entities.Dto;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace Business
+{
+    public class KeywordOperation : IKeywordOperation
+    {
+        private ITagAndPointDal _tagAndPointDal;
+        private IHtmlCleaner _htmlCleaner;
+        private IWordToExcludeDal _wordToExcludeDal;
+
+        public KeywordOperation(ITagAndPointDal tagAndPointDal, IHtmlCleaner htmlClearer, IWordToExcludeDal wordToExcludeDal)
+        {
+            _tagAndPointDal = tagAndPointDal;
+            _htmlCleaner = htmlClearer;
+            _wordToExcludeDal = wordToExcludeDal;
+        }
+
+        //Frequency Generater
+        public IDataResult<List<Word>> FrequencyGenerater(string content)
+        {
+            List<Word> tempWordsList = new List<Word>();
+            var words = content.Replace("  ", " ").Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach (var word in words)
+            {
+                if (word != "" && word != " ")
+                {
+                    if (tempWordsList.SingleOrDefault(p => p.word == word.ToLower()) != null)
+                    {
+                        var frequance = tempWordsList.SingleOrDefault(p => p.word == word.ToLower());
+                        frequance.frequency += 1;
+                    }
+                    else
+                    {
+                        tempWordsList.Add(new Word
+                        {
+                            word = word.ToLower(),
+                            frequency = 1
+                        });
+                    }
+                }
+            }
+            tempWordsList = RemoveWordsToExclude(tempWordsList).Data;
+            return new SuccessDataResult<List<Word>>(tempWordsList.OrderByDescending(p => p.frequency).ToList());
+        }
+
+        public IDataResult<List<Word>> RemoveWordsToExclude(List<Word> Words)
+        {
+            List<Word> tempWordsList = new List<Word>();
+            Regex numberCheck = new Regex("([0-9])");
+            foreach (var item in Words)
+            {
+                if ((_wordToExcludeDal.CheckWord(item.word) == false && item.word.Length >= 2)
+                    ||
+                    (item.word.Length == 1 && numberCheck.Match(item.word).Success))
+                {
+                    tempWordsList.Add(item);
+                }
+            }
+            return new SuccessDataResult<List<Word>>(tempWordsList.ToList());
+        }
+
+        //Keyword Generator
+        public IDataResult<WebSite> KeywordGenerator(WebSite webSite)
+        {
+            List<Keyword> TempKeywords = new List<Keyword>();
+
+            foreach (var word in webSite.Words)
+            {
+                //Default score = 1
+                TempKeywords.Add(new Keyword { word = word.word, frequency = word.frequency, score = (1 * word.frequency) });
+            }
+
+            // Keywords score calculate
+            foreach (var tagAndPoint in _tagAndPointDal.GetAll())
+            {
+                List<Word> tagWords = ExtractWordInTag(tagAndPoint.before, tagAndPoint.after, webSite.StringHtmlPage).Data;
+                foreach (var keyword in TempKeywords)
+                {
+                    if (tagWords.Any(p => p.word == keyword.word) == true)
+                    {
+                        keyword.score = tagAndPoint.score * keyword.frequency;
+                    }
+                }
+            }
+            webSite.Keywords = TempKeywords.OrderByDescending(p => p.score).Take(10).ToList();
+
+            return new SuccessDataResult<WebSite>(webSite);
+        }
+
+        private IDataResult<List<Word>> ExtractWordInTag(string before, string after, string StringHtmlPage)
+        {
+            int firstIndex = 0;
+            int lastIndex = 0;
+            string stringTagWords = "";
+            while (firstIndex != -1 || lastIndex != -1)
+            {
+                try
+                {
+                    firstIndex = StringHtmlPage.IndexOf(before, firstIndex);
+                    lastIndex = StringHtmlPage.IndexOf(after, firstIndex) + after.Length;
+                    stringTagWords += _htmlCleaner.RemoveHtmlTags(StringHtmlPage.Substring(firstIndex, (lastIndex - firstIndex))).Data;
+                }
+                catch (Exception)
+                {
+                    break;
+                }
+                firstIndex += 1;
+            }
+            var words = stringTagWords.Split(" ");
+            List<Word> tagWords = new List<Word>();
+            foreach (var word in words)
+            {
+                tagWords.Add(new Word { word = word });
+            }
+            return new SuccessDataResult<List<Word>>(tagWords);
+        }
+
+        public IDataResult<WebSite> SemanticKeywordGeneratorForTarget(WebSite webSite, ref List<SemanticWordJsonDto> Dictionary)
+        {
+            List<SemanticWord> TempSemanticKeywords = new List<SemanticWord>();
+            //Semantic keyword find
+            foreach (var keyword in webSite.Keywords)// website keywords
+            {
+                List<string> tempSemantic = new List<string>();
+
+                foreach (var part in Dictionary) // dictionary letter 'a' ,'b'....
+                {
+                    if (part.letter == keyword.word[0])
+                    {
+                        foreach (var semantic in part.data) // semantic word
+                        {
+                            if (keyword.word == semantic.word)
+                            {
+                                if (semantic.similarWords.Count > 0)
+                                {
+                                    TempSemanticKeywords.Add(new SemanticWord
+                                    {
+                                        word = keyword.word,
+                                        similarWords = semantic.similarWords
+                                    });
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            webSite.SemanticKeywordsList = TempSemanticKeywords;
+            return new SuccessDataResult<WebSite>(data: webSite);
+        }
+
+        public IDataResult<WebSite> SemanticKeywordGeneratorForPool(WebSite webSite, WebSite webSitePool)
+        {
+            webSitePool.SemanticKeywords = new List<SemanticKeyword>();
+            webSite.SemanticKeywordsList.ForEach(keyword =>
+            {
+                keyword.similarWords.ForEach(similar =>
+                {
+                    webSitePool.Words.ForEach(p =>
+                    {
+                        if (p.word == similar)
+                        {
+                            int score = GetWordScore(webSitePool, similar).Data;
+                            if (webSitePool.SemanticKeywords.Any(a => a.word == keyword.word))
+                            {
+                                webSitePool.SemanticKeywords.Single(a => a.word == keyword.word).similarWords.Add(new Keyword
+                                {
+                                    word = similar,
+                                    frequency = p.frequency,
+                                    score = score
+                                });
+                            }
+                            else
+                            {
+                                var tempWord = new Keyword { word = similar, frequency = p.frequency, score = score };
+                                webSitePool.SemanticKeywords.Add(new SemanticKeyword
+                                {
+                                    word = keyword.word,
+                                    similarWords = new List<Keyword> { tempWord }
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+
+            return new SuccessDataResult<WebSite>(data: webSitePool);
+        }
+
+        public IDataResult<int> GetWordScore(WebSite webSite, string similar)
+        {
+            int score = 1;
+            foreach (var tagAndPoint in _tagAndPointDal.GetAll())
+            {
+                List<Word> tagWords = ExtractWordInTag(tagAndPoint.before, tagAndPoint.after, webSite.StringHtmlPage).Data;
+                if (tagWords.Any(p => p.word == similar))
+                {
+                    score = tagAndPoint.score;
+                }
+            }
+            return new SuccessDataResult<int>(data: score);
+        }
+
+        //Website Operations
+        public IDataResult<string> GetTitle(string stringWebSite)
+        {
+            try
+            {
+                Regex regexTitleAttr = new Regex("<title[^>]*>[\\s\\S]*</title>");
+                Regex regexTitle = new Regex(">[^>]*[^/title>]");
+                string tempWebSite = stringWebSite;
+
+                var result = regexTitleAttr.Match(tempWebSite);
+                string tempTitle = result.Value.ToString();
+                result = regexTitle.Match(tempTitle.ToString());
+                tempTitle = result.Value.ToString();
+                int lenght = tempTitle.Length - 1;
+                string title = tempTitle.Substring(1, lenght - 1);
+                return new SuccessDataResult<string>(data: title);
+            }
+            catch (Exception)
+            {
+                return new ErrorDataResult<string>(data: "");
+            }
+        }
+
+        //Similarity Operations
+        public IDataResult<InputDto> SimilarityCalculate(WebSite webSite, List<WebSite> webSitePool, bool subUrlCheck = false, bool semanticCheck = false)
+        {
+            //Similarity calculating
+            foreach (var item in webSitePool)
+            {
+                //MaxValue = 3.40282347E+38F
+                float ratelvl1 = 0;
+                float lvl1machedKeyword = 0;
+                float lvl1allKeyword = 0;
+
+                foreach (var keyword in item.Keywords) // 85% for stage four,five
+                {
+                    lvl1allKeyword += keyword.score;
+
+                    if (webSite.Keywords.Any(p => p.word == keyword.word))
+                        lvl1machedKeyword += keyword.score;
+                }
+                //if semantic keyword calculate
+                if (semanticCheck)
+                {
+                    var temp = SemanticKeywordGeneratorForPool(webSite, item).Data;
+                    item.SemanticKeywords = temp.SemanticKeywords;
+                    foreach (var semantic in item.SemanticKeywords)
+                    {
+                        semantic.similarWords.ForEach(p =>
+                        {
+                            lvl1allKeyword += p.score * p.frequency;
+                            lvl1machedKeyword += p.score * p.frequency;
+                        });
+                    }
+                }
+                // if have SubUrl
+                if (subUrlCheck) //2.Seviye %20
+                {
+                    float ratelvl2 = 0;
+                    float lvl2MachedKeyword = 0;
+                    float lvl2UrlAllKeyword = 0;
+                    float ratelvl3 = 0;
+                    float lvl3MachedKeyword = 0;
+                    float lvl3UrlAllKeyword = 0;
+
+                    //lvl 2
+                    foreach (var subUrl in item.SubUrls)
+                    {
+                        foreach (var keyword in subUrl.Keywords)
+                        {
+                            lvl2UrlAllKeyword += keyword.score;
+
+                            if (webSite.Keywords.Any(p => p.word == keyword.word))
+                            {
+                                lvl2MachedKeyword += keyword.score;
+                            }
+                        }
+                        //if semantic keyword calculate
+                        if (semanticCheck)
+                        {
+                            var temp = SemanticKeywordGeneratorForPool(webSite, subUrl).Data;
+                            subUrl.SemanticKeywords = temp.SemanticKeywords;
+                            foreach (var semantic in subUrl.SemanticKeywords)
+                            {
+                                semantic.similarWords.ForEach(p =>
+                                {
+                                    lvl2UrlAllKeyword += p.score * p.frequency;
+                                    lvl2MachedKeyword += p.score * p.frequency;
+                                });
+                            }
+                        }
+                        if (subUrl.SubUrls.Count > 0) //3.Seviye %10
+                        {
+                            //lvl 3
+                            foreach (var subUrl2 in subUrl.SubUrls)
+                            {
+                                foreach (var keyword in subUrl2.Keywords)
+                                {
+                                    lvl3UrlAllKeyword += keyword.score;
+
+                                    if (webSite.Keywords.Any(p => p.word == keyword.word))
+                                    {
+                                        lvl3MachedKeyword += keyword.score;
+                                    }
+                                }
+                                //if semantic keyword calculate
+                                if (semanticCheck)
+                                {
+                                    var temp = SemanticKeywordGeneratorForPool(webSite, subUrl2).Data;
+                                    subUrl2.SemanticKeywords = temp.SemanticKeywords;
+                                    foreach (var semantic in subUrl2.SemanticKeywords)
+                                    {
+                                        semantic.similarWords.ForEach(p =>
+                                        {
+                                            lvl3UrlAllKeyword += p.score * p.frequency;
+                                            lvl3MachedKeyword += p.score * p.frequency;
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (lvl3UrlAllKeyword == 0) lvl3UrlAllKeyword = 1;
+                    if (lvl2UrlAllKeyword == 0) lvl2UrlAllKeyword = 1;
+                    if (lvl1allKeyword == 0) lvl1allKeyword = 1;
+
+                    ratelvl3 = (lvl3MachedKeyword * 5) / (lvl3UrlAllKeyword * 100);
+                    ratelvl2 = (lvl2MachedKeyword * 10) / (lvl2UrlAllKeyword * 100);
+                    ratelvl1 = (lvl1machedKeyword * 85) / (lvl1allKeyword * 100);
+                    item.SimilarityScore = (ratelvl1 + ratelvl2 + ratelvl3) * 100;
+                }
+                else
+                {
+                    item.SimilarityScore = (lvl1machedKeyword / lvl1allKeyword) * 100;
+                }
+                if (float.IsNaN(item.SimilarityScore) || float.IsNegative(item.SimilarityScore))
+                {
+                    item.SimilarityScore = 0;
+                }
+            }
+            webSitePool = webSitePool.OrderByDescending(p => p.SimilarityScore).ToList();
+            return new SuccessDataResult<InputDto>(data: new InputDto { webSite = webSite, webSitePool = webSitePool });
+        }
+    }
+}
+/* ---------------------------------------- */
+using Business.Helpers.Abstract;
+using Core.Utilities.Results;
+using Entities.Concrete;
+using Entities.Dto;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace Business
+{
+    public class WebSiteOperation : IWebSiteOperation
+    {
+        private IHtmlCleaner _htmlCleaner;
+        private IKeywordOperation _keywordOperation;
+        private List<String> WhiteList;
+
+        public WebSiteOperation(IHtmlCleaner htmlCleaner, IKeywordOperation keywordOperation)
+        {
+            _htmlCleaner = htmlCleaner;
+            _keywordOperation = keywordOperation;
+
+            WhiteList = new List<String> { "php", "xps", "aspx", "axd", "chm", "do", "jhtml",
+                                                        "jnlp", "json", "mht", "gg", "gsp", "adr", "css",
+                                                        "mvc", "pac", "url", "xul", "_eml", "!bt", "asp",
+                                                        "att", "cer", "cfm", "con", "htc", "htm", "html",
+                                                        "js", "jsf", "jsp", "mhtml", "nzb", "rss", "vbd",
+                                                        "web", "wsdl", "xfdl", "aex", "pem", "wrf", "xbel",
+                                                        "alx", "ap", "ascx", "asr", "dap", "dml", "dwt",
+                                                        "email", "mai", "phtml", "shtml", "wgt", "wml", "xhtml",
+                                                        "crl", "pando", "pfc", "qbo"};
+        }
+
+        public IDataResult<WebSite> Finder(WebSite webSite, List<string> allUrlList, List<WebSite> globalList)
+        {
+            int subUrlFinderCount = 5;
+
+            Regex regexDocType = new Regex(@"<!DOCTYPE[^>]*>");
+            Regex regexScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+            Regex regexHead = new Regex(@"<head[^>]*>[\s\S]*?</head>");
+            Regex regexStyle = new Regex(@"<style[^>]*>[\s\S]*?</style>");
+            Regex regexCode = new Regex(@"<code[^>]*>[\s\S]*?</code>");
+            Regex regexATag = new Regex("(<a[^>]*>[\\s\\S]*?</a>)");
+            Regex regexHref = new Regex("href=['|\"][a-zA-Z0-9:/.]+[^' | \"]+");
+            Regex regexLastParams = new Regex("#+[^$]*");
+            Regex regexBadLinkRemove = new Regex(" /[^ ]*");
+            string temp = webSite.StringHtmlPage;
+
+            temp = regexDocType.Replace(temp, " ");
+            temp = regexScript.Replace(temp, " ");
+            temp = regexHead.Replace(temp, " ");
+            temp = regexStyle.Replace(temp, " ");
+            temp = regexCode.Replace(temp, " ");
+
+            var result = regexATag.Matches(temp);
+            temp = String.Join("  ", result);
+            result = regexHref.Matches(temp);
+            temp = String.Join("  ", result);
+            temp = temp.Replace("'", "\"");
+            temp = temp.Replace("href=\"", " ");
+            temp = regexBadLinkRemove.Replace(temp, " ");
+            temp = temp.Replace("javascript:;", " ");
+            temp = temp.Replace("  ", " ");
+
+            //Standart Order
+            //List<string> urlList = temp.Replace("  ", " ").Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            //Random Order
+            List<string> urlList = temp.Replace("  ", " ").Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => Guid.NewGuid()).ToList();
+
+            List<string> clearList = new List<string>();
+
+            foreach (var item in urlList)
+            {
+                try
+                {
+                    if (item.Length > 7 && (item.Substring(0, 8) == "https://" || item.Substring(0, 7) == "http://"))
+                    {
+                        string url = (item.Substring(item.Length - 1, 1) == "/") ? item.Substring(0, item.Length - 1) : item;
+                        url = regexLastParams.Replace(url, "");
+                        if (UrlControl(url, clearList, allUrlList, webSite.SubUrls).Data)
+                        {
+                            clearList.Add(url);
+                        }
+                        if (clearList.Count > (subUrlFinderCount * subUrlFinderCount * 2))
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            int i = 0;
+            foreach (var item in clearList)
+            {
+                try
+                {
+                    WebSite subSite = new WebSite
+                    {
+                        Url = item
+                    };
+                    if (globalList.Any(p => p.Url == subSite.Url))
+                    {
+                        var selectedSite = globalList.SingleOrDefault(p => p.Url == subSite.Url);
+                        //Console.WriteLine("Virtual Cache: " + selectedSite.Url);
+                        subSite.Id = selectedSite.Id;
+                        subSite.Url = selectedSite.Url;
+                        subSite.Title = selectedSite.Title;
+                        subSite.SimilarityScore = selectedSite.SimilarityScore;
+                        subSite.Content = selectedSite.Content;
+                        subSite.StringHtmlPage = selectedSite.StringHtmlPage;
+                        subSite.Words = selectedSite.Words;
+                        subSite.Keywords = selectedSite.Keywords;
+                        subSite.SemanticKeywordsList = selectedSite.SemanticKeywordsList;
+                        subSite.SemanticKeywords = selectedSite.SemanticKeywords;
+                    }
+                    else
+                    {
+                        subSite = GetWebSite(subSite).Data;
+                        globalList.Add(subSite);
+                    }
+                    if (subSite.StringHtmlPage != "" && !webSite.SubUrls.Any(p => p.Url == item))
+                    {
+                        webSite.SubUrls.Add(subSite);
+                        i++;
+                    }
+                }
+                catch (Exception)
+                {
+                    // throw new Exception("URL BAĞLANTI HATASI");
+                }
+                //////////////////////////////////////
+                ///           SUB COUNT            ///
+                //////////////////////////////////////
+                if (i == subUrlFinderCount)
+                {
+                    break;
+                }
+            }
+            return new SuccessDataResult<WebSite>(webSite);
+        }
+
+        public IDataResult<WebSite> GetWebSite(WebSite webSite)
+        {
+            try
+            {
+                webSite.Url = webSite.Url.Trim();
+                webSite.Url = (webSite.Url.Substring(webSite.Url.Length - 1, 1) == "/") ? webSite.Url.Substring(0, webSite.Url.Length - 1) : webSite.Url;
+                //Console.WriteLine(webSite.Url);
+                WebRequest request = WebRequest.Create(webSite.Url);
+                WebResponse response = request.GetResponse();
+                StreamReader responseData = new StreamReader(response.GetResponseStream(), Encoding.UTF8, true);
+                webSite.StringHtmlPage = WebUtility.HtmlDecode(responseData.ReadToEnd());
+                webSite.Title = _keywordOperation.GetTitle(webSite.StringHtmlPage).Data;
+                webSite.Content = _htmlCleaner.RemoveHtmlTags(webSite.StringHtmlPage).Data + " " + webSite.Title;
+                webSite.Words = _keywordOperation.FrequencyGenerater(webSite.Content).Data;
+                webSite.Keywords = _keywordOperation.KeywordGenerator(webSite).Data.Keywords;
+            }
+            catch (Exception)
+            {
+                webSite.StringHtmlPage = " ";
+                webSite.Keywords = new List<Keyword>();
+                //Console.WriteLine(webSite.Url);
+            }
+            return new SuccessDataResult<WebSite>(webSite);
+        }
+
+        public IDataResult<UrlTreeDto> SubUrlFinder(WebSite webSite, List<WebSite> globalList)
+        {
+            List<string> allUrlList = new List<string>();
+            allUrlList.Add(webSite.Url);
+            webSite = Finder(webSite, allUrlList, globalList).Data;
+            allUrlList = UpdateAllUrlList(webSite.SubUrls, allUrlList);
+
+            foreach (var subSite in webSite.SubUrls)
+            {
+                var sub = webSite.SubUrls.SingleOrDefault(p => p.Url == subSite.Url);
+                sub = Finder(sub, allUrlList, globalList).Data;
+                allUrlList = UpdateAllUrlList(sub.SubUrls, allUrlList);
+            }
+            //Sub Url Tree
+            UrlTreeDto tempUrlsTree = new UrlTreeDto(); //1.Seviye
+            tempUrlsTree.Url = webSite.Url;
+            tempUrlsTree.Title = webSite.Title;
+            tempUrlsTree.Key = Guid.NewGuid().ToString("D");
+            tempUrlsTree.Children = new List<UrlTreeDto>(); //2.Seviye
+            if (webSite.SubUrls.Count > 0)
+            {
+                foreach (var subUrl in webSite.SubUrls)
+                {
+                    var treeSubUrl = new UrlTreeDto
+                    {
+                        Key = Guid.NewGuid().ToString("D"),
+                        Title = subUrl.Title,
+                        Url = subUrl.Url,
+                        Children = new List<UrlTreeDto>() //3.Seviye
+                    };
+                    if (subUrl.SubUrls.Count > 0)
+                    {
+                        var subsubUrlList = new List<UrlTreeDto>();
+                        foreach (var subsubUrl in subUrl.SubUrls)
+                        {
+                            var treeSubSubUrl = new UrlTreeDto
+                            {
+                                Key = Guid.NewGuid().ToString("D"),
+                                Title = subsubUrl.Title,
+                                Url = subsubUrl.Url
+                            };
+                            subsubUrlList.Add(treeSubSubUrl);
+                        }
+                        treeSubUrl.Children = subsubUrlList;
+                    }
+                    tempUrlsTree.Children.Add(treeSubUrl);
+                }
+            }
+
+            return new SuccessDataResult<UrlTreeDto>(tempUrlsTree);
+        }
+
+        private List<string> UpdateAllUrlList(List<WebSite> testSubUrls, List<string> allUrlList)
+        {
+            foreach (var subSite in testSubUrls)
+            {
+                if (!allUrlList.Any(p => p == subSite.Url))
+                {
+                    allUrlList.Add(subSite.Url);
+                }
+            }
+
+            return allUrlList;
+        }
+
+        private IDataResult<bool> UrlControl(string url, List<string> clearList, List<string> allUrlList, List<WebSite> SubUrls)
+        {
+            string tempUrl = url;
+            //https://
+            int startIndex = tempUrl.IndexOf("/", 9, (tempUrl.Length - 9));
+            if (startIndex != -1)
+            {
+                tempUrl = tempUrl.Substring((startIndex + 1), (tempUrl.Length - 1) - startIndex);
+                if (tempUrl.Length > 0)
+                {
+                    while (startIndex != -1)
+                    {
+                        startIndex = 0;
+                        startIndex = tempUrl.IndexOf(".", startIndex, (tempUrl.Length - 1));
+
+                        if (startIndex != -1)
+                        {
+                            tempUrl = tempUrl.Substring((startIndex + 1), (tempUrl.Length - 1) - startIndex);
+                        }
+                    }
+                }
+
+                //TODO: Düzenlenecek..
+                if (!WhiteList.Any(p => p == tempUrl) && tempUrl.Length <= 5)
+                {
+                    return new ErrorDataResult<bool>(false);
+                }
+
+                if (clearList.Any(p => p == url) || allUrlList.Any(p => p == url))
+                {
+                    return new ErrorDataResult<bool>(false);
+                }
+            }
+            if (SubUrls.Any(p => p.Url == url))
+            {
+                return new ErrorDataResult<bool>(false);
+            }
+            return new SuccessDataResult<bool>(true);
+        }
+    }
+}
+/* ---------------------------------------- */
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class HomeController : ControllerBase
+    {
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok("Hello world");
+        }
+    }
+}
+/* ---------------------------------------- */
+using Business.Abstract;
+using Entities.Dto;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+
+namespace WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class StageFiveController : ControllerBase
+    {
+        private IIndexerService _indexerService;
+
+        public StageFiveController(IIndexerService indexerService)
+        {
+            _indexerService = indexerService;
+        }
+
+        [HttpGet]
+        public IActionResult Guide()
+        {
+            return Ok(new GuideDto
+            {
+                Website = new website
+                {
+                    Url = "http://www.example.com"
+                },
+                WebsitePool = new List<website>
+                {
+                    new website
+                    {
+                        Url="http://www.example.com"
+                    },
+                    new website
+                    {
+                        Url="http://www.example.com"
+                    }
+                }
+            });
+        }
+
+        [HttpPost]
+        [DisableRequestSizeLimit]
+        public IActionResult UrlSimilaritySubSemanticCalculate(InputDto input)
+        {
+            input.webSitePool.ForEach(p => p = _indexerService.WebSiteCalculate(p).Data);
+            return Ok(_indexerService.UrlSimilarityWithSemanticCalculate(_indexerService.WebSiteCalculate(input.webSite).Data, input.webSitePool));
+        }
+    }
+}
+/* ---------------------------------------- */
+using Business.Abstract;
+using Entities.Dto;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+
+namespace WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class StageFourController : ControllerBase
+    {
+        private IIndexerService _indexerService;
+
+        public StageFourController(IIndexerService indexerService)
+        {
+            _indexerService = indexerService;
+        }
+
+        [HttpGet]
+        public IActionResult Guide()
+        {
+            return Ok(new GuideDto
+            {
+                Website = new website
+                {
+                    Url = "http://www.example.com"
+                },
+                WebsitePool = new List<website>
+                {
+                    new website
+                    {
+                        Url="http://www.example.com"
+                    },
+                    new website
+                    {
+                        Url="http://www.example.com"
+                    }
+                }
+            });
+        }
+
+        [HttpPost]
+        [DisableRequestSizeLimit]
+        public IActionResult UrlSimilarityWithSubCalculate(InputDto input)
+        {
+            input.webSitePool.ForEach(p => p = _indexerService.WebSiteCalculate(p).Data);
+            return Ok(_indexerService.UrlSimilarityWithSubCalculate(_indexerService.WebSiteCalculate(input.webSite).Data, input.webSitePool));
+        }
+    }
+}
+/* ---------------------------------------- */
+using Business.Abstract;
+using Core.Utilities.Results;
+using Entities.Concrete;
+using Entities.Dto;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class StageOneController : ControllerBase
+    {
+        private IIndexerService _indexerService;
+
+        public StageOneController(IIndexerService indexerService)
+        {
+            _indexerService = indexerService;
+        }
+
+        [HttpGet]
+        public IActionResult Guide()
+        {
+            return Ok(new website
+            {
+                Url = "http://www.example.com"
+            }
+            );
+        }
+
+        [HttpPost]
+        public IActionResult FrequencyCalculate(WebSite webSite)
+        {
+            var result = _indexerService.WebSiteCalculate(webSite).Data;
+            FrequencyWebSiteDto frequencyWebSiteDto = new FrequencyWebSiteDto
+            {
+                Url = result.Url,
+                Title = result.Title,
+                Words = result.Words
+            };
+
+            return Ok(new SuccessDataResult<FrequencyWebSiteDto>(frequencyWebSiteDto));
+        }
+    }
+}
+/* ---------------------------------------- */
+using Business.Abstract;
+using Entities.Dto;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+
+namespace WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class StageThreeController : ControllerBase
+    {
+        private IIndexerService _indexerService;
+
+        public StageThreeController(IIndexerService indexerService)
+        {
+            _indexerService = indexerService;
+        }
+
+        [HttpGet]
+        public IActionResult Guide()
+        {
+            return Ok(new GuideDto
+            {
+                Website = new website
+                {
+                    Url = "http://www.example.com"
+                },
+                WebsitePool = new List<website>
+                {
+                    new website
+                    {
+                        Url="http://www.example.com"
+                    },
+                    new website
+                    {
+                        Url="http://www.example.com"
+                    }
+                }
+            });
+        }
+
+        [HttpPost]
+        public IActionResult UrlSimilarityCalculate(InputDto input)
+        {
+            input.webSitePool.ForEach(p => p = _indexerService.WebSiteCalculate(p).Data);
+            return Ok(_indexerService.UrlSimilarityCalculate(_indexerService.WebSiteCalculate(input.webSite).Data, input.webSitePool));
+        }
+    }
+}
+/* ---------------------------------------- */
+using Business.Abstract;
+using Core.Utilities.Results;
+using Entities.Concrete;
+using Entities.Dto;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class StageTwoController : Controller
+    {
+        private IIndexerService _indexerService;
+
+        public StageTwoController(IIndexerService indexerService)
+        {
+            _indexerService = indexerService;
+        }
+
+        [HttpGet]
+        public IActionResult Guide()
+        {
+            return Ok(new website
+            {
+                Url = "http://www.example.com"
+            }
+           );
+        }
+
+        [HttpPost]
+        public IActionResult FrequencyCalculate(WebSite webSite)
+        {
+            var result = _indexerService.WebSiteCalculate(webSite).Data;
+            KeywordWebSiteDto keywordWebSiteDto = new KeywordWebSiteDto
+            {
+                Url = result.Url,
+                Title = result.Title,
+                Keywords = result.Keywords
+            };
+
+            return Ok(new SuccessDataResult<KeywordWebSiteDto>(keywordWebSiteDto));
+        }
+    }
+}
+/* ---------------------------------------- */
+using DataAccess.Concrete.InMemory;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace WebAPI
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddCors();
+            services.AddControllers();
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            InMemoryGlobalSemanticWordDal.GetGlobalSemanticWordList();
+            app.UseCors(builder => builder.WithOrigins("https://siteindexer-729f6.web.app").AllowAnyHeader().AllowAnyOrigin());
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
+    }
+}
+/* ---------------------------------------- */
+
+

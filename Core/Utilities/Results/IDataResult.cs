@@ -1,7 +1,4 @@
-﻿//Created By Engin Yenice
-//enginyenice2626@gmail.com
-
-namespace Core.Utilities.Results
+﻿namespace Core.Utilities.Results
 {
     public interface IDataResult<T> : IResult
     {

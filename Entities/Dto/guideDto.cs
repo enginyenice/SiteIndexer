@@ -8,9 +8,4 @@ namespace Entities.Dto
         public website Website { get; set; }
         public List<website> WebsitePool { get; set; }
     }
-
-    public class website : IDto
-    {
-        public string Url { get; set; }
-    }
 }
