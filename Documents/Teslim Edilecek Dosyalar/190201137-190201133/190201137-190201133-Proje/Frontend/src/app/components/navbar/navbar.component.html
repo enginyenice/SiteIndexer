@@ -1,0 +1,54 @@
+<div style="
+  display: flex;
+  flex-direction: column; 
+  justify-content: space-between; 
+  min-height: 160px; 
+  background-image: url('assets/image/navbarbackground.jpg'); 
+  background-repeat: no-repeat;
+  background-size: cover;" >
+
+  <div style="padding: 10px; text-align: center;">
+    <a routerLink="/home">
+    <img style="height: 90px; width: auto;" src="assets/image/logo.png">
+    </a>
+  </div>
+
+<ul nz-menu nzMode="horizontal" nzTheme="dark" class="text-center"  nzMatchRouterExact="true">
+    <li nz-menu-item nzSelected>
+      <a class="text-decoration-none" routerLink="/home">
+        <i nz-icon nzType="home" nzTheme="outline"></i>      
+        Anasayfa
+      </a>
+    </li> 
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-one">
+        <i nz-icon nzType="file-text"></i>
+        Frekans
+      </a>
+    </li>
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-two">
+        <i nz-icon nzType="file-search"></i>
+        Anahtar Kelimeler
+      </a>
+    </li>
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-three">
+        <i nz-icon nzType="subnode"></i>
+        Url Havuzu
+      </a>
+    </li>
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-four">
+        <i nz-icon nzType="sisternode"></i>
+        Url - Alt Url Havuzu
+      </a>
+    </li>
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-five">
+        <i nz-icon nzType="mac-command"></i>
+        Semantik
+      </a>
+    </li>
+</ul>
+</div>

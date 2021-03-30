@@ -1,0 +1,71 @@
+<div class="container-md pt-5 pb-5" >
+
+<ng-template #notification let-notification="data">
+  <nz-tag [nzColor]="notification.color">{{ notification.title }}</nz-tag>
+  <button nz-button nzSize="small">{{ notification.message }}</button>
+</ng-template>
+
+<ng-template #titleTemplate>
+  <div nz-row nzJustify="space-between">
+    <div nz-col nzMd="18">
+      <h5>Aşama 1 - Sayfada Geçen Kelimelerin Frekanslarını Hesaplama</h5>
+    </div>
+    <div nz-col nzMd="6">
+      <div nz-row nzJustify="end">
+        <div nz-col>
+          <app-operation-infos operationName="operationOne"></app-operation-infos>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<nz-card nzHoverable="true"  nzType="inner"  [nzTitle]="titleTemplate">
+  <nz-input-group nzSearch nzSize="large" nzAddOnBeforeIcon="link" [nzAddOnAfter]="suffixButton">
+    <input #OperationOneInput  type="text" nz-input placeholder="http://bilgisayar.kocaeli.edu.tr" />
+  </nz-input-group>
+  <ng-template #suffixButton>
+    <button (click)="getFrequency(OperationOneInput.value)" nz-button nzType="primary" nzSize="large" nzSearch>Gönder</button>
+  </ng-template>
+</nz-card>
+
+<nz-card nzHoverable="true" class="mt-2 " *ngIf="send == true"  nzType="inner"  nzTitle="Sonuçlar">
+  <div class="text-center">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+</nz-card>
+
+<nz-card nzHoverable="true" class="mt-2" *ngIf="operationOneData && send == false"  nzType="inner"  nzTitle="Sonuçlar">
+  <nz-alert
+  nzType="success"
+  nzMessage="Site Bilgileri"
+  [nzDescription]="alertMessage"
+></nz-alert>
+<ng-template #alertMessage>
+  <strong>Site Title : </strong>&nbsp;<a target="_blank" href="{{operationOneData.url}}">{{
+                  operationOneData.title ? operationOneData.title : operationOneData.url 
+                }}</a><br>
+                <strong>Site Url &nbsp; : </strong>&nbsp;<a target="_blank" href="{{ operationOneData.url }}">{{
+                  operationOneData.url
+                }}</a>
+</ng-template>
+
+
+  <nz-table class="mt-2" [nzPageSize]=5 #wordsTable [nzData]="operationOneData.words" nzBordered nzTitle="Hesaplanan Frekans Değerleri">
+  <thead>
+    <tr>
+      <th>Kelime</th>
+      <th>Tekrar Sayısı</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of wordsTable.data">
+      <td>{{data.word}}</td>
+      <td>{{data.frequency}}</td>
+    </tr>
+  </tbody>
+</nz-table>
+</nz-card>
+
+
+</div>

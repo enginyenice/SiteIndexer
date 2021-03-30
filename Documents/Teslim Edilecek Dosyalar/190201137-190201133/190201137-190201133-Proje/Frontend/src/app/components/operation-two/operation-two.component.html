@@ -1,0 +1,73 @@
+<div class="container-md pt-5 pb-5" >
+  
+<ng-template #notification let-notification="data">
+  <nz-tag [nzColor]="notification.color">{{ notification.title }}</nz-tag>
+  <button nz-button nzSize="small">{{ notification.message }}</button>
+</ng-template>
+<ng-template #titleTemplate>
+  <div nz-row nzJustify="space-between">
+    <div nz-col nzMd="18">
+      <h5>Aşama 2 - Sayfada geçen anahtar kelimeleri hesaplama</h5>
+    </div>
+    <div nz-col nzMd="6">
+      <div nz-row nzJustify="end">
+        <div nz-col>
+          <app-operation-infos operationName="operationTwo"></app-operation-infos>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<nz-card nzHoverable="true" nzType="inner"  [nzTitle]="titleTemplate">
+  <nz-input-group nzSearch nzSize="large" nzAddOnBeforeIcon="link" [nzAddOnAfter]="suffixButton">
+    <input #OperationTwoInput  type="text" nz-input placeholder="http://bilgisayar.kocaeli.edu.tr" />
+  </nz-input-group>
+  <ng-template #suffixButton>
+    <button (click)="getKeyword(OperationTwoInput.value)" nz-button nzType="primary" nzSize="large" nzSearch>Gönder</button>
+  </ng-template>
+
+</nz-card>
+
+<nz-card nzHoverable="true" class="mt-2 " *ngIf="send == true"  nzType="inner"  nzTitle="Sonuçlar">
+  <div class="text-center">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+</nz-card>
+
+<nz-card nzHoverable="true" class="mt-2" *ngIf="operationTwoData && send == false"  nzType="inner"  nzTitle="Sonuçlar">
+  <nz-alert
+  nzType="success"
+  nzMessage="Site Bilgileri"
+  [nzDescription]="alertMessage"
+></nz-alert>
+<ng-template #alertMessage>
+  <strong>Site Title : </strong>&nbsp;<a target="_blank" href="{{operationTwoData.url}}">{{
+                operationTwoData.title ? operationTwoData.title : operationTwoData.url 
+                }}</a><br>
+                <strong>Site Url &nbsp; : </strong>&nbsp;<a target="_blank" href="{{ operationTwoData.url }}">{{
+                  operationTwoData.url
+                }}</a>
+</ng-template>
+
+
+  <nz-table class="mt-2" [nzPageSize]=5 #keywordsTable [nzData]="operationTwoData.keywords" nzBordered nzTitle="Hesaplanan Frekans Değerleri">
+  <thead>
+    <tr>
+      <th>Anahtar kelime</th>
+      <th>Frekans</th>
+      <th>Skor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let keyword of keywordsTable.data let i=index">
+            <td>{{keyword.word}}</td>
+            <td><span class="badge bg-secondary">{{keyword.frequency}}</span></td>
+            <td><span class="badge bg-danger">{{keyword.score}}</span></td>
+    </tr>
+  </tbody>
+</nz-table>
+</nz-card>
+
+</div>

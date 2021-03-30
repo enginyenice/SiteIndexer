@@ -1,0 +1,117 @@
+<div class="container-md pt-5 pb-5" >
+
+<nz-card nzHoverable class="card" >
+    <div nz-row nzJustify="center" nzAlign="middle" style="text-align: center;">
+        <h2>Website Indexer</h2>
+        <nz-divider></nz-divider>
+        <p class="fs-6">Website Indexer ile website içerisindeki kelimeler veya anahtar kelimeler hakkında bilgi sahibi olabilirsiniz 
+        ve websiteler arasında benzerlik karşılaştırması yapabilirsiniz.</p>        
+        <nz-divider></nz-divider>
+    </div> 
+    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="3" aria-label="Slide 4"></button>
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="4" aria-label="Slide 5"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active" data-bs-interval="3000">
+            <ng-template #coverTemplate>
+                <a routerLink="/operation-one"><img class="img-responsive" style="width: 100%;" src="{{array[0].img}}"></a>
+            </ng-template>
+            <nz-card class="card" [nzCover]="coverTemplate">
+                <nz-card-meta nzTitle="{{array[0].title}}" nzDescription="{{array[0].desc}}"></nz-card-meta>
+            </nz-card>
+          </div>
+          <div class="carousel-item" data-bs-interval="3000">
+            <ng-template #coverTemplate1>
+                <a routerLink="/operation-two"><img class="img-responsive" style="width: 100%;" src="{{array[1].img}}"></a>
+            </ng-template>
+            <nz-card class="card" [nzCover]="coverTemplate1">
+                <nz-card-meta nzTitle="{{array[1].title}}" nzDescription="{{array[1].desc}}"></nz-card-meta>
+            </nz-card>
+          </div>
+          <div class="carousel-item" data-bs-interval="3000">
+            <ng-template #coverTemplate2>
+                <a routerLink="/operation-three"><img class="img-responsive" style="width: 100%;" src="{{array[2].img}}"></a>
+            </ng-template>
+            <nz-card class="card" [nzCover]="coverTemplate2">
+                <nz-card-meta nzTitle="{{array[2].title}}" nzDescription="{{array[2].desc}}"></nz-card-meta>
+            </nz-card>
+          </div>
+          <div class="carousel-item" data-bs-interval="3000">
+            <ng-template #coverTemplate3>
+                <a routerLink="/operation-four"><img class="img-responsive" style="width: 100%;" src="{{array[3].img}}"></a>
+            </ng-template>
+            <nz-card class="card" [nzCover]="coverTemplate3">
+                <nz-card-meta nzTitle="{{array[3].title}}" nzDescription="{{array[3].desc}}"></nz-card-meta>
+            </nz-card>
+          </div>
+          <div class="carousel-item" data-bs-interval="3000">
+            <ng-template #coverTemplate4>
+                <a routerLink="/operation-five"><img class="img-responsive" style="width: 100%;" src="{{array[4].img}}"></a>
+            </ng-template>
+            <nz-card class="card" [nzCover]="coverTemplate4">
+                <nz-card-meta nzTitle="{{array[4].title}}" nzDescription="{{array[4].desc}}"></nz-card-meta>
+            </nz-card>
+          </div>
+          <!--
+
+          
+          <div class="carousel-item ">
+            <ng-template #coverTemplate>
+                <img class="img-responsive" style="width: 100%;" src="{{array[1].img}}">
+            </ng-template>
+            <nz-card class="card" [nzCover]="coverTemplate">
+                <nz-card-meta nzTitle="{{array[1].title}}" nzDescription="{{array[1].desc}}"></nz-card-meta>
+            </nz-card>
+          </div>
+          <div class="carousel-item ">
+            <img src="{{array[2].img}}" class="d-block w-80">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>{{array[2].title}}</h5>
+              <p>{{array[2].desc}}</p>
+            </div>
+          </div>
+          <div class="carousel-item ">
+            <img src="{{array[3].img}}" class="d-block w-80">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>{{array[3].title}}</h5>
+              <p>{{array[3].desc}}</p>
+            </div>
+          </div>
+          <div class="carousel-item ">
+            <img src="{{array[4].img}}" class="d-block w-80">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>{{array[4].title}}</h5>
+              <p>{{array[4].desc}}</p>
+            </div>
+          </div>
+          -->
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+<!--
+        <nz-carousel nzAutoPlay style="width: 100%;">
+            <div nz-carousel-content *ngFor="let index of array">
+                <nz-card class="card">
+                    <img class="img-responsive" style="width: 100%;" src="{{index.img}}">
+                     <br>
+                    <nz-card-meta nzTitle="{{index.title}}" nzDescription="{{index.desc}}"></nz-card-meta>
+                </nz-card>
+            </div>
+        </nz-carousel>
+
+-->
+</nz-card>
+</div>

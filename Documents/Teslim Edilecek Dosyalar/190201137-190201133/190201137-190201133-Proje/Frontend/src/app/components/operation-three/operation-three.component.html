@@ -1,0 +1,254 @@
+<div class="container-md pt-5 pb-5" >
+
+<ng-template #notification let-notification="data">
+  <nz-tag [nzColor]="notification.color">{{ notification.title }}</nz-tag>
+  <button nz-button nzSize="small">{{ notification.message }}</button>
+</ng-template>
+
+<ng-template #titleTemplate>
+  <div nz-row nzJustify="space-between">
+    <div nz-col nzMd="18">
+    <h5>Aşama 3 - URL havuzu arasında benzerlik skorlaması</h5>    
+  </div>
+    <div nz-col nzMd="6">
+      <div nz-row nzJustify="end">
+        <div nz-col>
+          <app-operation-infos operationName="operationTree"></app-operation-infos>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<nz-card
+  nzHoverable="true"
+  nzType="inner"
+  [nzTitle]="titleTemplate"
+>
+  <nz-input-group nzSearch nzSize="large" nzAddOnBeforeIcon="link">
+    <input
+      [(ngModel)]="webSite"
+      type="text"
+      nz-input
+      placeholder="http://bilgisayar.kocaeli.edu.tr"
+    />
+  </nz-input-group>
+
+  <nz-input-group
+    class="mt-2"
+    nzSearch
+    nzSize="large"
+    nzAddOnBeforeIcon="appstore-add"
+    [nzAddOnAfter]="addWebSite"
+  >
+    <input
+      [(ngModel)]="sendUrl"
+      type="text"
+      nz-input
+      placeholder="http://bilgisayar.kocaeli.edu.tr"
+    />
+    <ng-template #addWebSite>
+      <button
+        (click)="addUrl()"
+        nz-button
+        nzType="primary"
+        class="btn btn-warning"
+        nzSize="large"
+        nzSearch
+      >
+        Hazuva Ekle
+      </button>
+    </ng-template>
+  </nz-input-group>
+
+  <nz-list class="mt-2" nz-list nzBordered nzSize="small">
+    <nz-list-header>Havuz Listesi</nz-list-header>
+    <nz-list-item *ngFor="let item of urlList; let i = index">
+      <ul nz-list-item-actions>
+        <nz-list-item-action>
+          <button
+            (click)="removeUrl(i)"
+            nz-button
+            nzDanger
+            nzSize="small"
+            nzShape="circle"
+          >
+            <i
+              style="vertical-align: 0.125em !important"
+              nz-icon
+              nzType="delete"
+            ></i>
+          </button>
+        </nz-list-item-action>
+      </ul>
+      <a routerLink="{{ item }}">{{ item }}</a>
+    </nz-list-item>
+    <nz-list-empty *ngIf="urlList.length === 0"></nz-list-empty>
+  </nz-list>
+  <button (click)="getSimilarity()" nz-button nzType="primary" nzBlock>
+    <i nz-icon nzType="deployment-unit" nzTheme="outline"></i> Başlat
+  </button>
+</nz-card>
+
+<nz-card
+  nzHoverable="true"
+  class="mt-2"
+  *ngIf="send == true"
+  nzType="inner"
+  nzTitle="Sonuçlar"
+>
+  <div class="text-center">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+</nz-card>
+
+<div *ngIf="result && send == false">
+  <nz-ribbon nzText="Temel Site">
+    <nz-card class="mt-2" nzType="inner" nzTitle="Temel Site">
+      <nz-alert nzType="success" [nzDescription]="alertMessage"></nz-alert>
+      <ng-template #alertMessage>
+        <strong>Site : </strong>&nbsp;<a target="_blank"
+          href="{{ result.webSite.url }}"
+          >{{ result.webSite.title ? result.webSite.title : result.webSite.url  }}</a
+        >
+      </ng-template>
+
+      <nz-collapse nzAccordion>
+        <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+          <nz-table
+            class="mt-2"
+            [nzPageSize]="5"
+            #keywordsTable
+            [nzData]="result.webSite.keywords"
+            nzBordered
+            nzTitle="Anahtar Kelimeler"
+          >
+            <thead>
+              <tr>
+                <th>Anahtar kelime</th>
+                <th>Frekans</th>
+                <th>Skor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+                <td>{{ keyword.word }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{
+                    keyword.frequency
+                  }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-danger">{{ keyword.score }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-card>
+  </nz-ribbon>
+
+  <nz-card class="mt-2" nzType="inner" nzTitle="Hedef Siteler">
+    <nz-card
+      nzHoverable="true"
+      *ngFor="let webSite of result.webSitePool"
+      class="mt-2"
+      nzType="inner"
+      nzTitle="{{ webSite.webSite.title ? webSite.webSite.title : webSite.webSite.url  }}"
+    >
+
+    
+
+  <!--  -->
+
+  <nz-alert nzType="info" [nzDescription]="alertMessage"></nz-alert>
+  <ng-template #alertMessage>
+    <div nz-row nzJustify="space-between">
+      <div nz-col nzMd="20">
+        <strong>Site : </strong>&nbsp;<a target="_blank" href="{{ webSite.webSite.url }}">{{
+          webSite.webSite.title ? webSite.webSite.title : webSite.webSite.url 
+        }}</a>
+      </div>
+      <div nz-col nzMd="4">
+        <div nz-row nzJustify="end">
+          <div nz-col>
+            
+            <button nz-button nzType="default" nzDanger>%{{ webSite.similarityScore }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!--  -->
+      <nz-collapse nzAccordion>
+        <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+          <nz-table
+            class="mt-2"
+            [nzPageSize]="5"
+            #keywordsTable
+            [nzData]="webSite.webSite.keywords"
+            nzBordered
+            nzTitle="Anahtar Kelimeler"
+          >
+            <thead>
+              <tr>
+                <th>Anahtar kelime</th>
+                <th>Frekans</th>
+                <th>Skor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+                <td>{{ keyword.word }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{
+                    keyword.frequency
+                  }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-danger">{{ keyword.score }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-card>
+
+    <!-- 
+    <nz-collapse nzAccordion>
+      <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+        <nz-table
+          class="mt-2"
+          [nzPageSize]="5"
+          #keywordsTable
+          [nzData]="result.webSite.keywords"
+          nzBordered
+          nzTitle="Anahtar Kelimeler"
+        >
+          <thead>
+            <tr>
+              <th>Anahtar kelime</th>
+              <th>Frekans</th>
+              <th>Skor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+              <td>{{ keyword.word }}</td>
+              <td>
+                <span class="badge bg-secondary">{{ keyword.frequency }}</span>
+              </td>
+              <td>
+                <span class="badge bg-danger">{{ keyword.score }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-collapse-panel>
+    </nz-collapse> -->
+  </nz-card>
+</div>
+</div>
