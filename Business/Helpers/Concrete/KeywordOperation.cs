@@ -330,14 +330,13 @@ namespace Business
                                     }
                                 }
                             }
-                            
                         }
                     }
                     if (lvl3UrlAllKeyword == 0) lvl3UrlAllKeyword = 1;
                     if (lvl2UrlAllKeyword == 0) lvl2UrlAllKeyword = 1;
                     if (lvl1allKeyword == 0) lvl1allKeyword = 1;
 
-                    ratelvl3 = (lvl3MachedKeyword * 5)  / (lvl3UrlAllKeyword * 100);
+                    ratelvl3 = (lvl3MachedKeyword * 5) / (lvl3UrlAllKeyword * 100);
                     ratelvl2 = (lvl2MachedKeyword * 10) / (lvl2UrlAllKeyword * 100);
                     ratelvl1 = (lvl1machedKeyword * 85) / (lvl1allKeyword * 100);
                     item.SimilarityScore = (ratelvl1 + ratelvl2 + ratelvl3) * 100;
