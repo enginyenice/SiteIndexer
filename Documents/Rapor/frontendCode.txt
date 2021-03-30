@@ -1,0 +1,2040 @@
+/* -------------------------------------  */ 
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './components/home/home.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { OperationOneComponent } from './components/operation-one/operation-one.component';
+import { OperationTwoComponent } from './components/operation-two/operation-two.component';
+import { OperationThreeComponent } from './components/operation-three/operation-three.component';
+import { OperationFourComponent } from './components/operation-four/operation-four.component';
+import { OperationFiveComponent } from './components/operation-five/operation-five.component';
+import { NZ_I18N } from 'ng-zorro-antd/i18n';
+import { tr_TR } from 'ng-zorro-antd/i18n';
+import { registerLocaleData } from '@angular/common';
+import tr from '@angular/common/locales/tr';
+import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzListModule } from 'ng-zorro-antd/list';
+import { NzNotificationModule } from 'ng-zorro-antd/notification';
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzStatisticModule } from 'ng-zorro-antd/statistic';
+import { OperationInfosComponent } from './components/operation-infos/operation-infos.component';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzTreeModule } from 'ng-zorro-antd/tree';
+
+registerLocaleData(tr);
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    OperationOneComponent,
+    OperationTwoComponent,
+    OperationThreeComponent,
+    OperationFourComponent,
+    OperationFiveComponent,
+    OperationInfosComponent,
+    HomeComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    NzAlertModule,
+    NzGridModule,
+    NzMenuModule,
+    NzLayoutModule,
+    NzBreadCrumbModule,
+    NzCardModule,
+    NzInputModule,
+    NzButtonModule,
+    NzIconModule,
+    NzSpinModule,
+    NzTableModule,
+    NzTagModule,
+    NzListModule,
+    NzNotificationModule,
+    NzCollapseModule,
+    NzBadgeModule,
+    NzStatisticModule,
+    NzModalModule,
+    NzTreeModule
+  ],
+
+  providers: [{ provide: NZ_I18N, useValue: tr_TR }],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+
+/* -------------------------------------  */ 
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'siteIndexer-Frontend';
+}
+
+/* -------------------------------------  */ 
+<app-navbar></app-navbar>
+
+<div style=" min-height: calc(100% - 260px);">
+  <router-outlet></router-outlet>  
+</div>
+
+<nz-footer nzTheme="dark" class="text-center" 
+  style="height: 100px; background-color:#7f8e9e69;">
+ <div style="padding: 5px; text-align: center;">
+    <img style="height: 35px; width: auto;" src="assets/image/footer.png">
+</div>
+</nz-footer>
+/* -------------------------------------  */ 
+.fixed-bottom {
+    z-index: 0!important;
+}
+
+
+
+/* -------------------------------------  */ 
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { HomeComponent } from './components/home/home.component';
+import { OperationFiveComponent } from './components/operation-five/operation-five.component';
+import { OperationFourComponent } from './components/operation-four/operation-four.component';
+import { OperationOneComponent } from './components/operation-one/operation-one.component';
+import { OperationThreeComponent } from './components/operation-three/operation-three.component';
+import { OperationTwoComponent } from './components/operation-two/operation-two.component';
+
+const routes: Routes = [
+  {path:"", redirectTo : "/home",  pathMatch: 'full'},
+  {path:"home", component:HomeComponent},
+  {path:"operation-one", component:OperationOneComponent},
+  {path:"operation-two", component:OperationTwoComponent},
+  {path:"operation-three", component:OperationThreeComponent},
+  {path:"operation-four", component:OperationFourComponent},
+  {path:"operation-five", component:OperationFiveComponent},
+
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+/* -------------------------------------  */ 
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ItemResponseModel } from 'src/app/models/itemResponseModel';
+import { OperationFiveModel } from 'src/app/models/operation-five/operationFiveModel';
+import { WebSiteBasic } from 'src/app/models/websiteBasic/WebSiteBasic';
+import { environment } from 'src/environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class OperationFiveService {
+
+  constructor(private httpClient:HttpClient) { }
+  apiUrl = environment.apiUrl+"stagefive";
+  
+  getSimilarity(webSite:string,webSitePool:WebSiteBasic[]):Observable<ItemResponseModel<OperationFiveModel>> 
+  {
+    return this.httpClient.post<ItemResponseModel<OperationFiveModel>>(this.apiUrl,{webSite : {url:webSite}, webSitePool : webSitePool});
+  }
+}
+
+/* -------------------------------------  */ 
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ItemResponseModel } from 'src/app/models/itemResponseModel';
+import { OperationFourModel } from 'src/app/models/operation-four/operationFourModel';
+import { WebSiteBasic } from 'src/app/models/websiteBasic/WebSiteBasic';
+import { environment } from 'src/environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class OperationFourService {
+
+  constructor(private httpClient:HttpClient) { }
+  apiUrl = environment.apiUrl+"stagefour";
+  
+  getSimilarity(webSite:string,webSitePool:WebSiteBasic[]):Observable<ItemResponseModel<OperationFourModel>> 
+  {
+    return this.httpClient.post<ItemResponseModel<OperationFourModel>>(this.apiUrl,{webSite : {url:webSite}, webSitePool : webSitePool});
+  }
+}
+
+/* -------------------------------------  */ 
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ItemResponseModel } from 'src/app/models/itemResponseModel';
+import { OperationOneModel } from 'src/app/models/operation-one/operationOneModel';
+import { environment } from 'src/environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class OperationOneService {
+
+  constructor(private httpClient: HttpClient) { }
+
+  apiUrl = environment.apiUrl + 'stageone';
+  getFrequency(Url: String):Observable<ItemResponseModel<OperationOneModel>> {
+    return this.httpClient.post<ItemResponseModel<OperationOneModel>>(this.apiUrl, { url: Url });
+  }
+}
+
+/* -------------------------------------  */ 
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ItemResponseModel } from 'src/app/models/itemResponseModel';
+import { OperationThreeModel } from 'src/app/models/operation-three/operationThreeModel';
+import { WebSiteBasic } from 'src/app/models/websiteBasic/WebSiteBasic';
+import { environment } from 'src/environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class OperationThreeService {
+
+  constructor(private httpClient:HttpClient) { }
+  apiUrl = environment.apiUrl+"stagethree";
+  
+  getSimilarity(webSite:string,webSitePool:WebSiteBasic[]):Observable<ItemResponseModel<OperationThreeModel>> 
+  {
+    return this.httpClient.post<ItemResponseModel<OperationThreeModel>>(this.apiUrl,{webSite : {url:webSite}, webSitePool : webSitePool});
+  }
+}
+
+/* -------------------------------------  */ 
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ItemResponseModel } from 'src/app/models/itemResponseModel';
+import { OperationTwoModel } from 'src/app/models/operation-two/operationTwoModel';
+import { environment } from 'src/environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class OperationTwoService {
+
+  constructor(private httpClient:HttpClient) { }
+  apiUrl = environment.apiUrl+"stagetwo";
+    getKeyword(Url:String):Observable<ItemResponseModel<OperationTwoModel>> {
+    return this.httpClient.post<ItemResponseModel<OperationTwoModel>>(this.apiUrl, { url: Url });
+
+    
+  }
+}
+
+/* -------------------------------------  */ 
+export interface FrequanceModel{
+    word:String;
+    frequency:Number;
+}
+/* -------------------------------------  */ 
+export interface Keyword {
+    word:string;
+    frequency:Number;
+    score:Number;
+}
+/* -------------------------------------  */ 
+import { OperationFourModel } from "../operation-four/operationFourModel";
+
+export interface OperationFiveModel extends OperationFourModel{
+    
+}
+
+/* -------------------------------------  */ 
+import { OperationThreeModel } from "../operation-three/operationThreeModel";
+
+export interface OperationFourModel extends OperationThreeModel{
+    urlTree: UrlTree[]
+}
+
+export interface UrlTree{
+    key:string,
+    title:string,
+    url:string,
+    children:UrlTree[]
+}
+
+/* -------------------------------------  */ 
+import { FrequanceModel } from "../frequance/frequanceModel";
+
+export interface OperationOneModel{
+    url:string;
+    title:string;
+    words:FrequanceModel[];
+}
+/* -------------------------------------  */ 
+import { Keyword } from "../keyword/keywordModel";
+import { SemanticKeyword } from "../semanticKeyword/semanticKeyword";
+
+//Website modeli
+export interface Website{
+    title:string;
+    url:string;
+    keywords:Keyword[];
+    semanticKeywords:SemanticKeyword[]
+}
+
+// Sonuc Modelindeki Benzerligi hesaplanan websiteler ve benzerlik skorlari modeli
+interface SimularityScore{
+    similarityScore:number;
+    webSite:Website;
+}
+
+// Sonuc Modeli
+export interface OperationThreeModel{
+    webSite:Website;
+    webSitePool:SimularityScore[];
+}
+
+/* -------------------------------------  */ 
+import { Keyword } from "../keyword/keywordModel";
+
+export interface OperationTwoModel{
+    url:string;
+    title:string;
+    keywords:Keyword[];
+}
+/* -------------------------------------  */ 
+import { Keyword } from "../keyword/keywordModel";
+
+export interface SemanticKeyword{
+    word:String,
+    similarWords:Keyword[]
+
+}
+
+
+/* -------------------------------------  */ 
+export interface WebSiteBasic{
+    url:string;
+}
+/* -------------------------------------  */ 
+import { ResponseModel } from "./responseModel";
+
+export interface ItemResponseModel<T> extends ResponseModel{
+    data:T;
+}
+/* -------------------------------------  */ 
+import { ResponseModel } from "./responseModel";
+
+export interface ListResponseModel<T> extends ResponseModel{
+    data:T[];
+}
+/* -------------------------------------  */ 
+export interface ResponseModel{
+    message:String;
+    success:boolean;
+}
+/* -------------------------------------  */ 
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { OperationTwoModel } from 'src/app/models/operation-two/operationTwoModel';
+import { OperationTwoService } from 'src/app/services/operationTwo/operation-two.service';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+
+@Component({
+  selector: 'app-operation-two',
+  templateUrl: './operation-two.component.html',
+  styleUrls: ['./operation-two.component.css']
+})
+export class OperationTwoComponent implements OnInit {
+  @ViewChild(TemplateRef, { static: false }) template?: TemplateRef<{}>;
+  constructor(private operationTwoService:OperationTwoService,private notificationService: NzNotificationService) { }
+  dataLoaded = false;
+  send = false;
+  ngOnInit(): void {
+  }
+
+  operationTwoData: OperationTwoModel;
+  getKeyword(url:String){
+    if(url != "" && url.length != 0 && url != null){
+    this.send=true;
+    this.operationTwoService.getKeyword(url).subscribe(response => {
+      this.operationTwoData = response.data;
+      this.dataLoaded=true;  
+      this.send=false;
+      console.log(response)
+    })
+  } else {
+    this.notificationService.template(this.template!, {
+      nzData: {
+        title: 'Hata!!',
+        message: 'Url hatalı. Tekrar kontrol ediniz.',
+        color: 'red',
+      },
+    });
+  }
+
+}
+}
+
+/* -------------------------------------  */ 
+<div class="container-md pt-5 pb-5" >
+  
+<ng-template #notification let-notification="data">
+  <nz-tag [nzColor]="notification.color">{{ notification.title }}</nz-tag>
+  <button nz-button nzSize="small">{{ notification.message }}</button>
+</ng-template>
+<ng-template #titleTemplate>
+  <div nz-row nzJustify="space-between">
+    <div nz-col nzMd="18">
+      <h5>Aşama 2 - Sayfada geçen anahtar kelimeleri hesaplama</h5>
+    </div>
+    <div nz-col nzMd="6">
+      <div nz-row nzJustify="end">
+        <div nz-col>
+          <app-operation-infos operationName="operationTwo"></app-operation-infos>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<nz-card nzHoverable="true" nzType="inner"  [nzTitle]="titleTemplate">
+  <nz-input-group nzSearch nzSize="large" nzAddOnBeforeIcon="link" [nzAddOnAfter]="suffixButton">
+    <input #OperationTwoInput  type="text" nz-input placeholder="http://bilgisayar.kocaeli.edu.tr" />
+  </nz-input-group>
+  <ng-template #suffixButton>
+    <button (click)="getKeyword(OperationTwoInput.value)" nz-button nzType="primary" nzSize="large" nzSearch>Gönder</button>
+  </ng-template>
+
+</nz-card>
+
+<nz-card nzHoverable="true" class="mt-2 " *ngIf="send == true"  nzType="inner"  nzTitle="Sonuçlar">
+  <div class="text-center">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+</nz-card>
+
+<nz-card nzHoverable="true" class="mt-2" *ngIf="operationTwoData && send == false"  nzType="inner"  nzTitle="Sonuçlar">
+  <nz-alert
+  nzType="success"
+  nzMessage="Site Bilgileri"
+  [nzDescription]="alertMessage"
+></nz-alert>
+<ng-template #alertMessage>
+  <strong>Site Title : </strong>&nbsp;<a target="_blank" href="{{operationTwoData.url}}">{{
+                operationTwoData.title ? operationTwoData.title : operationTwoData.url 
+                }}</a><br>
+                <strong>Site Url &nbsp; : </strong>&nbsp;<a target="_blank" href="{{ operationTwoData.url }}">{{
+                  operationTwoData.url
+                }}</a>
+</ng-template>
+
+
+  <nz-table class="mt-2" [nzPageSize]=5 #keywordsTable [nzData]="operationTwoData.keywords" nzBordered nzTitle="Hesaplanan Frekans Değerleri">
+  <thead>
+    <tr>
+      <th>Anahtar kelime</th>
+      <th>Frekans</th>
+      <th>Skor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let keyword of keywordsTable.data let i=index">
+            <td>{{keyword.word}}</td>
+            <td><span class="badge bg-secondary">{{keyword.frequency}}</span></td>
+            <td><span class="badge bg-danger">{{keyword.score}}</span></td>
+    </tr>
+  </tbody>
+</nz-table>
+</nz-card>
+
+</div>
+/* -------------------------------------  */ 
+nz-card{
+    cursor: default;
+}
+/* -------------------------------------  */ 
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { OperationThreeModel } from 'src/app/models/operation-three/operationThreeModel';
+import { OperationThreeService } from 'src/app/services/operationThree/operation-three.service';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { WebSiteBasic } from 'src/app/models/websiteBasic/WebSiteBasic';
+
+@Component({
+  selector: 'app-operation-three',
+  templateUrl: './operation-three.component.html',
+  styleUrls: ['./operation-three.component.css']
+})
+export class OperationThreeComponent implements OnInit {
+
+  constructor(private operationThreeService:OperationThreeService,private notificationService: NzNotificationService) { }
+  @ViewChild(TemplateRef, { static: false }) template?: TemplateRef<{}>;
+  webSite:string;
+  sendUrl:string = "";
+  urlList:string[] = [];
+  webSitePool:WebSiteBasic[] = [];
+  result : OperationThreeModel;
+  control = false;
+  send = false;
+  ngOnInit(): void {
+  }
+ 
+  closeLoading(){
+    this.control=false;
+  }
+
+
+  addUrl(){
+    var control = false;
+    if (this.sendUrl != " " && this.sendUrl!= ""){
+      this.urlList.forEach(p=> {if(p === this.sendUrl) control=true;});
+      if (!control){
+        this.urlList.push(this.sendUrl); 
+        this.sendUrl = "";
+        this.notificationService.template(this.template!, { 
+          nzData: { 
+            title: 'Harika!!', 
+            message: 'Url başarıyla havuza eklendi.', 
+            color: 'green' 
+          },
+        });
+      } 
+      else {
+        this.notificationService.template(this.template!, { 
+          nzData: { 
+            title: 'Hata!!', 
+            message: 'Url hatalı veya havuzda bulunuyor.', 
+            color: 'red' 
+          }, 
+        });
+      }
+    } 
+    else{
+      this.notificationService.template(this.template!, {
+        nzData: {
+          title: 'Hata!!',
+          message: 'Url alanı boş.',
+          color: 'red',
+        },
+      });
+    }       
+  }
+
+  removeUrl(index:number){
+    this.urlList.splice(index,1);
+    this.notificationService.template(this.template!, { nzData: { title: 'Harika!!', message: 'Url başarıyla havuzdan kaldırıldı.', color: 'green' } });
+  }
+
+
+  
+
+
+  getSimilarity(){
+    
+    if(this.webSite != null && this.urlList != null && this.urlList.length > 0){
+      this.send = true;
+      
+      this.urlList.forEach(item => {
+        var webSite:WebSiteBasic = {
+          url:item
+        };
+        this.webSitePool.push(webSite);
+      });
+      this.operationThreeService.getSimilarity(this.webSite,this.webSitePool).subscribe(response => {
+          this.result = response.data;
+          this.send = false;
+          this.webSitePool = [];
+        }
+        );
+    }
+     else {
+      this.notificationService.template(this.template!, { nzData: { title: 'Hata!!', message: '1. Website veya havuz boş', color: 'red' } });
+    }
+   
+  }
+}
+
+/* -------------------------------------  */ 
+<div class="container-md pt-5 pb-5" >
+
+<ng-template #notification let-notification="data">
+  <nz-tag [nzColor]="notification.color">{{ notification.title }}</nz-tag>
+  <button nz-button nzSize="small">{{ notification.message }}</button>
+</ng-template>
+
+<ng-template #titleTemplate>
+  <div nz-row nzJustify="space-between">
+    <div nz-col nzMd="18">
+    <h5>Aşama 3 - URL havuzu arasında benzerlik skorlaması</h5>    
+  </div>
+    <div nz-col nzMd="6">
+      <div nz-row nzJustify="end">
+        <div nz-col>
+          <app-operation-infos operationName="operationTree"></app-operation-infos>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<nz-card
+  nzHoverable="true"
+  nzType="inner"
+  [nzTitle]="titleTemplate"
+>
+  <nz-input-group nzSearch nzSize="large" nzAddOnBeforeIcon="link">
+    <input
+      [(ngModel)]="webSite"
+      type="text"
+      nz-input
+      placeholder="http://bilgisayar.kocaeli.edu.tr"
+    />
+  </nz-input-group>
+
+  <nz-input-group
+    class="mt-2"
+    nzSearch
+    nzSize="large"
+    nzAddOnBeforeIcon="appstore-add"
+    [nzAddOnAfter]="addWebSite"
+  >
+    <input
+      [(ngModel)]="sendUrl"
+      type="text"
+      nz-input
+      placeholder="http://bilgisayar.kocaeli.edu.tr"
+    />
+    <ng-template #addWebSite>
+      <button
+        (click)="addUrl()"
+        nz-button
+        nzType="primary"
+        class="btn btn-warning"
+        nzSize="large"
+        nzSearch
+      >
+        Hazuva Ekle
+      </button>
+    </ng-template>
+  </nz-input-group>
+
+  <nz-list class="mt-2" nz-list nzBordered nzSize="small">
+    <nz-list-header>Havuz Listesi</nz-list-header>
+    <nz-list-item *ngFor="let item of urlList; let i = index">
+      <ul nz-list-item-actions>
+        <nz-list-item-action>
+          <button
+            (click)="removeUrl(i)"
+            nz-button
+            nzDanger
+            nzSize="small"
+            nzShape="circle"
+          >
+            <i
+              style="vertical-align: 0.125em !important"
+              nz-icon
+              nzType="delete"
+            ></i>
+          </button>
+        </nz-list-item-action>
+      </ul>
+      <a routerLink="{{ item }}">{{ item }}</a>
+    </nz-list-item>
+    <nz-list-empty *ngIf="urlList.length === 0"></nz-list-empty>
+  </nz-list>
+  <button (click)="getSimilarity()" nz-button nzType="primary" nzBlock>
+    <i nz-icon nzType="deployment-unit" nzTheme="outline"></i> Başlat
+  </button>
+</nz-card>
+
+<nz-card
+  nzHoverable="true"
+  class="mt-2"
+  *ngIf="send == true"
+  nzType="inner"
+  nzTitle="Sonuçlar"
+>
+  <div class="text-center">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+</nz-card>
+
+<div *ngIf="result && send == false">
+  <nz-ribbon nzText="Temel Site">
+    <nz-card class="mt-2" nzType="inner" nzTitle="Temel Site">
+      <nz-alert nzType="success" [nzDescription]="alertMessage"></nz-alert>
+      <ng-template #alertMessage>
+        <strong>Site : </strong>&nbsp;<a target="_blank"
+          href="{{ result.webSite.url }}"
+          >{{ result.webSite.title ? result.webSite.title : result.webSite.url  }}</a
+        >
+      </ng-template>
+
+      <nz-collapse nzAccordion>
+        <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+          <nz-table
+            class="mt-2"
+            [nzPageSize]="5"
+            #keywordsTable
+            [nzData]="result.webSite.keywords"
+            nzBordered
+            nzTitle="Anahtar Kelimeler"
+          >
+            <thead>
+              <tr>
+                <th>Anahtar kelime</th>
+                <th>Frekans</th>
+                <th>Skor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+                <td>{{ keyword.word }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{
+                    keyword.frequency
+                  }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-danger">{{ keyword.score }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-card>
+  </nz-ribbon>
+
+  <nz-card class="mt-2" nzType="inner" nzTitle="Hedef Siteler">
+    <nz-card
+      nzHoverable="true"
+      *ngFor="let webSite of result.webSitePool"
+      class="mt-2"
+      nzType="inner"
+      nzTitle="{{ webSite.webSite.title ? webSite.webSite.title : webSite.webSite.url  }}"
+    >
+
+    
+
+  <!--  -->
+
+  <nz-alert nzType="info" [nzDescription]="alertMessage"></nz-alert>
+  <ng-template #alertMessage>
+    <div nz-row nzJustify="space-between">
+      <div nz-col nzMd="20">
+        <strong>Site : </strong>&nbsp;<a target="_blank" href="{{ webSite.webSite.url }}">{{
+          webSite.webSite.title ? webSite.webSite.title : webSite.webSite.url 
+        }}</a>
+      </div>
+      <div nz-col nzMd="4">
+        <div nz-row nzJustify="end">
+          <div nz-col>
+            
+            <button nz-button nzType="default" nzDanger>%{{ webSite.similarityScore }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!--  -->
+      <nz-collapse nzAccordion>
+        <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+          <nz-table
+            class="mt-2"
+            [nzPageSize]="5"
+            #keywordsTable
+            [nzData]="webSite.webSite.keywords"
+            nzBordered
+            nzTitle="Anahtar Kelimeler"
+          >
+            <thead>
+              <tr>
+                <th>Anahtar kelime</th>
+                <th>Frekans</th>
+                <th>Skor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+                <td>{{ keyword.word }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{
+                    keyword.frequency
+                  }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-danger">{{ keyword.score }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-card>
+
+    <!-- 
+    <nz-collapse nzAccordion>
+      <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+        <nz-table
+          class="mt-2"
+          [nzPageSize]="5"
+          #keywordsTable
+          [nzData]="result.webSite.keywords"
+          nzBordered
+          nzTitle="Anahtar Kelimeler"
+        >
+          <thead>
+            <tr>
+              <th>Anahtar kelime</th>
+              <th>Frekans</th>
+              <th>Skor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+              <td>{{ keyword.word }}</td>
+              <td>
+                <span class="badge bg-secondary">{{ keyword.frequency }}</span>
+              </td>
+              <td>
+                <span class="badge bg-danger">{{ keyword.score }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-collapse-panel>
+    </nz-collapse> -->
+  </nz-card>
+</div>
+</div>
+/* -------------------------------------  */ 
+i {
+    vertical-align: 0px!important;
+    font-size: 16px!important;
+}
+nz-card{
+    cursor: default;
+}
+/* -------------------------------------  */ 
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { OperationOneModel } from 'src/app/models/operation-one/operationOneModel';
+import { OperationOneService } from 'src/app/services/operationOne/operation-one.service';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+@Component({
+  selector: 'app-operation-one',
+  templateUrl: './operation-one.component.html',
+  styleUrls: ['./operation-one.component.css']
+})
+export class OperationOneComponent implements OnInit {
+  @ViewChild(TemplateRef, { static: false }) template?: TemplateRef<{}>;
+  
+  constructor(private operationOneService:OperationOneService,    private notificationService: NzNotificationService) { }
+
+  ngOnInit(): void {
+  }
+  
+  
+  operationOneData: OperationOneModel;
+  dataLoaded = false;
+  send = false;
+  getFrequency(url:String){
+    if(url != "" && url.length != 0 && url != null){
+      this.send = true;
+    this.operationOneService.getFrequency(url).subscribe(response => {
+      this.operationOneData = response.data;
+      this.dataLoaded = true;
+      this.send = false;
+    })
+    } else {
+      this.notificationService.template(this.template!, {
+        nzData: {
+          title: 'Hata!!',
+          message: 'Url hatalı. Tekrar kontrol ediniz.',
+          color: 'red',
+        },
+      });
+    }
+  }
+
+
+}
+
+/* -------------------------------------  */ 
+<div class="container-md pt-5 pb-5" >
+
+<ng-template #notification let-notification="data">
+  <nz-tag [nzColor]="notification.color">{{ notification.title }}</nz-tag>
+  <button nz-button nzSize="small">{{ notification.message }}</button>
+</ng-template>
+
+<ng-template #titleTemplate>
+  <div nz-row nzJustify="space-between">
+    <div nz-col nzMd="18">
+      <h5>Aşama 1 - Sayfada Geçen Kelimelerin Frekanslarını Hesaplama</h5>
+    </div>
+    <div nz-col nzMd="6">
+      <div nz-row nzJustify="end">
+        <div nz-col>
+          <app-operation-infos operationName="operationOne"></app-operation-infos>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<nz-card nzHoverable="true"  nzType="inner"  [nzTitle]="titleTemplate">
+  <nz-input-group nzSearch nzSize="large" nzAddOnBeforeIcon="link" [nzAddOnAfter]="suffixButton">
+    <input #OperationOneInput  type="text" nz-input placeholder="http://bilgisayar.kocaeli.edu.tr" />
+  </nz-input-group>
+  <ng-template #suffixButton>
+    <button (click)="getFrequency(OperationOneInput.value)" nz-button nzType="primary" nzSize="large" nzSearch>Gönder</button>
+  </ng-template>
+</nz-card>
+
+<nz-card nzHoverable="true" class="mt-2 " *ngIf="send == true"  nzType="inner"  nzTitle="Sonuçlar">
+  <div class="text-center">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+</nz-card>
+
+<nz-card nzHoverable="true" class="mt-2" *ngIf="operationOneData && send == false"  nzType="inner"  nzTitle="Sonuçlar">
+  <nz-alert
+  nzType="success"
+  nzMessage="Site Bilgileri"
+  [nzDescription]="alertMessage"
+></nz-alert>
+<ng-template #alertMessage>
+  <strong>Site Title : </strong>&nbsp;<a target="_blank" href="{{operationOneData.url}}">{{
+                  operationOneData.title ? operationOneData.title : operationOneData.url 
+                }}</a><br>
+                <strong>Site Url &nbsp; : </strong>&nbsp;<a target="_blank" href="{{ operationOneData.url }}">{{
+                  operationOneData.url
+                }}</a>
+</ng-template>
+
+
+  <nz-table class="mt-2" [nzPageSize]=5 #wordsTable [nzData]="operationOneData.words" nzBordered nzTitle="Hesaplanan Frekans Değerleri">
+  <thead>
+    <tr>
+      <th>Kelime</th>
+      <th>Tekrar Sayısı</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of wordsTable.data">
+      <td>{{data.word}}</td>
+      <td>{{data.frequency}}</td>
+    </tr>
+  </tbody>
+</nz-table>
+</nz-card>
+
+
+</div>
+/* -------------------------------------  */ 
+nz-card{
+    cursor: default;
+}
+/* -------------------------------------  */ 
+import { Component, Input, OnInit } from '@angular/core';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
+
+@Component({
+  selector: 'app-operation-infos',
+  templateUrl: './operation-infos.component.html',
+  styleUrls: ['./operation-infos.component.css'],
+})
+export class OperationInfosComponent implements OnInit {
+  @Input() operationName: string;
+  constructor(private modal: NzModalService) {}
+  isVisible = false;
+  operationOneTitle = 'Sayfada Geçen Kelimelerin Frekanslarını Hesaplama';
+  operationOneText =  'Url içeriğinde (Url’in gösterdiği sayfa içeriğinde) her kelimenin kaçar defa yer aldığını (frekansını)  hesaplar.';
+
+  operationTwoTitle = 'Sayfada geçen anahtar kelimeleri hesaplama';
+  operationTwoText =  'Url içeriğinde (Url’in gösterdiği sayfa içeriğinde) bulunan anahtar kelimeleri ve kaçar defa yer aldığını (frekansını) hesaplar.';
+
+  operationTreeTitle = 'URL havuzu arasında benzerlik skorlaması';
+  operationTreeText =  'Girilen Url içeriğinde (Url’in gösterdiği sayfa içeriğinde) bulunan anahtar kelimeler yardımı ile birbirlerine olan benzerliklerini hesaplar.';
+
+  operationFourTitle = 'URL havuzu ve Alt URL leri arasında benzerlik skorlaması';
+  operationFourText =  'Girilen Url içeriğinde (Url’in gösterdiği sayfa içeriğinde) bulunan anahtar kelimeler yardımı ile birbirlerine olan benzerliklerini ve ağacını hesaplar.';
+
+  operationFiveTitle = 'URL havuzu ve Alt URL leri arasında benzerlik skorlaması (Semantik dahil)';
+  operationFiveText =  'URL havuzu ve alt URL leri arasında semantik kontrolü yapılarak benzerlik skorlaması';
+
+  modalTitle: string;
+  modalDescription: string;
+  confirmModal?: NzModalRef;
+  showConfirm(): void {
+    this.confirmModal = this.modal.info({
+      nzTitle: this.modalTitle,
+      nzContent: this.modalDescription,
+    });
+  }
+  ngOnInit(): void {
+    switch (this.operationName) {
+      case 'operationOne':
+        this.modalTitle = this.operationOneTitle;
+        this.modalDescription = this.operationOneText;
+        break;
+      case 'operationTwo':
+        this.modalTitle = this.operationTwoTitle;
+        this.modalDescription = this.operationTwoText;
+        break;
+      case 'operationTree':
+        this.modalTitle = this.operationTreeTitle;
+        this.modalDescription = this.operationTreeText;
+        break;
+      case 'operationFour':
+        this.modalTitle = this.operationFourTitle;
+        this.modalDescription = this.operationFourText;
+        break;
+      case 'operationFive':
+        this.modalTitle = this.operationFiveTitle;
+        this.modalDescription = this.operationFiveText;
+        break;
+      default:
+        this.modalTitle = "Yardım başlık";
+        this.modalDescription = "Yardım içerik";
+        break;
+    }
+  }
+}
+
+/* -------------------------------------  */ 
+<button nz-button nzType="default" (click)="showConfirm()" nzDanger><strong>Yardım</strong></button>
+
+/* -------------------------------------  */ 
+i {
+    vertical-align: 0!important;
+}
+/* -------------------------------------  */
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { WebSiteBasic } from 'src/app/models/websiteBasic/WebSiteBasic';
+import { OperationFourService } from 'src/app/services/operationFour/operation-four.service';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { OperationFourModel } from 'src/app/models/operation-four/operationFourModel';
+import { NzFormatEmitEvent } from 'ng-zorro-antd/tree';
+
+@Component({
+  selector: 'app-operation-four',
+  templateUrl: './operation-four.component.html',
+  styleUrls: ['./operation-four.component.css'],
+})
+export class OperationFourComponent implements OnInit {
+  constructor(
+    private operationFourService: OperationFourService,
+    private notificationService: NzNotificationService
+  ) {}
+  @ViewChild(TemplateRef, { static: false }) template?: TemplateRef<{}>;
+  webSite: string;
+  sendUrl: string = '';
+  urlList: string[] = [];
+  webSitePool: WebSiteBasic[] = [];
+  result: OperationFourModel;
+  control = false;
+  send = false;
+  ngOnInit(): void {}
+
+  nzEvent(event: NzFormatEmitEvent): void {
+    console.log(event);
+  }
+
+  closeLoading() {
+    this.control = false;
+  }
+
+  addUrl() {
+    var control = false;
+    if (this.sendUrl != ' ' && this.sendUrl != '') {
+      this.urlList.forEach((p) => {
+        if (p === this.sendUrl) control = true;
+      });
+      if (!control) {
+        this.urlList.push(this.sendUrl);
+        this.sendUrl = '';
+        this.notificationService.template(this.template!, {
+          nzData: {
+            title: 'Harika!!',
+            message: 'Url başarıyla havuza eklendi.',
+            color: 'green',
+          },
+        });
+      } else {
+        this.notificationService.template(this.template!, {
+          nzData: {
+            title: 'Hata!!',
+            message: 'Url hatalı veya havuzda bulunuyor.',
+            color: 'red',
+          },
+        });
+      }
+    } else {
+      this.notificationService.template(this.template!, {
+        nzData: {
+          title: 'Hata!!',
+          message: 'Url alanı boş.',
+          color: 'red',
+        },
+      });
+    }
+  }
+
+  removeUrl(index: number) {
+    this.urlList.splice(index, 1);
+    this.notificationService.template(this.template!, {
+      nzData: {
+        title: 'Harika!!',
+        message: 'Url başarıyla havuzdan kaldırıldı.',
+        color: 'green',
+      },
+    });
+  }
+
+  getSimilarity() {
+    if (
+      this.webSite != null &&
+      this.urlList != null &&
+      this.urlList.length > 0
+    ) {
+      this.send = true;
+
+      this.urlList.forEach((item) => {
+        var webSite: WebSiteBasic = {
+          url: item,
+        };
+        this.webSitePool.push(webSite);
+      });
+      this.operationFourService
+        .getSimilarity(this.webSite, this.webSitePool)
+        .subscribe((response) => {
+          this.result = response.data;
+          this.send = false;
+          this.webSitePool = [];
+          console.log(response);
+        });
+    } else {
+      this.notificationService.template(this.template!, {
+        nzData: {
+          title: 'Hata!!',
+          message: '1. Website veya havuz boş',
+          color: 'red',
+        },
+      });
+    }
+  }
+}
+ 
+/* -------------------------------------  */ 
+<div class="container-md pt-5 pb-5" >
+
+<ng-template #notification let-notification="data">
+  <nz-tag [nzColor]="notification.color">{{ notification.title }}</nz-tag>
+  <button nz-button nzSize="small">{{ notification.message }}</button>
+</ng-template>
+<ng-template #titleTemplate>
+  <div nz-row nzJustify="space-between">
+    <div nz-col nzMd="18">
+      <h5>Aşama 4 - URL havuzu ve Alt URL leri arasında benzerlik skorlaması</h5>
+    </div>
+    <div nz-col nzMd="6">
+      <div nz-row nzJustify="end">
+        <div nz-col>
+          <app-operation-infos
+            operationName="operationFour"
+          ></app-operation-infos>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<nz-card nzHoverable="true" nzType="inner" [nzTitle]="titleTemplate">
+  <nz-input-group nzSearch nzSize="large" nzAddOnBeforeIcon="link">
+    <input
+      [(ngModel)]="webSite"
+      type="text"
+      nz-input
+      placeholder="http://bilgisayar.kocaeli.edu.tr"
+    />
+  </nz-input-group>
+
+  <nz-input-group
+    class="mt-2"
+    nzSearch
+    nzSize="large"
+    nzAddOnBeforeIcon="appstore-add"
+    [nzAddOnAfter]="addWebSite"
+  >
+    <input
+      [(ngModel)]="sendUrl"
+      type="text"
+      nz-input
+      placeholder="http://bilgisayar.kocaeli.edu.tr"
+    />
+    <ng-template #addWebSite>
+      <button
+        (click)="addUrl()"
+        nz-button
+        nzType="primary"
+        class="btn btn-warning"
+        nzSize="large"
+        nzSearch
+      >
+        Hazuva Ekle
+      </button>
+    </ng-template>
+  </nz-input-group>
+
+  <nz-list class="mt-2" nz-list nzBordered nzSize="small">
+    <nz-list-header>Havuz Listesi</nz-list-header>
+
+    <nz-list-item *ngFor="let item of urlList; let i = index">
+      <ul nz-list-item-actions>
+        <nz-list-item-action>
+          <button
+            (click)="removeUrl(i)"
+            nz-button
+            nzDanger
+            nzSize="small"
+            nzShape="circle"
+          >
+            <i
+              style="vertical-align: 0.125em !important"
+              nz-icon
+              nzType="delete"
+            ></i>
+          </button>
+        </nz-list-item-action>
+      </ul>
+      <a routerLink="{{ item }}">{{ item }}</a>
+    </nz-list-item>
+    <nz-list-empty *ngIf="urlList.length === 0"></nz-list-empty>
+  </nz-list>
+  <button (click)="getSimilarity()" nz-button nzType="primary" nzBlock>
+    <i nz-icon nzType="deployment-unit" nzTheme="outline"></i> Başlat
+  </button>
+</nz-card>
+
+<nz-card
+  nzHoverable="true"
+  class="mt-2"
+  *ngIf="send == true"
+  nzType="inner"
+  nzTitle="Sonuçlar"
+>
+  <div class="text-center">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+</nz-card>
+
+<div *ngIf="result && send == false">
+  <nz-ribbon nzText="Temel Site">
+    <nz-card class="mt-2" nzType="inner" nzTitle="Temel Site">
+      <nz-alert nzType="success" [nzDescription]="alertMessage"></nz-alert>
+      <ng-template #alertMessage>
+        <strong>Site Title : </strong>&nbsp;<a
+          href="{{ result.webSite.url }}"
+          >{{ result.webSite.title ? result.webSite.title : result.webSite.url }}</a
+        >
+      </ng-template>
+
+      <nz-collapse nzAccordion>
+        <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+          <nz-table
+            class="mt-2"
+            [nzPageSize]="5"
+            #keywordsTable
+            [nzData]="result.webSite.keywords"
+            nzBordered
+            nzTitle="Anahtar Kelimeler"
+          >
+            <thead>
+              <tr>
+                <th>Anahtar kelime</th>
+                <th>Frekans</th>
+                <th>Skor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+                <td>{{ keyword.word }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{
+                    keyword.frequency
+                  }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-danger">{{ keyword.score }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-card>
+  </nz-ribbon>
+
+  <nz-card class="mt-2" nzType="inner" nzTitle="Hedef Siteler">
+    <nz-collapse>
+      <nz-collapse-panel nzHeader="Url Ağacı" nzActive="true">
+        <nz-tree
+        [nzData]="result.urlTree"
+        nzShowLine
+        (nzClick)="nzEvent($event)"
+      >
+      </nz-tree>
+      </nz-collapse-panel>
+
+      <nz-collapse-panel nzHeader="Hedef Site Listesi" nzActive="false">
+        <nz-card
+          nzHoverable="true"
+          *ngFor="let webSite of result.webSitePool"
+          class="mt-2"
+          nzType="inner"
+          nzTitle="{{ !webSite.webSite.title ? webSite.webSite.url : webSite.webSite.title }}"
+          
+        >
+          <nz-alert nzType="info" [nzDescription]="alertMessage"></nz-alert>
+          <ng-template #alertMessage>
+            <div nz-row nzJustify="space-between">
+              <div nz-col nzMd="12">
+                <strong>Site : </strong>&nbsp;<a
+                  href="{{ webSite.webSite.url }}"
+                  >{{ !webSite.webSite.title ? webSite.webSite.url : webSite.webSite.title }}</a
+                >
+              </div>
+              <div nz-col nzMd="12">
+                <div nz-row nzJustify="end">
+                  <div nz-col>
+                    <button nz-button nzType="default" nzDanger>
+                      %{{ webSite.similarityScore }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+
+          <nz-collapse nzAccordion>
+            <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+              <nz-table
+                class="mt-2"
+                [nzPageSize]="5"
+                #keywordsTable
+                [nzData]="webSite.webSite.keywords"
+                nzBordered
+                nzTitle="Anahtar Kelimeler"
+              >
+                <thead>
+                  <tr>
+                    <th>Anahtar kelime</th>
+                    <th>Frekans</th>
+                    <th>Skor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+                    <td>{{ keyword.word }}</td>
+                    <td>
+                      <span class="badge bg-secondary">{{
+                        keyword.frequency
+                      }}</span>
+                    </td>
+                    <td>
+                      <span class="badge bg-danger">{{ keyword.score }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </nz-table>
+            </nz-collapse-panel>
+          </nz-collapse>
+        </nz-card>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </nz-card>
+</div>
+</div>
+/* -------------------------------------  */ 
+i {
+    vertical-align: 0px!important;
+    font-size: 16px!important;
+}
+nz-card{
+    cursor: default;
+}
+/* -------------------------------------  */ 
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { WebSiteBasic } from 'src/app/models/websiteBasic/WebSiteBasic';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { OperationFourModel } from 'src/app/models/operation-four/operationFourModel';
+import { NzFormatEmitEvent } from 'ng-zorro-antd/tree';
+import { OperationFiveService } from 'src/app/services/operationFive/operation-five.service';
+import { OperationFiveModel } from 'src/app/models/operation-five/operationFiveModel';
+
+@Component({
+  selector: 'app-operation-five',
+  templateUrl: './operation-five.component.html',
+  styleUrls: ['./operation-five.component.css']
+})
+export class OperationFiveComponent implements OnInit {
+
+  constructor(
+    private operationFiveService: OperationFiveService,
+    private notificationService: NzNotificationService
+
+  ) { }
+
+  @ViewChild(TemplateRef, { static: false }) template?: TemplateRef<{}>;
+  webSite: string;
+  sendUrl: string = "";
+  urlList: string[] = [];
+  webSitePool: WebSiteBasic[] = [];
+  result: OperationFiveModel;
+  control = false;
+  send = false;
+  ngOnInit(): void {}
+
+  nzEvent(event: NzFormatEmitEvent): void {
+    console.log(event);
+  }
+
+
+  closeLoading() {
+    this.control = false;
+  }
+
+  addUrl() {
+    var control = false;
+    if (this.sendUrl != ' ' && this.sendUrl != '') {
+      this.urlList.forEach((p) => {
+        if (p === this.sendUrl) control = true;
+      });
+      if (!control) {
+        this.urlList.push(this.sendUrl);
+        this.sendUrl = '';
+        this.notificationService.template(this.template!, {
+          nzData: {
+            title: 'Harika!!',
+            message: 'Url başarıyla havuza eklendi.',
+            color: 'green',
+          },
+        });
+      } else {
+        this.notificationService.template(this.template!, {
+          nzData: {
+            title: 'Hata!!',
+            message: 'Url hatalı veya havuzda bulunuyor.',
+            color: 'red',
+          },
+        });
+      }
+    }
+    else{
+      this.notificationService.template(this.template!, {
+        nzData: {
+          title: 'Hata!!',
+          message: 'Url alanı boş.',
+          color: 'red',
+        },
+      });
+    }
+  }
+
+  removeUrl(index: number) {
+    this.urlList.splice(index, 1);
+    this.notificationService.template(this.template!, {
+      nzData: {
+        title: 'Harika!!',
+        message: 'Url başarıyla havuzdan kaldırıldı.',
+        color: 'green',
+      },
+    });
+  }
+
+  getSimilarity() {
+    if (
+      this.webSite != null &&
+      this.urlList != null &&
+      this.urlList.length > 0
+    ) {
+      this.send = true;
+
+      this.urlList.forEach((item) => {
+        var webSite: WebSiteBasic = {
+          url: item,
+        };
+        this.webSitePool.push(webSite);
+      });
+      this.operationFiveService
+        .getSimilarity(this.webSite, this.webSitePool)
+        .subscribe((response) => {
+          console.log(response)
+          this.result = response.data;
+          this.send = false;
+          this.webSitePool = [];
+          
+        });
+    } else {
+      this.notificationService.template(this.template!, {
+        nzData: {
+          title: 'Hata!!',
+          message: '1. Website veya havuz boş',
+          color: 'red',
+        },
+      });
+    }
+  }
+
+}
+
+/* -------------------------------------  */ 
+<div class="container-md pt-5 pb-5" >
+
+<ng-template #notification let-notification="data">
+  <nz-tag [nzColor]="notification.color">{{ notification.title }}</nz-tag>
+  <button nz-button nzSize="small">{{ notification.message }}</button>
+</ng-template>
+<ng-template #titleTemplate>
+  <div nz-row nzJustify="space-between">
+    <div nz-col nzMd="18">
+      <h5>Aşama 5 - URL havuzu ve Alt URL leri arasında semantik kontrolü yapılarak
+      benzerlik skorlaması</h5>
+    </div>
+    <div nz-col nzMd="6">
+      <div nz-row nzJustify="end">
+        <div nz-col>
+          <app-operation-infos
+            operationName="operationFive"
+          ></app-operation-infos>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<nz-card nzHoverable="true" nzType="inner" [nzTitle]="titleTemplate">
+ 
+  <nz-input-group nzSearch nzSize="large" nzAddOnBeforeIcon="link">
+    <input
+      [(ngModel)]="webSite"
+      type="text"
+      nz-input
+      placeholder="http://bilgisayar.kocaeli.edu.tr"
+    />
+  </nz-input-group>
+
+  <nz-input-group
+    class="mt-2"
+    nzSearch
+    nzSize="large"
+    nzAddOnBeforeIcon="appstore-add"
+    [nzAddOnAfter]="addWebSite"
+  >
+    <input
+      [(ngModel)]="sendUrl"
+      type="text"
+      nz-input
+      placeholder="http://bilgisayar.kocaeli.edu.tr"
+    />
+    <ng-template #addWebSite>
+      <button
+        (click)="addUrl()"
+        nz-button
+        nzType="primary"
+        class="btn btn-warning"
+        nzSize="large"
+        nzSearch
+      >
+        Hazuva Ekle
+      </button>
+    </ng-template>
+  </nz-input-group>
+
+  <nz-list class="mt-2" nz-list nzBordered nzSize="small">
+    <nz-list-header>Havuz Listesi</nz-list-header>
+
+    <nz-list-item *ngFor="let item of urlList; let i = index">
+      <ul nz-list-item-actions>
+        <nz-list-item-action>
+          <button
+            (click)="removeUrl(i)"
+            nz-button
+            nzDanger
+            nzSize="small"
+            nzShape="circle"
+          >
+            <i
+              style="vertical-align: 0.125em !important"
+              nz-icon
+              nzType="delete"
+            ></i>
+          </button>
+        </nz-list-item-action>
+      </ul>
+      <a routerLink="{{ item }}">{{ item }}</a>
+    </nz-list-item>
+    <nz-list-empty *ngIf="urlList.length === 0"></nz-list-empty>
+  </nz-list>
+  <button (click)="getSimilarity()" nz-button nzType="primary" nzBlock>
+    <i nz-icon nzType="deployment-unit" nzTheme="outline"></i> Başlat
+  </button>
+</nz-card>
+
+<nz-card
+  nzHoverable="true"
+  class="mt-2"
+  *ngIf="send == true"
+  nzType="inner"
+  nzTitle="Sonuçlar">
+  
+<div class="text-center">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+</nz-card>
+
+<div *ngIf="result && send == false">
+  <nz-ribbon nzText="Temel Site">
+    <nz-card class="mt-2" nzType="inner" nzTitle="Temel Site">
+      <nz-alert nzType="success" [nzDescription]="alertMessage"></nz-alert>
+      <ng-template #alertMessage>
+        <strong>Site Title : </strong>&nbsp;<a
+          href="{{ result.webSite.url }}"
+          >{{ !result.webSite.title ? result.webSite.url : result.webSite.title }}</a
+        >
+        
+      </ng-template>
+
+      <nz-collapse nzAccordion>
+        <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+          <nz-table
+            class="mt-2"
+            [nzPageSize]="5"
+            #keywordsTable
+            [nzData]="result.webSite.keywords"
+            nzBordered
+            nzTitle="Anahtar Kelimeler"
+          >
+            <thead>
+              <tr>
+                <th>Anahtar kelime</th>
+                <th>Frekans</th>
+                <th>Skor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+                <td>{{ keyword.word }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{
+                    keyword.frequency
+                  }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-danger">{{ keyword.score }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-card>
+  </nz-ribbon>
+
+  <nz-card class="mt-2" nzType="inner" nzTitle="Hedef Siteler">
+    <nz-collapse>
+      <nz-collapse-panel nzHeader="Url Ağacı" nzActive="true">
+        <nz-tree
+          [nzData]="result.urlTree"
+          nzShowLine
+          (nzClick)="nzEvent($event)"
+        >
+        </nz-tree>
+      </nz-collapse-panel>
+
+      <nz-collapse-panel nzHeader="Hedef Site Listesi" nzActive="false">
+        <nz-card
+          nzHoverable="true"
+          *ngFor="let webSite of result.webSitePool"
+          class="mt-2"
+          nzType="inner"
+          nzTitle="{{ !webSite.webSite.title ? webSite.webSite.url : webSite.webSite.title }}"
+        >
+        
+          <nz-alert nzType="info" [nzDescription]="alertMessage"></nz-alert>
+          <ng-template #alertMessage>
+            <div nz-row nzJustify="space-between">
+              <div nz-col nzMd="12">
+                <strong>Site : </strong>&nbsp;<a
+                  href="{{ webSite.webSite.url }}"
+                  >{{ !webSite.webSite.title ? webSite.webSite.url : webSite.webSite.title }}</a
+                >
+              </div>
+              <div nz-col nzMd="12">
+                <div nz-row nzJustify="end">
+                  <div nz-col>
+                    <button nz-button nzType="default" nzDanger>
+                      %{{ webSite.similarityScore }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+          <nz-list nzBordered nzHeader="Semantik Kelimeler">
+            <nz-list-item *ngFor="let semanticKeywords of webSite.webSite.semanticKeywords">
+              <span nz-typography><nz-tag [nzColor]="'green'">
+                <strong>{{semanticKeywords.word}}</strong>
+              </nz-tag>
+              &nbsp;<i nz-icon nzType="double-right" nzTheme="outline"></i>&nbsp;
+              <nz-tag class="mb-1 mt-1" [nzColor]="'gold'" *ngFor="let similarWords of semanticKeywords.similarWords"> <strong>{{similarWords.word}} ({{similarWords.frequency}} Adet)</strong></nz-tag>
+              
+            </span>
+            </nz-list-item>
+          </nz-list>
+          <nz-collapse nzAccordion>
+            <nz-collapse-panel nzHeader="Anahtar Kelimeler" [nzActive]="false">
+              <nz-table
+                class="mt-2"
+                [nzPageSize]="5"
+                #keywordsTable
+                [nzData]="webSite.webSite.keywords"
+                nzBordered
+                nzTitle="Anahtar Kelimeler"
+              >
+                <thead>
+                  <tr>
+                    <th>Anahtar kelime</th>
+                    <th>Frekans</th>
+                    <th>Skor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let keyword of keywordsTable.data; let i = index">
+                    <td>{{ keyword.word }}</td>
+                    <td>
+                      <span class="badge bg-secondary">{{
+                        keyword.frequency
+                      }}</span>
+                    </td>
+                    <td>
+                      <span class="badge bg-danger">{{ keyword.score }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </nz-table>
+            </nz-collapse-panel>
+          </nz-collapse>
+        </nz-card>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </nz-card>
+</div>
+</div>
+/* -------------------------------------  */ 
+i {
+    vertical-align: 0px!important;
+    font-size: 16px!important;
+}
+nz-card{
+    cursor: default;
+}
+/* -------------------------------------  */ 
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-navbar',
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.css']
+})
+export class NavbarComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+
+/* -------------------------------------  */ 
+<div style="
+  display: flex;
+  flex-direction: column; 
+  justify-content: space-between; 
+  min-height: 160px; 
+  background-image: url('assets/image/navbarbackground.jpg'); 
+  background-repeat: no-repeat;
+  background-size: cover;" >
+
+  <div style="padding: 10px; text-align: center;">
+    <a routerLink="/home">
+    <img style="height: 90px; width: auto;" src="assets/image/logo.png">
+    </a>
+  </div>
+
+<ul nz-menu nzMode="horizontal" nzTheme="dark" class="text-center"  nzMatchRouterExact="true">
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/home">
+        <i nz-icon nzType="home" nzTheme="outline"></i>      
+        Anasayfa
+      </a>
+    </li> 
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-one">
+        <i nz-icon nzType="file-text"></i>
+        Frekans
+      </a>
+    </li>
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-two">
+        <i nz-icon nzType="file-search"></i>
+        Anahtar Kelimeler
+      </a>
+    </li>
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-three">
+        <i nz-icon nzType="subnode"></i>
+        Url Havuzu
+      </a>
+    </li>
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-four">
+        <i nz-icon nzType="sisternode"></i>
+        Url - Alt Url Havuzu
+      </a>
+    </li>
+    <li nz-menu-item>
+      <a class="text-decoration-none" routerLink="/operation-five">
+        <i nz-icon nzType="mac-command"></i>
+        Semantik
+      </a>
+    </li>
+</ul>
+</div>
+/* -------------------------------------  */ 
+i {
+    vertical-align: 0px!important;
+    font-size: 18px!important;
+}
+
+/* -------------------------------------  */ 
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
+})
+export class HomeComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+
+/* -------------------------------------  */
+<div class="container-md pt-5 pb-5" >
+<p>Home Page</p>
+
+
+
+</div> 
+/* -------------------------------------  */ 
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": "75d0d6b2-235c-4afc-961e-53a3e672a856"
+  },
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "siteIndexer-Frontend": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/siteIndexer-Frontend",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
+                "output": "/assets/"
+              }
+            ],
+            "styles": [
+              "src/theme.less",
+              "src/styles.css",
+              "bootstrap/dist/css/bootstrap.min.css"
+            ],
+            "scripts": [
+              "bootstrap/dist/js/bootstrap.min.js",
+              "jquery/dist/jquery.min.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2mb",
+                  "maximumError": "4mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "siteIndexer-Frontend:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "siteIndexer-Frontend:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "siteIndexer-Frontend:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "tsconfig.app.json",
+              "tsconfig.spec.json",
+              "e2e/tsconfig.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "siteIndexer-Frontend:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "siteIndexer-Frontend:serve:production"
+            }
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "siteIndexer-Frontend"
+}
+/* -------------------------------------  */ 
+// This file can be replaced during build by using the `fileReplacements` array.
+// `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
+// The list of file replacements can be found in `angular.json`.
+
+export const environment = {
+  production: false,
+  apiUrl: "https://localhost:44384/api/"
+  
+};
+
+/*
+ * For easier debugging in development mode, you can import the following file
+ * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
+ *
+ * This import should be commented out in production mode because it will have a negative impact
+ * on performance if an error is thrown.
+ */
+// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+
+/* -------------------------------------  */ 
+export const environment = {
+  production: true,
+  apiUrl: "https://siteindexer-backend.ue.r.appspot.com/api/"
+};
+
+/* -------------------------------------  */ 
