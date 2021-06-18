@@ -10,6 +10,18 @@ Engin Yenice
  Kocaeli Üniversitesi
  190201133
 
+# Çevrimiçi Linkler
+
+## Backend (Arka Plan)
+
+### [http://yazlab21.somee.com/](http://yazlab21.somee.com/)
+
+## Frontend (Kullanıcı Arayüzü (UI))
+
+### [https://siteindexer-729f6.web.app/home](https://siteindexer-729f6.web.app/home)
+
+
+
 **_Özet_— Verilen bir URL&#39;deki web sayfa içeriğine göre diğer birden fazla web sayfasını benzerlik bakımından indeksleyip sıralayan web tabanlı bir uygulama geliştirmek. Böylece bu proje sayesinde web indeksleme yöntemleri hakkında bilgi edinilmesini ve web tabanlı uygulama yazma becerisinin geliştirilmesi amaçlanmaktadır.**
 
 _ **Anahtar Kelimeler—anahtar, kelime, frekans, havuz, liste, website, link, url, semantic, benzerlik** _
@@ -346,16 +358,6 @@ Alt sitelerde bulunan semantik kelimeler ise tespit edildiği sitenin alt bilgil
  ![](RackMultipart20210402-4-d6e3c1_html_7e3d1b7278cf9118.png)
 
 ![](RackMultipart20210402-4-d6e3c1_html_520472caad42f69a.png)
-
-# Çevrimiçi Linkler
-
-## Backend (Arka Plan)
-
-### [http://yazlab21.somee.com/](http://yazlab21.somee.com/)
-
-## Frontend (Kullanıcı Arayüzü (UI))
-
-### [https://siteindexer-729f6.web.app/home](https://siteindexer-729f6.web.app/home)
 
 # Kaynakça
 
